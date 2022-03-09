@@ -89,4 +89,4 @@ export default class MainAbility extends Ability {
 
         return true
     }
-};
+}
