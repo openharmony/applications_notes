@@ -1,2 +1,0 @@
-# ohos_notes
-

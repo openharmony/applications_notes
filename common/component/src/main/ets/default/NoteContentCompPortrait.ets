@@ -17,30 +17,31 @@ import DateUtil from '../../../../../../common/utils/src/main/ets/default/baseUt
 import RdbStoreUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
 import FolderData from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/FolderData.ets'
 import NoteData from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/NoteData.ets'
-import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete} from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
+import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
+} from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
 import StyleConstants from '../../../../../../common/utils/src/main/ets/default/constants/StyleConstants.ets'
-import {EditContentDialog, DeleteDialog, EditTitleDialog} from './CusDialogComp.ets'
+import {EditContentDialogPortrait, DeleteDialog, EditTitleDialog} from './CusDialogComp.ets'
 import FolderUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/FolderUtil.ets'
 import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
 import prompt from '@system.prompt'
-import featureAbility from '@ohos.ability.featureAbility'
+import featureAbility from '@ohos.ability.featureAbility';
 import LogUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 
 const TAG = "NoteContentComp"
 
 // Note content component
 @Component
-export struct NoteContentComp {
-  @Consume('SelectedNoteData') selectedNoteData: NoteData
+export struct NoteContentCompPortrait {
+  @Consume('SelectedNoteData') selectedNoteData: NoteData;
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('RefreshFlag') refreshFlag: number
-  @Consume('EditModel') editModel: boolean
   @Consume('SectionStatus') sectionStatus: number
-  @Consume('LastSectionStatus') lastSectionStatus: number
-  controllerShow: WebController
+  @Consume('ChooseNote') chooseNote: boolean
+  @Consume('EditModel') editModel: boolean
+  private controllerShow: WebController = new WebController()
   private editContentFlag = false
-  @State uri1: string = ""
+  @State uri1: string = "";
   private context = getContext(this)
   noteContent = {
     callbackhtml: (html) => {
@@ -52,33 +53,7 @@ export struct NoteContentComp {
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
       LogUtil.info(TAG, 'update note success:' + this.selectedNoteData)
-      // save continue data
-      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-      AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-      console.log("callbackhtml, set continue note success")
-      return "AceString"
-    },
-
-    callbackhtmlSave: (html) => {
-      LogUtil.info(TAG, 'html content is:' + html)
-      LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
-      this.selectedNoteData.content_text = html
-      this.selectedNoteData.modified_time = new Date().getTime()
-      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData)
-      // save continue data
-      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-      AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-      console.log("callbackhtml, set continue note success")
-      // 删除空白笔记
-      if(NoteUtil.deleteEmptyNote(this.selectedNoteData,this.AllNoteArray,this.controllerShow)) {
-        this.selectedNoteData = this.AllNoteArray[0]
-        LogUtil.info(TAG, "selectedNoteData note:" + this.selectedNoteData.uuid)
-        this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"})
-      }
-      return "AceString"
+      return "AceString";
     }
   }
 
@@ -102,19 +77,19 @@ export struct NoteContentComp {
                 this.controllerShow.registerJavaScriptProxy({
                   obj: this.noteContent,
                   name: "callBackToApp", // html-->  name.method
-                  methodList: ["callbackhtml","callbackhtmlSave"],
-                })
+                  methodList: ["callbackhtml"],
+                });
                 LogUtil.info(TAG, "finish register")
                 this.controllerShow.refresh()
                 this.editContentFlag = true
               }
               LogUtil.info(TAG, "finish loadurl")
               console.log('onPageEnd:' + e.url)
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
-              // 初次加载为为小屏预览模式
-              if (this.sectionStatus != 1) {
-                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
-              }
+              // 初次进入预览模式
+              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
+              this.controllerShow.runJavaScript({
+                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              })
             })
             .zoomAccess(false)
             .height(450)
@@ -125,44 +100,27 @@ export struct NoteContentComp {
         .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
         .enabled(this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .onClick(() => {
-          // 点击第三屏进入全屏编辑模式
-          if (this.sectionStatus != 1) {
-            this.lastSectionStatus = this.sectionStatus
-            this.sectionStatus = 1
-            this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
-            this.editModel = !this.editModel
-            // save continue data
-            AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-            console.log("NoteContentComp, set continue section success")
-          }
+          this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
+          this.editModel = true
         })
       }
       .height(StyleConstants.PERCENTAGE_100)
       .margin({ left: 24, right: 24 })
       .visibility(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0 ? Visibility.Hidden : Visibility.Visible)
 
+      EditNoteCompForPortrait({ controllerShow: this.controllerShow })
       DeleteNoteComp()
     }
     .height(StyleConstants.PERCENTAGE_100)
     .width(StyleConstants.PERCENTAGE_100)
   }
-
-  aboutToAppear(): void{
-    LogUtil.info(TAG, "aboutToAppear")
-  }
-
-  aboutToDisappear(): void{
-    LogUtil.info(TAG, "aboutToDisappear")
-  }
-
 }
 
 @Component
 export struct NoteContentOverViewComp {
-  @Consume('SelectedNoteData') selectedNoteData: NoteData
+  @Consume('SelectedNoteData') selectedNoteData: NoteData;
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
-  @Consume('EditModel') editModel: boolean
   @Consume('SectionStatus') sectionStatus: number
   editTitleDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditTitleDialog({ confirm: this.confirm.bind(this), dialogType: 0 }),
@@ -205,19 +163,12 @@ export struct NoteContentOverViewComp {
       Row() {
         Text(this.selectedNoteData.title).fontSize(30)
           .onClick(() => {
-            this.editModel = true
-            this.sectionStatus = 1
             this.editTitleDialogCtl.open()
-            // save continue data
-            AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-            console.log("NoteContentOverViewComp, set continue section success")
           })
-      }.height(40)
-      .width(StyleConstants.PERCENTAGE_100)
+      }.height(40).width(StyleConstants.PERCENTAGE_100)
 
       Row() {
-        Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time)))
-          .fontSize(12)
+        Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time))).fontSize(12)
           .padding({ top: 4, bottom: 4 })
         Row() {
           Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
@@ -241,222 +192,36 @@ export struct NoteContentOverViewComp {
 
 @Component
 export struct ToolBarComp {
-  @Consume('SelectedNoteData') selectedNoteData: NoteData
+  @Consume('SelectedNoteData') selectedNoteData: NoteData;
   @Consume('RefreshFlag') refreshFlag: number
   @Consume('SectionStatus') sectionStatus: number
-  @Consume('LastSectionStatus') lastSectionStatus: number
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('ChooseNote') chooseNote: boolean
   @Consume('PortraitModel') portraitModel: boolean
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('EditModel') editModel: boolean
   controllerShow: WebController
-  private context = getContext(this)
-
-//private lastSectionStatus: number
-  noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
-    alignment: DialogAlignment.Center,
-    autoCancel: false,
-    customStyle: true,
-  })
-  noteDataDeleteDialogCtlBottom: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
-    alignment: DialogAlignment.Bottom,
-    autoCancel: false,
-    customStyle: true,
-  })
-
-  onDeleteConfirm() {
-    if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
-      this.selectedNoteData.is_deleted = Delete.Yes
-      this.selectedNoteData.deleted_time = new Date().getTime()
-      // update note to db
-      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-    } else {
-      NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData.uuid)
-      // delete note from db
-      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.delete(predicates_note, null)
-    }
-    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
-    this.chooseNote = false
-    // save continue data
-    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-    console.log("ToolBarComp, onDeleteConfirm, set continue note success")
-  }
-
-  editContentDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: EditContentDialog({ confirm: this.confirm.bind(this), dialogType: 0 }),
-    alignment: DialogAlignment.Bottom,
-    autoCancel: true,
-    customStyle: true,
-  })
-
-  confirm(excuteJs: string) {
-    prompt.showToast({ message: excuteJs, duration: 2000 })
-    this.controllerShow.runJavaScript({ script: excuteJs })
-  }
 
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
       justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
-      if (this.portraitModel == true) {
-        Image($r('app.media.back'))
-          .height(24)
-          .width(24)
-          .onClick(() => {
-            this.chooseNote = false
-          })
-      } else {
-        Image($r('app.media.zoom'))
-          .height(24)
-          .width(24)
-          .onClick(() => {
-            if (this.sectionStatus != 1) {
-              this.lastSectionStatus = this.sectionStatus
-              this.sectionStatus = 1
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
-            } else {
-              if (this.lastSectionStatus != undefined) {
-                // 切换为小屏预览模式
-                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
-                // 退出全屏时存库
-                LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
-                this.controllerShow.runJavaScript({ script: "save_html_content()" })
-                this.sectionStatus = this.lastSectionStatus
-              } else {
-                this.sectionStatus = 3
-              }
-            }
-            this.editModel = !this.editModel
-            // 迁移
-            console.log("ToolBarComp, set continue section")
-            AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-            console.log("ToolBarComp, set continue section success")
-          })
-          .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
-      }
 
-      if (this.selectedNoteData.is_deleted == Delete.Yes) {
-        Row({ space: StyleConstants.SPACE_24 }) {
-          Image($r('app.media.delete'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              this.noteDataDeleteDialogCtl.open()
-            })
-          Image($r('app.media.recover'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              this.selectedNoteData.is_deleted = Delete.No
-              this.selectedNoteData.deleted_time = 0
-              prompt.showToast({ message: "已恢复", duration: 2000 })
-              this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-              this.chooseNote = false
-              // update note to db
-              let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-              predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+      Image($r('app.media.back')).height(24).width(24)
+        .onClick(() => {
+          // 退出全屏时存库
+          this.controllerShow.runJavaScript({ script: "get_html_content()" })
+          // 删除空白笔记
+          NoteUtil.deleteEmptyNote(this.selectedNoteData, this.AllNoteArray, this.controllerShow)
+          this.chooseNote = false
+          // 进入预览模式
+          this.controllerShow.runJavaScript({ script: "RE.setInputEnabled(false)" })
+          this.editModel = false
+        })
 
-              this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
-              // save continue data
-              let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-              AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-              console.log("recover, set continue note success")
-            })
-        }.width(72)
-        .visibility(this.portraitModel ? Visibility.None : Visibility.Visible)
-      } else if (this.portraitModel == true && this.editModel == true) {
-        Row({ space: StyleConstants.SPACE_24 }) {
-          Image($r('app.media.undo'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
-            })
-          Image($r('app.media.todo'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
-            })
-          Image($r('app.media.tick_thin'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              // 保存笔记信息到数据库
-              this.controllerShow.runJavaScript({ script: "get_html_content()" })
-              if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
-                LogUtil.info(TAG, "note is empty,save note failed")
-                prompt.showToast({ message: $r('app.string.empty_note'), duration: 2000 })
-              }
-            })
-        }.width(120)
-      } else if (this.editModel == true) {
-        Row({ space: StyleConstants.SPACE_24 }) {
-          Image($r('app.media.circle_tick1'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              // 清单
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
-            })
-          Image($r('app.media.styles'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              if (this.portraitModel) {
-                this.editContentDialogCtl.open()
-              } else {
-                this.editContentDialogCtl.open()
-              }
-            })
-          Image($r('app.media.picture_white'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              console.info('test select single select!')
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImage()" })
-            })
-          Image($r('app.media.tick_thick'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              // 保存笔记信息到数据库
-              this.controllerShow.runJavaScript({ script: "get_html_content()" })
-              if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
-                LogUtil.info(TAG, "note is empty,save note failed")
-                prompt.showToast({ message: $r('app.string.empty_note'), duration: 2000 })
-              }
-            })
-          Image($r('app.media.undo'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
-            })
-          Image($r('app.media.todo'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
-            })
-        }.width(268)
-      } else {
+      if (this.editModel == false) {
         Row({ space: StyleConstants.SPACE_24 }) {
           Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') : $r('app.media.favorite_cancel'))
-            .height(24)
-            .width(24)
+            .height(24).width(24)
             .onClick(() => {
               this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -466,23 +231,41 @@ export struct ToolBarComp {
               RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
               if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
                 this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
-                // save continue data
+                // 迁移
+                console.log("ToolBarComp, set continue note")
                 let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+                console.log("ToolBarComp, continueNote : " + continueNote)
                 AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
                 console.log("ToolBarComp, set continue note success")
               }
             })
-          Image($r('app.media.delete'))
-            .height(24)
-            .width(24)
+        }.width(36)
+        .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
+      } else {
+        Row({ space: StyleConstants.SPACE_24 }) {
+          Image($r('app.media.undo')).height(24).width(24)
             .onClick(() => {
-              if (this.portraitModel) {
-                this.noteDataDeleteDialogCtlBottom.open()
-              } else {
-                this.noteDataDeleteDialogCtl.open()
-              }
+              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
             })
-        }.width(72)
+          Image($r('app.media.todo')).height(24).width(24)
+            .onClick(() => {
+              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
+            })
+          Image($r('app.media.tick_thin')).height(24).width(24)
+            .onClick(() => {
+              // 保存笔记信息到数据库
+              this.controllerShow.runJavaScript({ script: "get_html_content()" })
+              if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
+                LogUtil.info(TAG, "note is empty,save note failed")
+                prompt.showToast({ message: $r('app.string.empty_note'), duration: 2000 })
+              }
+              // 进入预览模式
+              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
+              this.editModel = false
+            })
+        }
+        .width(120)
+        .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       }
     }
     .width(StyleConstants.PERCENTAGE_100)
@@ -496,7 +279,7 @@ export struct DeleteNoteComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('RefreshFlag') refreshFlag: number
-  @Consume('SelectedNoteData') selectedNoteData: NoteData
+  @Consume('SelectedNoteData') selectedNoteData: NoteData;
   @Consume('PortraitModel') portraitModel: boolean
   @Consume('ChooseNote') chooseNote: boolean
   noteDataDeleteDialogCtlBottom: CustomDialogController = new CustomDialogController({
@@ -524,10 +307,6 @@ export struct DeleteNoteComp {
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     this.chooseNote = false
-    // save continue data
-    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-    console.log("DeleteNoteComp, onDeleteConfirm, set continue note success")
   }
 
   build() {
@@ -540,8 +319,7 @@ export struct DeleteNoteComp {
             this.noteDataDeleteDialogCtlBottom.open()
           })
         Text($r("app.string.delete"))
-          .fontSize(10)
-          .fontColor('#182431')
+          .fontSize(10).fontColor('#182431')
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)
@@ -553,7 +331,7 @@ export struct DeleteNoteComp {
           .onClick(() => {
             this.selectedNoteData.is_deleted = Delete.No
             this.selectedNoteData.deleted_time = 0
-            prompt.showToast({ message: "已恢复", duration: 2000 })
+            prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             this.chooseNote = false
             // update note to db
@@ -562,8 +340,7 @@ export struct DeleteNoteComp {
             RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
           })
         Text($r("app.string.recover"))
-          .fontSize(10)
-          .fontColor('#182431')
+          .fontSize(10).fontColor('#182431')
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)
@@ -571,6 +348,76 @@ export struct DeleteNoteComp {
     .width(360)
     .height(56)
     .visibility(this.selectedNoteData.is_deleted == Delete.Yes && this.portraitModel == true ?
+      Visibility.Visible : Visibility.None)
+  }
+}
+
+@Component
+export struct EditNoteCompForPortrait {
+  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
+  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
+  @Consume('SelectedFolderData') selectedFolderData: FolderData
+  @Consume('RefreshFlag') refreshFlag: number
+  @Consume('SelectedNoteData') selectedNoteData: NoteData;
+  @Consume('PortraitModel') portraitModel: boolean
+  @Consume('ChooseNote') chooseNote: boolean
+  @Consume('EditModel') editModel: boolean
+  controllerShow: WebController
+  editContentDialogCtl: CustomDialogController = new CustomDialogController({
+    builder: EditContentDialogPortrait({ confirm: this.confirm.bind(this), dialogType: 0 }),
+    alignment: DialogAlignment.Bottom,
+    autoCancel: true,
+    customStyle: true,
+  })
+
+  confirm(excuteJs: string) {
+    this.controllerShow.runJavaScript({ script: excuteJs })
+  }
+
+  build() {
+    Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
+      Column() {
+        Image($r('app.media.circle_tick'))
+          .width(24)
+          .height(24)
+          .onClick(() => {
+            // 清单
+            this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+          })
+        Text($r("app.string.list"))
+          .fontSize(10).fontColor('#182431')
+          .padding({ top: 5 })
+      }
+      .alignItems(HorizontalAlign.Center)
+
+      Column() {
+        Image($r('app.media.font_style'))
+          .width(24)
+          .height(24)
+          .onClick(() => {
+            this.editContentDialogCtl.open()
+          })
+        Text($r("app.string.style"))
+          .fontSize(10).fontColor('#182431')
+          .padding({ top: 5 })
+      }
+      .alignItems(HorizontalAlign.Center)
+
+      Column() {
+        Image($r('app.media.picture_white'))
+          .width(24)
+          .height(24)
+          .onClick(() => {
+          })
+        Text($r("app.string.photo"))
+          .fontSize(10).fontColor('#182431')
+          .padding({ top: 5 })
+      }
+      .alignItems(HorizontalAlign.Center)
+    }
+    .width(360)
+    .height(56)
+    .visibility(this.selectedNoteData.is_deleted == Delete.No && this.editModel == true ?
       Visibility.Visible : Visibility.None)
   }
 }
@@ -605,9 +452,7 @@ struct NoteDataMoveItemComp {
         .width('100%')
         .height(55)
 
-        Divider()
-          .color($r("app.color.divider_color_e4e4e4"))
-          .strokeWidth(1)
+        Divider().color($r("app.color.divider_color_e4e4e4")).strokeWidth(1)
       }
       .padding({ left: 16 })
     }

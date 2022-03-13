@@ -19,7 +19,7 @@ export default class StyleConstants {
   public static PERCENTAGE_0: string = '0%'
   public static SPACE_24: number = 24
   public static NOTE_LIST_BACKGROUND: string = "#f1f3f5"
-  public static DELETE_DEADLINE: number = 2592000000  // 30 days (30 * 24 * 60 * 60 * 1000)ms
+  public static DELETE_DEADLINE: number = 2592000000 // 30 days (30 * 24 * 60 * 60 * 1000)ms
   public static OPACITY_10: number = 0.1
   public static OPACITY_20: number = 0.2
   public static OPACITY_40: number = 0.4

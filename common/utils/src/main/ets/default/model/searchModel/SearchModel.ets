@@ -43,7 +43,7 @@ export class SearchModel {
     let searchData: NoteData[] = [];
     noteDataArray.forEach((noteData) => {
       if (noteData.content_text.toLowerCase().indexOf(query.toLowerCase()) != -1
-        || noteData.title.toLowerCase().indexOf(query.toLowerCase()) != -1) {
+      || noteData.title.toLowerCase().indexOf(query.toLowerCase()) != -1) {
         LogUtil.info(TAG, "uuid " + noteData.uuid)
         searchData.push(noteData);
       }
@@ -81,4 +81,5 @@ export class SearchModel {
 }
 
 let searchModel = new SearchModel()
+
 export default searchModel as SearchModel

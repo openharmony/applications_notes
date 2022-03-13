@@ -16,8 +16,7 @@
 import DateUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/DateUtil.ets'
 import FolderData from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/FolderData.ets'
 import NoteData from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/NoteData.ets'
-import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete, Top, NoteType
-} from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
+import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete, Top, NoteType} from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
 import {NoteDataMoveDialog, DeleteDialog} from './CusDialogComp.ets'
 import RdbStoreUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
 import prompt from '@system.prompt'
@@ -41,8 +40,8 @@ export struct NoteListComp {
     Stack({ alignContent: Alignment.Bottom }) {
 
       Flex({ direction: FlexDirection.Column }) {
-        NoteOverViewComp({controllerShow: this.controllerShow})
-        NoteItemListComp({controllerShow: this.controllerShow})
+        NoteOverViewComp({ controllerShow: this.controllerShow })
+        NoteItemListComp({ controllerShow: this.controllerShow })
       }
       .padding({ top: this.search ? 15 : 0 })
       .width('100%')
@@ -53,6 +52,15 @@ export struct NoteListComp {
     .height('100%')
     .width('100%')
   }
+
+  aboutToAppear(): void{
+    LogUtil.info(TAG, "aboutToAppear")
+  }
+
+  aboutToDisappear(): void{
+    LogUtil.info(TAG, "aboutToDisappear")
+  }
+
 }
 
 @Component
@@ -93,12 +101,15 @@ struct NoteOverViewComp {
           alignItems: ItemAlign.Start
         }) {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
-            .fontSize(30).fontColor('#182431')
+            .fontSize(30)
+            .fontColor('#182431')
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
-              .fontSize(14).fontColor('#182431')
+              .fontSize(14)
+              .fontColor('#182431')
             Text($r("app.string.noteslist"))
-              .fontSize(14).fontColor('#182431')
+              .fontSize(14)
+              .fontColor('#182431')
           }
           .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
         }.visibility(this.longpress ? Visibility.None : Visibility.Visible)
@@ -113,12 +124,16 @@ struct NoteOverViewComp {
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             })
           Text(this.CheckedNoteArray.length == 0 ? $r("app.string.none_selected") : $r("app.string.selected", this.CheckedNoteArray.length))
-            .fontSize(20).fontColor('#182431').margin({ left: 16 })
-        }.alignItems(VerticalAlign.Center).visibility(this.longpress ? Visibility.Visible : Visibility.None)
-      }.padding({ top: 8, bottom: 8 }).height('100%')
+            .fontSize(20)
+            .fontColor('#182431')
+            .margin({ left: 16 })
+        }.alignItems(VerticalAlign.Center)
+        .visibility(this.longpress ? Visibility.Visible : Visibility.None)
+      }.padding({ top: 8, bottom: 8 })
+      .height('100%')
 
-      AddNoteComp({controllerShow: this.controllerShow})
-      OperateNoteComp({controllerShow: this.controllerShow})
+      AddNoteComp({ controllerShow: this.controllerShow })
+      OperateNoteComp({ controllerShow: this.controllerShow })
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
     }
     .width('100%').height(82)
@@ -133,7 +148,7 @@ export struct NoteItemComp {
   public spans: any[]
   controllerShow: WebController
   @Consume('SelectedFolderData') selectedFolderData: FolderData
-  @Consume('SelectedNoteData') selectedNoteData: NoteData;
+  @Consume('SelectedNoteData') selectedNoteData: NoteData
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
   @Consume('Longpress') longpress: boolean
@@ -141,6 +156,7 @@ export struct NoteItemComp {
   @Consume('RefreshFlag') refreshFlag: number
   @Consume('Search') search: boolean
   @Consume('selectedAll') selectedAll: boolean
+  @Consume('PortraitModel') portraitModel:boolean
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -149,11 +165,12 @@ export struct NoteItemComp {
         Column({ space: 2 }) {
           Row({ space: 8 }) {
             Image($r("app.media.verticalBar"))
-              .height(16).width(4)
+              .height(16)
+              .width(4)
               .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.Get('AllFolderArray'), this.noteItem.folder_uuid))
             Text() {
               ForEach(this.spans.map((item1, index1) => {
-                return { index: index1, data: item1 };
+                return { index: index1, data: item1 }
               }), item => {
 
                 if (item.data.type == 0) {
@@ -170,9 +187,13 @@ export struct NoteItemComp {
             Text(DateUtil.formateDateForNoteTitle(new Date(this.noteItem.modified_time)))
               .fontSize(14)
               .fontColor('#182431')
-            Image($r("app.media.favorite")).height(16).width(16)
+            Image($r("app.media.favorite"))
+              .height(16)
+              .width(16)
               .visibility(this.noteItem.is_favorite == Favorite.Yes ? Visibility.Visible : Visibility.None)
-            Image($r("app.media.topped")).height(16).width(16)
+            Image($r("app.media.topped"))
+              .height(16)
+              .width(16)
               .visibility(this.noteItem.is_top == Top.Yes ? Visibility.Visible : Visibility.None)
           }
           .padding({ left: 12 })
@@ -186,11 +207,18 @@ export struct NoteItemComp {
           .borderRadius(12)
           .border({ width: 0.5, color: '#19182431' })
         Stack({ alignContent: Alignment.Center }) {
-          Image($r("app.media.unChecked")).height(24).width(24)
-          Image($r("app.media.checked")).width(24).height(24)
+          Image($r("app.media.unChecked"))
+            .height(24)
+            .width(24)
+          Image($r("app.media.checked"))
+            .width(24)
+            .height(24)
             .visibility(NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem) ? Visibility.Visible : Visibility.None)
-        }.width(24).height(24).visibility(this.longpress ? Visibility.Visible : Visibility.None)
-      }.height(48).width(this.longpress ? 80 : 48)
+        }.width(24)
+        .height(24)
+        .visibility(this.longpress ? Visibility.Visible : Visibility.None)
+      }.height(48)
+      .width(this.longpress ? 80 : 48)
     }
     .width('100%')
     .height(72)
@@ -216,15 +244,14 @@ export struct NoteItemComp {
       } else {
         this.selectedNoteData = this.noteItem
         this.chooseNote = true
-        // 迁移
-        console.log("NoteItemComp, set continue note")
+        // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-        console.log("NoteItemComp, continueNote : " + continueNote)
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         console.log("NoteItemComp, set continue note success")
       }
-      this.controllerShow.runJavaScript({script:"RE.setHtml('" + this.selectedNoteData.content_text + "')"})
-      this.controllerShow.runJavaScript({script:"RE.updateRichTextState()"})
+      if(this.portraitModel == false) {
+        this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+      }
       this.selectedAll = this.CheckedNoteArray.length ==
       NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length
       this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -254,7 +281,7 @@ export struct NoteItemListComp {
   @Consume('Search') search: boolean
   @Consume @Watch('doSearch') inputKeyword: string
   @Consume('SearchResultList') searchResultList: NoteData[]
-  @Consume('SelectedNoteData') selectedNoteData: NoteData;
+  @Consume('SelectedNoteData') selectedNoteData: NoteData
   controllerShow: WebController
 
   doSearch() {
@@ -267,10 +294,8 @@ export struct NoteItemListComp {
         } else {
           this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
         }
-        // 迁移
-        console.log("doSearch, set continue note")
+        // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-        console.log("doSearch, continueNote : " + continueNote)
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         console.log("doSearch, set continue note success")
         this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -286,7 +311,9 @@ export struct NoteItemListComp {
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
 
       Flex({ justifyContent: FlexAlign.Center }) {
-        Text($r("app.string.permanently_delete_tips")).fontSize(12).fontColor('#18181A')
+        Text($r("app.string.permanently_delete_tips"))
+          .fontSize(12)
+          .fontColor('#18181A')
       }
       .margin({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
       .width('100%')
@@ -296,11 +323,17 @@ export struct NoteItemListComp {
         List({ initialIndex: 0 }) {
           ListItem() {
             Column({ space: 8 }) {
-              Image($r('app.media.emptyPage')).width(120).height(120)
-              Text($r("app.string.Empty_page")).fontSize(12).fontColor('#A3A7AD')
+              Image($r('app.media.emptyPage'))
+                .width(120)
+                .height(120)
+              Text($r("app.string.Empty_page"))
+                .fontSize(12)
+                .fontColor('#A3A7AD')
             }
           }
-          .width('100%').height('100%').padding({ bottom: 120 })
+          .width('100%')
+          .height('100%')
+          .padding({ bottom: 120 })
           .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
 
           ForEach(this.inputKeyword.length == 0 ?
@@ -321,7 +354,7 @@ export struct NoteItemListComp {
       .height('100%')
     }
     .height('80%')
-    .padding({bottom: 1 })
+    .padding({ bottom: 1 })
     .onClick(() => {
       this.search = false
     })
@@ -335,7 +368,7 @@ export struct OperateNoteComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('RefreshFlag') refreshFlag: number
-  @Consume('SelectedNoteData') selectedNoteData: NoteData;
+  @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('PortraitModel') portraitModel: boolean
   @Consume('selectedAll') selectedAll: boolean
   controllerShow: WebController
@@ -388,11 +421,11 @@ export struct OperateNoteComp {
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    this.controllerShow.runJavaScript({script:"RE.setHtml('" + this.selectedNoteData.content_text + "')"})
-    // 迁移
-    console.log("OperateNoteComp, set continue note")
+    if(this.portraitModel == false) {
+      this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+    }
+    // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-    console.log("OperateNoteComp, continueNote : " + continueNote)
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     console.log("OperateNoteComp, set continue note success")
   }
@@ -447,7 +480,7 @@ export struct OperateNoteComp {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_deleted = Delete.No
             noteItem.deleted_time = 0
-            prompt.showToast({ message: "已恢复", duration: 2000 })
+            prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
@@ -481,17 +514,21 @@ export struct AddNoteComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('Longpress') longpress: boolean
   @Consume('SelectedFolderData') selectedFolderData: FolderData
-  @Consume('SelectedNoteData') selectedNoteData: NoteData;
+  @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('SectionStatus') sectionStatus: number
   @Consume('LastSectionStatus') lastSectionStatus: number
-  @Consume('EditModel') editModel:boolean
+  @Consume('EditModel') editModel: boolean
+  @Consume('ChooseNote') chooseNote: boolean
+  @Consume('PortraitModel') portraitModel: boolean
   controllerShow: WebController
 
   build() {
     Image($r('app.media.addNote'))
-      .width(24).height(24).margin({ right: 12 })
+      .width(24)
+      .height(24)
+      .margin({ right: 12 })
       .onClick(() => {
-        let noteData = new NoteData(0,"标题",new Date().getTime() + "",SysDefFolderUuid.UnClassified,"","",NoteType.SysDef,Top.No,Favorite.No,Delete.No,new Date().getTime(),new Date().getTime(),0)
+        let noteData = new NoteData(0, "标题", new Date().getTime() + "", this.selectedFolderData.uuid, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0)
 
         this.AllNoteArray.push(noteData)
         RdbStoreUtil.insert(TableName.NoteTable, noteData.toNoteObject(), null)
@@ -501,12 +538,20 @@ export struct AddNoteComp {
         if (this.sectionStatus != 1) {
           this.lastSectionStatus = this.sectionStatus
           this.sectionStatus = 1
-          this.controllerShow.runJavaScript({script:"RE.setInputEnabled(true)"})
+          this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
         } else {
           this.sectionStatus = this.lastSectionStatus
         }
-        this.controllerShow.runJavaScript({script:"RE.setHtml('" + this.selectedNoteData.content_text + "')"})
+        if(this.portraitModel == false) {
+          this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+        }
         this.editModel = true
+        this.chooseNote = true
+        // save continue data
+        let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+        AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+        AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
+        console.log("addNote, set continue note and section success")
       })
       .visibility(this.longpress || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
   }
@@ -556,7 +601,7 @@ export struct OperateNoteCompForPortrait {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('RefreshFlag') refreshFlag: number
-  @Consume('SelectedNoteData') selectedNoteData: NoteData;
+  @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('PortraitModel') portraitModel: boolean
   noteDataMoveDialogCtlBottom: CustomDialogController = new CustomDialogController({
     builder: NoteDataMoveDialog({ onConfirm: this.onMoveConfirm.bind(this) }),
@@ -607,10 +652,8 @@ export struct OperateNoteCompForPortrait {
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    // 迁移
-    console.log("OperateNoteCompForPortrait, set continue note")
+    // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-    console.log("OperateNoteCompForPortrait, continueNote : " + continueNote)
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     console.log("OperateNoteCompForPortrait, set continue note success")
   }
@@ -634,7 +677,8 @@ export struct OperateNoteCompForPortrait {
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             })
           Text($r("app.string.set_top"))
-            .fontSize(10).fontColor('#182431')
+            .fontSize(10)
+            .fontColor('#182431')
             .padding({ top: 5 })
         }
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
@@ -650,7 +694,8 @@ export struct OperateNoteCompForPortrait {
             this.noteDataDeleteDialogCtlBottom.open()
           })
         Text($r("app.string.delete"))
-          .fontSize(10).fontColor('#182431')
+          .fontSize(10)
+          .fontColor('#182431')
           .padding({ top: 5 })
       }
       .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
@@ -666,7 +711,8 @@ export struct OperateNoteCompForPortrait {
               this.noteDataMoveDialogCtlBottom.open()
             })
           Text($r("app.string.move"))
-            .fontSize(10).fontColor('#182431')
+            .fontSize(10)
+            .fontColor('#182431')
             .padding({ top: 5 })
         }
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
@@ -684,7 +730,7 @@ export struct OperateNoteCompForPortrait {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_deleted = Delete.No
                 noteItem.deleted_time = 0
-                prompt.showToast({ message: "已恢复", duration: 2000 })
+                prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
                 predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
@@ -695,7 +741,8 @@ export struct OperateNoteCompForPortrait {
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             })
           Text($r("app.string.recover"))
-            .fontSize(10).fontColor('#182431')
+            .fontSize(10)
+            .fontColor('#182431')
             .padding({ top: 5 })
         }
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
@@ -718,7 +765,8 @@ export struct OperateNoteCompForPortrait {
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
           })
         Text($r("app.string.check_all"))
-          .fontSize(10).fontColor('#182431')
+          .fontSize(10)
+          .fontColor('#182431')
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)

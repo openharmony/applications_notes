@@ -24,6 +24,7 @@ import NoteData from '../../../../../../../common/utils/src/main/ets/default/mod
 import {SysDefFolderUuid} from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
 import LayoutUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LayoutUtil.ets'
 import NoteUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
+import {WebViewUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/WebViewUtil.ets'
 
 @Entry
 @Component
@@ -33,22 +34,21 @@ export struct NoteHomeComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-  // 当前文件夹、笔记、分栏
+// 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
-  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section');
-
-  @Provide('SelectedColor') selectedColor: string = circleColorArray[0];
-  @Provide('LastSectionStatus') lastSectionStatus: number = 3; // 记录分栏上一次的状态
+  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')
+  @Provide('SelectedColor') selectedColor: string = circleColorArray[0]
+  @Provide('LastSectionStatus') lastSectionStatus: number = 3 // 记录分栏上一次的状态
   @Provide('Longpress') longpress: boolean = false // 第二栏长按状态
   @Provide('ExpandStatus') expandStatus: boolean = false // 笔记本折叠展开状态
   @Provide('ChooseNote') chooseNote: boolean = true // 是否选择笔记进行打开
   @Provide('Search') search: boolean = false // 是否处于搜索状态
   @Provide('SearchResultList') searchResultList: NoteData[] = [] // 搜索得到的笔记列表
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串
-  @Provide('SelectedAll') selectedAll: boolean = false;
+  @Provide('SelectedAll') selectedAll: boolean = false
   @Provide('EditModel') editModel: boolean = false //编辑模式：临时方案
-  private controllerShow: WebController = new WebController()   //第三栏展示
+  private controllerShow: WebController = WebViewUtil.getWebController() //第三栏展示
 
   TAG = "NoteHomeComp"
 
@@ -56,7 +56,7 @@ export struct NoteHomeComp {
     Flex({ justifyContent: FlexAlign.Start }) {
       // Folder list display area
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
-        FolderListComp({controllerShow: this.controllerShow})
+        FolderListComp({ controllerShow: this.controllerShow })
       }
       .flexShrink(0)
       .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
@@ -76,7 +76,7 @@ export struct NoteHomeComp {
         .opacity(StyleConstants.OPACITY_10)
       // Note list display area
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
-        NoteListComp({controllerShow: this.controllerShow})
+        NoteListComp({ controllerShow: this.controllerShow })
       }
       .flexShrink(0)
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
@@ -84,7 +84,8 @@ export struct NoteHomeComp {
       .height(StyleConstants.PERCENTAGE_100)
       .visibility(
           LayoutUtil.getWidthWeightMessage(this.sectionStatus)
-          .noteListVisibility == 0 ? Visibility.None : Visibility.Visible);
+          .noteListVisibility == 0 ? Visibility.None : Visibility.Visible)
+
       Divider()
         .vertical(true)
         .strokeWidth(1)
@@ -93,7 +94,7 @@ export struct NoteHomeComp {
         .opacity(StyleConstants.OPACITY_10)
       // Note content display area
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
-        NoteContentComp({controllerShow: this.controllerShow})
+        NoteContentComp({ controllerShow: this.controllerShow })
       }
       .flexShrink(0)
       .backgroundColor(this.search && this.inputKeyword.length == 0 ? $r("app.color.notecontent_color_000000") : $r("app.color.notecontent_color_ffffff"))
@@ -102,7 +103,8 @@ export struct NoteHomeComp {
       .opacity(this.longpress ? StyleConstants.OPACITY_40 : this.search && this.inputKeyword.length == 0 ? StyleConstants.OPACITY_20 : StyleConstants.OPACITY_100)
       .enabled(this.longpress || this.search && this.inputKeyword.length == 0 ? false : true)
     }
-    .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)
+    .width(StyleConstants.PERCENTAGE_100)
+    .height(StyleConstants.PERCENTAGE_100)
   }
 
   aboutToAppear(): void{

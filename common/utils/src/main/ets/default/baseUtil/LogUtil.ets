@@ -69,4 +69,5 @@ export class LogUtil {
 }
 
 let mLogUtil = new LogUtil();
+
 export default mLogUtil as LogUtil

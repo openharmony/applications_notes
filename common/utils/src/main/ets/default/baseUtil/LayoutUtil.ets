@@ -39,4 +39,5 @@ export class LayoutUtil {
 }
 
 let layoutUtil = new LayoutUtil()
+
 export default layoutUtil as LayoutUtil

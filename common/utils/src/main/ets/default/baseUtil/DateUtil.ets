@@ -15,6 +15,7 @@
 
 import LogUtil from './LogUtil.ets'
 import GlobalResourceManager from './GlobalResourceManager.ets'
+
 const TAG = "DateUtil"
 
 /**
@@ -119,4 +120,5 @@ export class DateUtil {
 }
 
 let dateUtil = new DateUtil()
+
 export default dateUtil as DateUtil

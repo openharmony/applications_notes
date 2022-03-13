@@ -53,7 +53,7 @@ export enum NoteTableColumn {
   IsDeleted = "is_deleted", // 是否被删除
   CreatedTime = "created_time", // 创建时间
   ModifiedTime = "modified_time", // 修改时间
-  DeletedTime = "deleted_time"  // 删除时间
+  DeletedTime = "deleted_time" // 删除时间
 }
 
 /**
@@ -156,8 +156,8 @@ export enum SysDefFolderUuid {
  * folder type
  */
 export enum FolderType {
-  SysDef,    // System definition
-  CusDef,    // User defined
+  SysDef, // System definition
+  CusDef, // User defined
   FeatureDef // feature defined: MyFavorites & RecentDeletes
 }
 
