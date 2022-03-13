@@ -37,9 +37,9 @@
         "name": "com.ohos.note.MainAbility",
         "icon": "$media:note",
         "description": "$string:description_mainability",
-        "label":"$string:entry_MainAbility",
+        "label": "$string:entry_MainAbility",
         "type": "page",
-        "launchType": "singleton",
+        "launchType": "standard",
         "srcPath": "MainAbility",
         "srcLanguage": "ets",
         "metaData": {

@@ -15,29 +15,31 @@
 
 import FolderData from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/FolderData.ets'
 import NoteData from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/NoteData.ets'
-import {circleColorArray,fontColorArray} from '../../../../../../common/utils/src/main/ets/default/model/NoteBaseData.ets'
+import {circleColorArray, fontColorArray} from '../../../../../../common/utils/src/main/ets/default/model/NoteBaseData.ets'
 import {SysDefFolderUuid, DeleteFileType, FolderType} from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
-import GlobalResourceManager from '../../../../../../common/utils/src/main/ets/default/baseUtil/GlobalResourceManager.ets';
+import GlobalResourceManager from '../../../../../../common/utils/src/main/ets/default/baseUtil/GlobalResourceManager.ets'
 import FolderUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/FolderUtil.ets'
 import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
 
 @CustomDialog
 export struct NewOrEditFolderDialog {
-  newOrEditFolderDialogCtl: CustomDialogController;
+  newOrEditFolderDialogCtl: CustomDialogController
   confirm: (color: string, name: string) => void
-  @State inputName: string = "";
-  private oriInputName: string = "";
-  private oriSelectedColor: string = "";
-  private editFolderUuid: string = "";
-  private dialogType: number = 0;   // 0表示新建文件夹  1表示修改文件夹
-  @State isExisted: boolean = false;
+  @State inputName: string = ""
+  private oriInputName: string = ""
+  private oriSelectedColor: string = ""
+  private editFolderUuid: string = ""
+  private dialogType: number = 0 // 0表示新建文件夹  1表示修改文件夹
+  @State isExisted: boolean = false
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
-  @Consume('SelectedColor') selectedColor: string;
+  @Consume('SelectedColor') selectedColor: string
 
   build() {
     Column() {
       Text(this.dialogType == 0 ? $r("app.string.createFolder") : $r("app.string.editFolder"))
-        .fontSize(20).height(56).margin({ left: 24 })
+        .fontSize(20)
+        .height(56)
+        .margin({ left: 24 })
       // folder color choose
       Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
         ForEach(circleColorArray, (colorStr: string) => {
@@ -65,7 +67,10 @@ export struct NewOrEditFolderDialog {
           })
       }.margin({ bottom: 4, left: 24, right: 24 })
 
-      Text($r("app.string.category_already_exist")).fontSize(10).margin({ left: 64 }).fontColor("#FA2A2D")
+      Text($r("app.string.category_already_exist"))
+        .fontSize(10)
+        .margin({ left: 64 })
+        .fontColor("#FA2A2D")
         .visibility((this.isExisted && this.inputName != this.oriInputName) ? Visibility.Visible : Visibility.None)
       // button group
       Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
@@ -77,7 +82,11 @@ export struct NewOrEditFolderDialog {
           .onClick(() => {
             this.newOrEditFolderDialogCtl.close()
           })
-        Divider().vertical(true).height(15).strokeWidth(1).color($r("app.color.divider_color_e4e4e4"))
+        Divider()
+          .vertical(true)
+          .height(15)
+          .strokeWidth(1)
+          .color($r("app.color.divider_color_e4e4e4"))
         Text($r("app.string.save"))
           .opacity(this.inputName == ""
                    || (this.oriSelectedColor == this.selectedColor && this.inputName == this.oriInputName && this.dialogType == 1)
@@ -95,13 +104,14 @@ export struct NewOrEditFolderDialog {
             this.newOrEditFolderDialogCtl.close()
             this.confirm(this.selectedColor, this.inputName)
           })
-      }.width('100%').margin({ top: 21, bottom: 25 })
+      }.width('100%')
+      .margin({ top: 21, bottom: 25 })
     }
     .width(336)
     .borderRadius(36)
     .backgroundColor(Color.White)
     .alignItems(HorizontalAlign.Start)
-    .margin({bottom:16,left:12,right:12})
+    .margin({ bottom: 16, left: 12, right: 12 })
   }
 
   aboutToAppear(): void{
@@ -126,12 +136,14 @@ export struct NewOrEditFolderDialog {
 @Component
 struct ColorCircleComp {
   private circleColor: string
-  @Consume('SelectedColor') selectedColor: string;
+  @Consume('SelectedColor') selectedColor: string
 
   build() {
     Stack({ alignContent: Alignment.Center }) {
-      Circle({ width: 24, height: 24 }).fill(this.circleColor)
-      Circle({ width: 12, height: 12 }).fill($r("app.color.color_ffffff"))
+      Circle({ width: 24, height: 24 })
+        .fill(this.circleColor)
+      Circle({ width: 12, height: 12 })
+        .fill($r("app.color.color_ffffff"))
         .visibility(this.circleColor == this.selectedColor ? Visibility.Visible : Visibility.None)
     }.onClick(() => {
       this.selectedColor = this.circleColor
@@ -144,7 +156,7 @@ export struct DeleteDialog {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
-  @Consume('SelectedNoteData') selectedNoteData: NoteData;
+  @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   private multiSelect: boolean = false
   private deleteFileType = DeleteFileType.NoteData
@@ -155,23 +167,34 @@ export struct DeleteDialog {
     Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.SpaceBetween }) {
       Flex({ justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
         if (this.deleteFileType == DeleteFileType.FolderData) {
-          Text($r("app.string.delete_tips")).fontSize(14).textAlign(TextAlign.Center).maxLines(1)
+          Text($r("app.string.delete_tips"))
+            .fontSize(14)
+            .textAlign(TextAlign.Center)
+            .maxLines(1)
         } else {
           Text(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? $r("app.string.deleteNoteComplete") : $r("app.string.deleteNote"))
-            .fontSize(14).textAlign(TextAlign.Center).maxLines(1)
+            .fontSize(14)
+            .textAlign(TextAlign.Center)
+            .maxLines(1)
             .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
           if (this.CheckedNoteArray.length ==
           NoteUtil.getNoteDataArray(this.AllNoteArray, this.selectedFolderData.uuid).length) {
             Text($r("app.string.deleteAllNote"))
-              .fontSize(14).textAlign(TextAlign.Center).maxLines(1)
+              .fontSize(14)
+              .textAlign(TextAlign.Center)
+              .maxLines(1)
               .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
           } else if (this.CheckedNoteArray.length == 1) {
             Text($r("app.string.deleteNote"))
-              .fontSize(14).textAlign(TextAlign.Center).maxLines(1)
+              .fontSize(14)
+              .textAlign(TextAlign.Center)
+              .maxLines(1)
               .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
           } else {
             Text($r("app.string.deletePartNote", this.CheckedNoteArray.length))
-              .fontSize(14).textAlign(TextAlign.Center).maxLines(1)
+              .fontSize(14)
+              .textAlign(TextAlign.Center)
+              .maxLines(1)
               .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
           }
         }
@@ -190,7 +213,11 @@ export struct DeleteDialog {
           .onClick(() => {
             this.noteDataDeleteDialogCtl.close()
           })
-        Divider().vertical(true).strokeWidth(1).color($r("app.color.divider_color_e4e4e4")).height(40)
+        Divider()
+          .vertical(true)
+          .strokeWidth(1)
+          .color($r("app.color.divider_color_e4e4e4"))
+          .height(40)
         Text($r("app.string.delete"))
           .fontSize(16)
           .fontColor($r("app.color.delete_color_fa2a2d"))
@@ -211,7 +238,7 @@ export struct DeleteDialog {
     .borderRadius(36)
     .padding({ top: 24, bottom: 16, left: 16, right: 16 })
     .backgroundColor(Color.White)
-    .margin({bottom:16,left:12,right:12})
+    .margin({ bottom: 16, left: 12, right: 12 })
   }
 }
 
@@ -249,7 +276,9 @@ struct NoteDataMoveItemComp {
         .width(248)
         .height(55)
 
-        Divider().color($r("app.color.divider_color_e4e4e4")).strokeWidth(1)
+        Divider()
+          .color($r("app.color.divider_color_e4e4e4"))
+          .strokeWidth(1)
       }
       .padding({ left: 16 })
     }
@@ -270,7 +299,8 @@ export struct NoteDataMoveDialog {
       Flex({ alignItems: ItemAlign.Center }) {
         Text($r("app.string.chooseFolder"))
           .fontSize(20)
-      }.height(56).width(288)
+      }.height(56)
+      .width(288)
 
       List() {
         ForEach(this.AllFolderArray, (item) => {
@@ -293,151 +323,238 @@ export struct NoteDataMoveDialog {
           .onClick(() => {
             this.noteDataMoveDialogCtl.close()
           })
-      }.height(56).width(288)
+      }.height(56)
+      .width(288)
     }
     .width(336)
     .borderRadius(36)
     .height(this.AllFolderArray.length > 12 ? 616 : (this.AllFolderArray.length - 1) * 56)
     .padding({ left: 24, right: 24 })
     .backgroundColor(Color.White)
-    .margin({bottom:16,left:12,right:12})
+    .margin({ bottom: 16, left: 12, right: 12 })
   }
 }
 
 @CustomDialog
 export struct EditContentDialog {
-  editContentDialogCtl: CustomDialogController;
+  editContentDialogCtl: CustomDialogController
   confirm: (excuteJs: string) => void
-  @Consume('SelectedColor') selectedColor: string;
+  @Consume('SelectedColor') selectedColor: string
   @State inSetValue: number = 20
   private circleColor: string
-  private fontSize:number
+  private fontSize: number
 
   build() {
     Row() {
       Column() {
         Row({ space: 70 }) {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.action_bold')).height(24).width(24)
+            Image($r('app.media.action_bold'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setBold()")
+                this.confirm("javascript:RICH_EDITOR.setBold()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.format_italic')).height(24).width(24)
+            Image($r('app.media.format_italic'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setItalic()")
+                this.confirm("javascript:RICH_EDITOR.setItalic()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.underline')).height(24).width(24)
+            Image($r('app.media.underline'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setUnderline()")
+                this.confirm("javascript:RICH_EDITOR.setUnderline()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.right_justify')).height(24).width(24)
+            Image($r('app.media.right_justify'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setJustifyRight()")
+                this.confirm("javascript:RICH_EDITOR.setJustifyRight()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.mid_justify')).height(24).width(24)
+            Image($r('app.media.mid_justify'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setJustifyCenter()")
+                this.confirm("javascript:RICH_EDITOR.setJustifyCenter()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.left_justify')).height(24).width(24)
+            Image($r('app.media.left_justify'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setJustifyLeft()")
+                this.confirm("javascript:RICH_EDITOR.setJustifyLeft()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
         }
         .alignItems(VerticalAlign.Bottom)
-        .padding({bottom:2})
+        .padding({ bottom: 2 })
         .height(71)
 
-        Divider().vertical(false).color($r("app.color.divider_color_e4e4e4"))
+        Divider()
+          .vertical(false)
+          .color($r("app.color.divider_color_e4e4e4"))
 
-        Row({ space: 70 }){
+        Row({ space: 70 }) {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.suojin')).height(24).width(24)
+            Image($r('app.media.suojin'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setIndent()")
+                this.confirm("javascript:RICH_EDITOR.setIndent()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.suojin_back')).height(24).width(24)
+            Image($r('app.media.suojin_back'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setOutdent()")
+                this.confirm("javascript:RICH_EDITOR.setOutdent()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r("app.media.format_menulist_number")).height(24).width(24)
+            Image($r("app.media.format_menulist_number"))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setNumbers()")
+                this.confirm("javascript:RICH_EDITOR.setNumbers()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r("app.media.format_menulist_alphabet")).height(24).width(24)
+            Image($r("app.media.format_menulist_alphabet"))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setABC()")
+                this.confirm("javascript:RICH_EDITOR.setABC()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.format_menubullte2')).height(24).width(24)
+            Image($r('app.media.format_menubullte2'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setBullets()")
+                this.confirm("javascript:RICH_EDITOR.setBullets()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.format_menubullte1')).height(24).width(24)
+            Image($r('app.media.format_menubullte1'))
+              .height(24)
+              .width(24)
               .onClick(() => {
-                this.confirm("javascript:RE.setSquare()")
+                this.confirm("javascript:RICH_EDITOR.setSquare()")
               })
-          }.width(42).height(42).borderRadius(8).backgroundColor($r('app.color.color_ffffff'))
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
         }
         .alignItems(VerticalAlign.Top)
-        .padding({top:2})
+        .padding({ top: 2 })
         .height(56)
       }
       .width('50%')
-      .padding({left:24,right:24})
+      .padding({ left: 24, right: 24 })
       .height(128)
 
-      Divider().vertical(true).height(128).color($r("app.color.divider_color_e4e4e4")).margin({top:4,bottom:4})
+      Divider()
+        .vertical(true)
+        .height(128)
+        .color($r("app.color.divider_color_e4e4e4"))
+        .margin({ top: 4, bottom: 4 })
 
       Column() {
         Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.End }) {
-          Image($r('app.media.cross')).height(16).width(16).margin({top:8})
+          Image($r('app.media.cross'))
+            .height(16)
+            .width(16)
+            .margin({ top: 8 })
             .onClick(() => {
               this.editContentDialogCtl.close()
             })
         }
         .height(36)
-        Row(){
+
+        Row() {
           Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
             ForEach(fontColorArray, (colorStr: string) => {
               Stack({ alignContent: Alignment.Center }) {
-                Circle({ width: 24, height: 24 }).fill(colorStr)
-                Circle({ width: 12, height: 12 }).fill($r("app.color.color_ffffff"))
+                Circle({ width: 24, height: 24 })
+                  .fill(colorStr)
+                Circle({ width: 12, height: 12 })
+                  .fill($r("app.color.color_ffffff"))
                   .visibility(colorStr == this.selectedColor ? Visibility.Visible : Visibility.None)
               }.onClick(() => {
                 this.selectedColor = colorStr
-                this.confirm("javascript:RE.setTextColor('" + this.selectedColor + "')")
+                this.confirm("javascript:RICH_EDITOR.setTextColor('" + this.selectedColor + "')")
               })
             }, colorStr => colorStr)
-          }.padding({ bottom: 11})
+          }.padding({ bottom: 11 })
         }
         .alignItems(VerticalAlign.Top)
         .height(35)
 
-        Divider().vertical(false).color($r("app.color.divider_color_e4e4e4"))
+        Divider()
+          .vertical(false)
+          .color($r("app.color.divider_color_e4e4e4"))
 
         Row({ space: 15 }) {
-          Image($r('app.media.font_small')).height(24).width(24).margin({top:8})
+          Image($r('app.media.font_small'))
+            .height(24)
+            .width(24)
+            .margin({ top: 8 })
           Slider({
             value: this.inSetValue,
             min: 0,
@@ -453,11 +570,14 @@ export struct EditContentDialog {
             .onChange((value: number, mode: SliderChangeMode) => {
               this.inSetValue = value
               this.fontSize = value + 20
-              this.confirm("javascript:RE.execFontSize('" + this.fontSize+"')")
+              this.confirm("javascript:RICH_EDITOR.execFontSize('" + this.fontSize + "')")
               console.info('value:' + value + 'mode:' + mode.toString())
             })
             .width('88%')
-          Image($r('app.media.font_large')).height(24).width(24).margin({top:7})
+          Image($r('app.media.font_large'))
+            .height(24)
+            .width(24)
+            .margin({ top: 7 })
         }
         .alignItems(VerticalAlign.Top)
         .padding({ top: 5 })
@@ -465,7 +585,7 @@ export struct EditContentDialog {
       }
       .width('50%')
       .height(128)
-      .padding({left:24,right:24})
+      .padding({ left: 24, right: 24 })
     }
     .width('100%')
     .height(128)
@@ -476,13 +596,16 @@ export struct EditContentDialog {
 
 @CustomDialog
 export struct EditTitleDialog {
-  editTitleDialog: CustomDialogController;
+  editTitleDialog: CustomDialogController
   confirm: (newTitle: string) => void
-  @State inputName: string = "";
+  @State inputName: string = ""
 
   build() {
     Column() {
-      Text($r("app.string.editNoteTitle")).fontSize(20).height(56).margin({ left: 24 })
+      Text($r("app.string.editNoteTitle"))
+        .fontSize(20)
+        .height(56)
+        .margin({ left: 24 })
 
       // title input
       Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
@@ -508,7 +631,11 @@ export struct EditTitleDialog {
           .onClick(() => {
             this.editTitleDialog.close()
           })
-        Divider().vertical(true).height(15).strokeWidth(1).color($r("app.color.divider_color_e4e4e4"))
+        Divider()
+          .vertical(true)
+          .height(15)
+          .strokeWidth(1)
+          .color($r("app.color.divider_color_e4e4e4"))
         Text($r("app.string.save"))
           .opacity((this.inputName == "") ? 0.4 : 1)
           .enabled((this.inputName == "") ? false : true)
@@ -520,12 +647,158 @@ export struct EditTitleDialog {
             this.editTitleDialog.close()
             this.confirm(this.inputName)
           })
-      }.width('100%').margin({ top: 21, bottom: 25 })
+      }.width('100%')
+      .margin({ top: 21, bottom: 25 })
     }
     .width(336)
     .borderRadius(36)
     .backgroundColor(Color.White)
     .alignItems(HorizontalAlign.Start)
-    .margin({bottom:16,left:12,right:12})
+    .margin({ bottom: 16, left: 12, right: 12 })
+  }
+}
+
+@CustomDialog
+export struct EditContentDialogPortrait {
+  editContentDialogCtl: CustomDialogController;
+  confirm: (excuteJs: string) => void
+  @Consume('SelectedColor') selectedColor: string;
+  @State inSetValue: number = 20
+  private circleColor: string
+  private fontSize: number
+
+
+
+  build() {
+    Column() {
+      Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
+        justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+        Text($r("app.string.style")).margin({ top: 8 })
+          .fontSize(14).fontColor($r("app.color.font_stylecolor_AD182431"))
+
+        Image($r('app.media.cross')).height(16).width(16).margin({ top: 8 })
+          .onClick(() => {
+            this.editContentDialogCtl.close()
+          })
+      }
+      .height(48)
+
+
+      Row({ space: 34 }) {
+        Image($r('app.media.action_bold')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setBold()")
+          })
+        Image($r('app.media.format_italic')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setItalic()")
+          })
+        Image($r('app.media.underline')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setUnderline()")
+          })
+        Image($r('app.media.right_justify')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setJustifyRight()")
+          })
+        Image($r('app.media.mid_justify')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setJustifyCenter()")
+          })
+        Image($r('app.media.left_justify')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setJustifyLeft()")
+          })
+      }
+      .height(48)
+
+      Divider().vertical(false).color($r("app.color.divider_color_e4e4e4"))
+
+      Row({ space: 34 }) {
+
+        Image($r('app.media.suojin')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setIndent()")
+          })
+
+        Image($r('app.media.suojin_back')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setOutdent()")
+          })
+
+        Image($r("app.media.format_menulist_number")).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setNumbers()")
+          })
+
+        Image($r("app.media.format_menulist_alphabet")).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setABC()")
+          })
+
+        Image($r('app.media.format_menubullte2')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setBullets()")
+          })
+
+        Image($r('app.media.format_menubullte1')).height(24).width(24)
+          .onClick(() => {
+            this.confirm("javascript:RICH_EDITOR.setSquare()")
+          })
+      }
+      .height(48)
+
+      Divider().vertical(false).color($r("app.color.divider_color_e4e4e4"))
+
+      Row() {
+        Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
+          ForEach(fontColorArray, (colorStr: string) => {
+            Stack({ alignContent: Alignment.Center }) {
+              Circle({ width: 24, height: 24 }).fill(colorStr)
+              Circle({ width: 12, height: 12 }).fill($r("app.color.color_ffffff"))
+                .visibility(colorStr == this.selectedColor ? Visibility.Visible : Visibility.None)
+            }.onClick(() => {
+              this.selectedColor = colorStr
+              this.confirm("javascript:RICH_EDITOR.setTextColor('" + this.selectedColor + "')")
+            })
+          }, colorStr => colorStr)
+        }
+      }
+      .height(48)
+
+      Divider().vertical(false).color($r("app.color.divider_color_e4e4e4"))
+
+      Row({ space: 10 }) {
+        Image($r('app.media.font_small')).height(24).width(24).margin({ top: 8 })
+        Slider({
+          value: this.inSetValue,
+          min: 0,
+          max: 60,
+          step: 10,
+          style: SliderStyle.InSet
+        })
+          .blockColor($r("app.color.color_ffffff"))
+          .trackColor($r("app.color.divider_color_e4e4e4"))
+          .selectedColor($r("app.color.text_color_f86d05"))
+          .showSteps(false)
+          .showTips(false)
+          .onChange((value: number, mode: SliderChangeMode) => {
+            this.inSetValue = value
+            this.fontSize = value + 20
+            this.confirm("javascript:RICH_EDITOR.execFontSize('" + this.fontSize + "')")
+            console.info('value:' + value + 'mode:' + mode.toString())
+          })
+          .width('79%')
+        Image($r('app.media.font_large')).height(24).width(24).margin({ top: 7 })
+      }
+      .alignItems(VerticalAlign.Top)
+      .padding({ top: 5 })
+      .height(72)
+    }
+    .width(360)
+    .height(266)
+    .backgroundColor($r("app.color.color_ffffff"))
+    .borderRadius(36)
+    .padding({ left: 24, right: 24 })
   }
 }

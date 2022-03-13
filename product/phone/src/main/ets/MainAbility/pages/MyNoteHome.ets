@@ -23,14 +23,14 @@ import RdbStoreUtil from '../../../../../../../common/utils/src/main/ets/default
 @Component
 export struct MyNoteHomeComp {
   @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
-  @Provide('PortraitModel') portraitModel:boolean = true
+  @Provide('PortraitModel') portraitModel: boolean = true
   private context = getContext(this)
   TAG = "MyNoteHomeComp"
 
   build() {
     Flex() {
       if (this.dBQueryFinished == 1) {
-        if (this.portraitModel == true){
+        if (this.portraitModel == true) {
           NoteHomePortraitComp()
         } else {
           NoteHomeComp()

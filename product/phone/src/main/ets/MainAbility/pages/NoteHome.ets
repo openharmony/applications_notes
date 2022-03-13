@@ -33,12 +33,11 @@ export struct NoteHomeComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-  // 当前文件夹、笔记、分栏
+// 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
-  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section');
-
-  @Provide('SelectedColor') selectedColor: string = circleColorArray[0];
+  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')
+  @Provide('SelectedColor') selectedColor: string = circleColorArray[0]
   @Provide('Longpress') longpress: boolean = false // 第二栏长按状态
   @Provide('ExpandStatus') expandStatus: boolean = false // 笔记本折叠展开状态
   @Provide('ChooseNote') chooseNote: boolean = true // 是否选择笔记进行打开
@@ -80,7 +79,8 @@ export struct NoteHomeComp {
       .height(StyleConstants.PERCENTAGE_100)
       .visibility(
           LayoutUtil.getWidthWeightMessage(this.sectionStatus)
-          .noteListVisibility == 0 ? Visibility.None : Visibility.Visible);
+          .noteListVisibility == 0 ? Visibility.None : Visibility.Visible)
+
       Divider()
         .vertical(true)
         .strokeWidth(1)

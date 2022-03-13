@@ -30,17 +30,16 @@ export struct NoteHomePortraitComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-  // 当前文件夹、笔记、分栏
+// 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
-  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section');
-
-  @Provide('SelectedColor') selectedColor: string = circleColorArray[0];
+  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')
+  @Provide('SelectedColor') selectedColor: string = circleColorArray[0]
   @Provide('Longpress') longpress: boolean = false // 第二栏长按状态
   @Provide('ExpandStatus') expandStatus: boolean = false // 笔记本折叠展开状态
   @Provide('ChooseNote') chooseNote: boolean = true // 是否选择笔记进行打开
   @Provide('Search') search: boolean = false // 是否处于搜索状态
-  @Provide('SearchResultList') searchResultList: NoteData[] = []  // 搜索得到的笔记列表
+  @Provide('SearchResultList') searchResultList: NoteData[] = [] // 搜索得到的笔记列表
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串
 
   TAG = "NoteHomeComp"
@@ -56,14 +55,14 @@ export struct NoteHomePortraitComp {
       .height(StyleConstants.PERCENTAGE_100)
       .enabled(this.expandStatus ? false : true)
 
-       //Folder list display area
+      //Folder list display area
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
         FolderListComp()
       }
       .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
       .width(StyleConstants.PERCENTAGE_60)
       .height(StyleConstants.PERCENTAGE_100)
-      .visibility(this.expandStatus == false ? Visibility.None:Visibility.Visible)
+      .visibility(this.expandStatus == false ? Visibility.None : Visibility.Visible)
 
 
       // Note content display area
@@ -73,9 +72,10 @@ export struct NoteHomePortraitComp {
       .backgroundColor($r("app.color.notecontent_color_ffffff"))
       .width(StyleConstants.PERCENTAGE_100)
       .height(StyleConstants.PERCENTAGE_100)
-      .visibility(this.chooseNote == false ? Visibility.None:Visibility.Visible)
+      .visibility(this.chooseNote == false ? Visibility.None : Visibility.Visible)
     }
-    .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)
+    .width(StyleConstants.PERCENTAGE_100)
+    .height(StyleConstants.PERCENTAGE_100)
   }
 
   aboutToAppear(): void{

@@ -25,6 +25,7 @@ export const circleColorArray: string[] = [
   "#3f56ea", // 深蓝
   "#8a2be2", // 紫色
 ]
+
 export const fontColorArray: string[] = [
   "#e84026", // 深红
   "#ffbf00", // 黄色
@@ -60,16 +61,16 @@ export const selectedNoteBgColorMap = {
 }
 
 export const folderTextMap = {
-  "sys_def_allNotes_uuid":      $r('app.string.allNotes'),
-  "sys_def_unClassified_uuid":  $r('app.string.unClassified'),
-  "sys_def_myFavorites_uuid":   $r('app.string.myFavorites'),
+  "sys_def_allNotes_uuid": $r('app.string.allNotes'),
+  "sys_def_unClassified_uuid": $r('app.string.unClassified'),
+  "sys_def_myFavorites_uuid": $r('app.string.myFavorites'),
   "sys_def_recentDeletes_uuid": $r('app.string.recentDeletes'),
 }
 
 export const folderIconMap = {
-  "sys_def_allNotes_uuid":      $r('app.media.allNotes'),
-  "sys_def_unClassified_uuid":  $r('app.media.unClassified'),
-  "sys_def_myFavorites_uuid":   $r('app.media.favorite_cancel'),
+  "sys_def_allNotes_uuid": $r('app.media.allNotes'),
+  "sys_def_unClassified_uuid": $r('app.media.unClassified'),
+  "sys_def_myFavorites_uuid": $r('app.media.favorite_cancel'),
   "sys_def_recentDeletes_uuid": $r('app.media.delete'),
 }
 
@@ -84,8 +85,9 @@ export class WidthWeightMessage {
   noteListVisibility: number
   noteCotentWeight: string
   noteCotentVisibility: number
+
   constructor(folderListWeight: string, folderListVisibility: number, noteListWeight: string, noteListVisibility: number,
-    noteCotentWeight: string, noteCotentVisibility: number) {
+              noteCotentWeight: string, noteCotentVisibility: number) {
     this.folderListWeight = folderListWeight
     this.folderListVisibility = folderListVisibility
     this.noteListWeight = noteListWeight
@@ -98,6 +100,7 @@ export class WidthWeightMessage {
 let widthWeightOneSection: WidthWeightMessage = new WidthWeightMessage("0%", 0, "0%", 0, "100%", 1)
 let widthWeightTwoSection = new WidthWeightMessage("0%", 0, "34%", 1, "66%", 1)
 let widthWeightThreeSection = new WidthWeightMessage("16%", 1, "34%", 1, "50%", 1)
+
 export const widthWeightMessageMap = {
   1: widthWeightOneSection,
   2: widthWeightTwoSection,

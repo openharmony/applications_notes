@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,10 @@
  * limitations under the License.
  */
 
-export default class StyleConstants {
-  public static PERCENTAGE_100: string = '100%'
-  public static PERCENTAGE_60: string = '60%'
-  public static PERCENTAGE_0: string = '0%'
-  public static SPACE_24: number = 24
-  public static NOTE_LIST_BACKGROUND: string = "#f1f3f5"
-  public static DELETE_DEADLINE: number = 2592000000 // 30 days (30 * 24 * 60 * 60 * 1000)ms
-  public static OPACITY_10: number = 0.1
-  public static OPACITY_20: number = 0.2
-  public static OPACITY_40: number = 0.4
-  public static OPACITY_100: number = 1
+import AbilityStage from "@ohos.application.AbilityStage"
+
+export default class MyAbilityStage extends AbilityStage {
+    onCreate() {
+        console.log("MyAbilityStage onCreate")
+    }
 }

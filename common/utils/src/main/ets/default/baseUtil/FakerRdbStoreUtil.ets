@@ -33,7 +33,7 @@ function FakerInitFolderArray(folderdataList: any[]) {
   })
 }
 
-function FakerInitNote(noteData: any) :NoteData{
+function FakerInitNote(noteData: any): NoteData {
   return new NoteData(0, noteData.title, noteData.uuid, noteData.folder_uuid, noteData.content_text, noteData.content_img,
     noteData.note_type, 0, 0, 0, noteData.created_time, noteData.modified_time, noteData.deleted_time)
 }
@@ -46,9 +46,9 @@ function FakerInitNoteArray(noteDataList: any[]) {
 
 export default {
   FakerInitAppStorage() {
-    FakerInitFolderArray([SysDefData.sys_def_allNotes, SysDefData.sys_def_unClassified, SysDefData.sys_def_life,SysDefData.sys_def_recentDeletes, SysDefData.sys_def_myFavorites,
+    FakerInitFolderArray([SysDefData.sys_def_allNotes, SysDefData.sys_def_unClassified, SysDefData.sys_def_life, SysDefData.sys_def_recentDeletes, SysDefData.sys_def_myFavorites,
     SysDefData.sys_def_personal, SysDefData.sys_def_work])
-    FakerInitNoteArray([SysDefData.sys_def_note1,SysDefData.sys_def_note2, SysDefData.sys_def_note3, SysDefData.sys_def_note4])
+    FakerInitNoteArray([SysDefData.sys_def_note1, SysDefData.sys_def_note2, SysDefData.sys_def_note3, SysDefData.sys_def_note4])
     AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
     AppStorage.SetOrCreate('AllFolderArray', folderDataArray)
     for (let folderData of folderDataArray) {
@@ -59,5 +59,4 @@ export default {
     }
     AppStorage.SetOrCreate('DBQueryFinished', 1)
   }
-
 }

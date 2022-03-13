@@ -21,6 +21,7 @@ import StyleConstants from '../constants/StyleConstants.ets'
 import LogUtil from './LogUtil.ets'
 
 const TAG = "FolderUtil"
+
 export class FolderUtil {
   /**
   * Get Folder Data
@@ -31,7 +32,7 @@ export class FolderUtil {
   */
   getFolderData(folderDataArray: FolderData[], folderUuid: string): FolderData {
     LogUtil.info(TAG, "get folder uuid " + folderUuid)
-    let folderData =  folderDataArray.find((folder) => {
+    let folderData = folderDataArray.find((folder) => {
       return folder.uuid == folderUuid
     })
     if (folderData == undefined) {
@@ -92,7 +93,7 @@ export class FolderUtil {
   * @param folderData - Folder
   * @return boolean - fottom fixed folder: deleted or favorite return true. else return false
   */
-  isBottomFixedFolder(folderData: FolderData) : boolean {
+  isBottomFixedFolder(folderData: FolderData): boolean {
     LogUtil.info(TAG, "folderDataUuid " + folderData.uuid)
     return (folderData.folder_type == FolderType.FeatureDef)
   }
@@ -103,7 +104,7 @@ export class FolderUtil {
   * @param folderDataUuid - Folder uuid
   * @return boolean - can be moved into notes return true. else return false
   */
-  isFolderMoveIn(folderData: FolderData) : boolean {
+  isFolderMoveIn(folderData: FolderData): boolean {
     LogUtil.info(TAG, "folderDataUuid " + folderData.uuid)
     return (folderData.uuid == SysDefFolderUuid.UnClassified || folderData.folder_type == FolderType.CusDef)
   }
@@ -129,10 +130,18 @@ export class FolderUtil {
   getNoteCount(noteDataArray: NoteData[], folderUuid: string): number {
     let count = 0;
     const folderTextMap = {
-      "sys_def_allNotes_uuid": (noteData) => {noteData.is_deleted == Delete.No ? ++count : count},
-      "sys_def_recentDeletes_uuid": (noteData) => {noteData.is_deleted == Delete.Yes ? ++count : count},
-      "sys_def_myFavorites_uuid": (noteData) => {noteData.is_favorite == Favorite.Yes && noteData.is_deleted == Delete.No ? ++count : count},
-      "sys_def_other_uuid": (noteData) => {noteData.folder_uuid == folderUuid && noteData.is_deleted == Delete.No ? ++count : count},
+      "sys_def_allNotes_uuid": (noteData) => {
+          noteData.is_deleted == Delete.No ? ++count : count
+      },
+      "sys_def_recentDeletes_uuid": (noteData) => {
+          noteData.is_deleted == Delete.Yes ? ++count : count
+      },
+      "sys_def_myFavorites_uuid": (noteData) => {
+          noteData.is_favorite == Favorite.Yes && noteData.is_deleted == Delete.No ? ++count : count
+      },
+      "sys_def_other_uuid": (noteData) => {
+          noteData.folder_uuid == folderUuid && noteData.is_deleted == Delete.No ? ++count : count
+      },
     }
     if (folderUuid == SysDefFolderUuid.AllNotes || folderUuid == SysDefFolderUuid.RecentDeletes || folderUuid == SysDefFolderUuid.MyFavorites) {
       noteDataArray.forEach(folderTextMap[folderUuid])
@@ -172,22 +181,22 @@ export class FolderUtil {
   * @return Promise<boolean> - if input name exist, return true, else return false
   */
   async duplicateDetection(inputStr: string, folderDataArray: FolderData[]): Promise<boolean> {
-  for (let index = 0; index < folderDataArray.length; index++) {
-    if (folderDataArray[index].folder_type == FolderType.CusDef && folderDataArray[index].name == inputStr) {
-      return true
-    } else {
-      let temp = GlobalResourceManager.getStringByResource(this.getFolderText(folderDataArray[index]))
-      temp.then(result => {
-        if (result == inputStr) {
-          return true
-        }
-      })
+    for (let index = 0; index < folderDataArray.length; index++) {
+      if (folderDataArray[index].folder_type == FolderType.CusDef && folderDataArray[index].name == inputStr) {
+        return true
+      } else {
+        let temp = GlobalResourceManager.getStringByResource(this.getFolderText(folderDataArray[index]))
+        temp.then(result => {
+          if (result == inputStr) {
+            return true
+          }
+        })
+      }
     }
+    return false
   }
-  return false
-}
-
 }
 
 let folderUtil = new FolderUtil()
+
 export default folderUtil as FolderUtil

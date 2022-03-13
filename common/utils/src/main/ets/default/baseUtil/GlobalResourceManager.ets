@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 import Rsm from '@ohos.resourceManager';
+
 const TAG = "Note_GlobalResourceManager"
 
 export class GlobalResourceManager {
-
-  public async getStringByResource(res: any): Promise<string>{
+  public async getStringByResource(res: any): Promise<string> {
     let json = JSON.parse(JSON.stringify(res));
     let id = json.id;
     console.info(TAG, "ResourceID = %d", id)
@@ -27,17 +27,17 @@ export class GlobalResourceManager {
   public getStringById(id: number): Promise<string>{
     let promise = new Promise<string>(resolve => {
       let resourceMgr = Rsm.getResourceManager("com.example.note");
-        resourceMgr.then((result) => {
-          result.getString(id)
+      resourceMgr.then((result) => {
+        result.getString(id)
           .then((resource) => {
             resolve(resource);
             console.info('getStringById resolve(resource) : ' + resolve(resource));
             console.info('getStringById resource : ' + resource);
             console.info('getStringById resource2 : ' + JSON.stringify(resource));
-        })
+          })
           .catch((err) => {
             console.info('getStringById err : ' + JSON.stringify(err));
-        });
+          });
       });
     });
     console.info('getStringById promise: ' + JSON.stringify(promise));
@@ -46,5 +46,6 @@ export class GlobalResourceManager {
 }
 
 let mGlobalResourceManager = new GlobalResourceManager();
+
 export default mGlobalResourceManager as GlobalResourceManager
 ;

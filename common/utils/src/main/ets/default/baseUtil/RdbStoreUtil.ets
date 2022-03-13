@@ -15,10 +15,11 @@
 
 import ohosDataRdb from '@ohos.data.rdb'
 import LogUtil from './LogUtil.ets'
+import FolderUtil from './FolderUtil.ets'
 import SysDefData from '../model/databaseModel/SysDefData.ets'
 import FolderData from '../model/databaseModel/FolderData.ets'
 import NoteData from '../model/databaseModel/NoteData.ets'
-import {TableSql, TableName, FolderTableColumn, NoteTableColumn} from '../model/databaseModel/EnumData.ets'
+import {TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid} from '../model/databaseModel/EnumData.ets'
 
 const TAG = "RdbStoreUtil"
 
@@ -44,28 +45,19 @@ export default {
         LogUtil.info(TAG, "create table success")
         // insert system defined folder
         await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_allNotes)
-        LogUtil.info(TAG, "insert sys_def_allNotes success")
         await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_unClassified)
-        LogUtil.info(TAG, "insert sys_def_unClassified success")
         await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_myFavorites)
-        LogUtil.info(TAG, "insert sys_def_myFavorites success")
         await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_recentDeletes)
-        LogUtil.info(TAG, "insert sys_def_recentDeletes success")
         await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_personal)
-        LogUtil.info(TAG, "insert sys_def_personal success")
         await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_life)
-        LogUtil.info(TAG, "insert sys_def_life success")
         await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_work)
-        LogUtil.info(TAG, "insert sys_def_work success")
+        LogUtil.info(TAG, "insert system defined folder success")
         // insert system defined note and attachment
         await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note1)
-        LogUtil.info(TAG, "insert sys_def_note1 success")
         await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note2)
-        LogUtil.info(TAG, "insert sys_def_note2 success")
         await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note3)
-        LogUtil.info(TAG, "insert sys_def_note3 success")
         await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note4)
-        LogUtil.info(TAG, "insert sys_def_note4 success")
+        LogUtil.info(TAG, "insert system defined note and attachment success")
 
         // add sys-def folder and note to AppStorage
         let folderDataArray = []
@@ -78,6 +70,8 @@ export default {
             sysDefFolder.modified_time)
           folderDataArray.push(folderData)
         })
+        LogUtil.info(TAG, "folderDataArray[sysdef] : " + folderDataArray.length)
+
         let noteDataArray = []
         let sysDefNoteArray = [SysDefData.sys_def_note1, SysDefData.sys_def_note2,
         SysDefData.sys_def_note3, SysDefData.sys_def_note4]
@@ -87,28 +81,20 @@ export default {
             sysDefNote.is_deleted, sysDefNote.created_time, sysDefNote.modified_time, sysDefNote.deleted_time)
           noteDataArray.push(noteData)
         })
-        LogUtil.info(TAG, "folderDataArray[sysdef] : " + folderDataArray.length)
-        for (let folderData of folderDataArray) {
-          LogUtil.info(TAG, "folderData[sysdef] : " + JSON.stringify(folderData))
-        }
         LogUtil.info(TAG, "noteDataArray[sysdef] : " + noteDataArray.length)
-        for (let noteData of noteDataArray) {
-          LogUtil.info(TAG, "noteData[sysdef] : " + JSON.stringify(noteData))
-        }
+
         AppStorage.SetOrCreate('AllFolderArray', folderDataArray)
         AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
+        LogUtil.info(TAG, "AppStorage[sysdef] set AllFolderArray and AllNoteArray success")
 
-        // 迁移
+        // save continue data
         let isContinue = AppStorage.Get('IsContinue');
         LogUtil.info(TAG, "createRdbStore, isContinue is " + isContinue)
         if (isContinue != undefined && isContinue == 1) {
           console.info("RdbStoreUtil createRdbStore, IsContinue true")
           let continueFolder: string = AppStorage.Get('ContinueFolder')
-          console.log("RdbStoreUtil createRdbStore, continueFolder is " + continueFolder)
           let continueNote: string = AppStorage.Get('ContinueNote')
-          console.log("RdbStoreUtil createRdbStore, continueNote is " + continueNote)
           let continueSection = AppStorage.Get('ContinueSection')
-          console.log("RdbStoreUtil createRdbStore, continueSection is " + continueSection)
 
           let folderObj = JSON.parse(continueFolder)
           let folderData = new FolderData(folderObj.uuid, folderObj.name, folderObj.uuid, folderObj.color,
@@ -119,7 +105,27 @@ export default {
             noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
             noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time)
 
-          AppStorage.SetOrCreate('Folder', folderData)
+          // if not exit this note
+          let exist = false
+          let folderUuid = ""
+          for (let note of noteDataArray) {
+            if (noteData.created_time == note.created_time) {
+              exist = true
+              folderUuid = note.folder_uuid
+              break
+            }
+          }
+          console.log("RdbStoreUtil initAppStorage, exist : " + exist)
+          // 迁移过来的笔记在本地不存在，则保存在未分类文件夹
+          if (!exist) {
+            noteData.folder_uuid = SysDefFolderUuid.UnClassified
+            noteDataArray.push(noteData)
+            AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
+            this.insert(TableName.NoteTable, noteData.toNoteObject(), null)
+            AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, SysDefFolderUuid.UnClassified))
+          } else {
+            AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, folderUuid))
+          }
           AppStorage.SetOrCreate('Note', noteData)
           AppStorage.SetOrCreate('Section', continueSection)
         } else {
@@ -162,7 +168,7 @@ export default {
           let folderData = new FolderData(id, name, uuid, color, folder_type, is_deleted, created_time, modified_time)
           folderDataArray.push(folderData)
         }
-        LogUtil.info(TAG, "query folder table success")
+        LogUtil.info(TAG, "folderDataArray[query] : " + folderDataArray.length)
         // query note
         let columns_note = []
         let predicates_note = new ohosDataRdb.RdbPredicates(TableName.NoteTable)
@@ -184,29 +190,19 @@ export default {
           let noteData = new NoteData(id, title, uuid, folder_uuid, content_text, content_img, noteType, is_top, is_favorite, is_deleted, created_time, modified_time, deleted_time)
           noteDataArray.push(noteData)
         }
-        LogUtil.info(TAG, "query note table success")
-        LogUtil.info(TAG, "folderDataArray[query] : " + folderDataArray.length)
-        for (let folderData of folderDataArray) {
-          LogUtil.info(TAG, "folderData[query] : " + JSON.stringify(folderData))
-        }
         LogUtil.info(TAG, "noteDataArray[query] : " + noteDataArray.length)
-        for (let noteData of noteDataArray) {
-          LogUtil.info(TAG, "noteData[query] : " + JSON.stringify(noteData))
-        }
+
         AppStorage.SetOrCreate('AllFolderArray', folderDataArray)
         AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
+        LogUtil.info(TAG, "AppStorage[query] set AllFolderArray and AllNoteArray success")
 
         // 迁移
         let isContinue = AppStorage.Get('IsContinue');
         LogUtil.info(TAG, "initAppStorage, isContinue is " + isContinue)
         if (isContinue != undefined && isContinue == 1) {
-          console.info("RdbStoreUtil initAppStorage, IsContinue true")
           let continueFolder: string = AppStorage.Get('ContinueFolder')
-          console.log("RdbStoreUtil initAppStorage, continueFolder is " + continueFolder)
           let continueNote: string = AppStorage.Get('ContinueNote')
-          console.log("RdbStoreUtil initAppStorage, continueNote is " + continueNote)
           let continueSection = AppStorage.Get('ContinueSection')
-          console.log("RdbStoreUtil initAppStorage, continueSection is " + continueSection)
 
           let folderObj = JSON.parse(continueFolder)
           let folderData = new FolderData(folderObj.uuid, folderObj.name, folderObj.uuid, folderObj.color,
@@ -217,7 +213,27 @@ export default {
             noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
             noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time)
 
-          AppStorage.SetOrCreate('Folder', folderData)
+          // if not exit this note
+          let exist = false
+          let folderUuid = ""
+          for (let note of noteDataArray) {
+            if (noteData.created_time == note.created_time) {
+              exist = true
+              folderUuid = note.folder_uuid
+              break
+            }
+          }
+          console.log("RdbStoreUtil initAppStorage, exist : " + exist)
+          // 迁移过来的笔记在本地不存在，则保存在未分类文件夹
+          if (!exist) {
+            noteData.folder_uuid = SysDefFolderUuid.UnClassified
+            noteDataArray.push(noteData)
+            AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
+            this.insert(TableName.NoteTable, noteData.toNoteObject(), null)
+            AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, SysDefFolderUuid.UnClassified))
+          } else {
+            AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, folderUuid))
+          }
           AppStorage.SetOrCreate('Note', noteData)
           AppStorage.SetOrCreate('Section', continueSection)
         } else {
