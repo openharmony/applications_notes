@@ -40,4 +40,4 @@ export default class MainAbility extends Ability {
     onBackground() {
         console.log("MainAbility onBackground")
     }
-};
+}
