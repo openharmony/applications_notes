@@ -60,7 +60,6 @@ export struct NoteHomeComp {
       .visibility(
           LayoutUtil.getWidthWeightMessage(this.sectionStatus)
           .folderListVisibility == 0 ? Visibility.None : Visibility.Visible)
-      .opacity(this.search ? StyleConstants.OPACITY_40 : StyleConstants.OPACITY_100)
       .enabled(this.search ? false : true)
 
       Divider()
@@ -92,10 +91,9 @@ export struct NoteHomeComp {
         NoteContentComp()
       }
       .flexShrink(0)
-      .backgroundColor(this.search && this.inputKeyword.length == 0 ? $r("app.color.notecontent_color_000000") : $r("app.color.notecontent_color_ffffff"))
+      .backgroundColor($r("app.color.notecontent_color_ffffff"))
       .width(LayoutUtil.getWidthWeightMessage(this.sectionStatus).noteCotentWeight)
       .height(StyleConstants.PERCENTAGE_100)
-      .opacity(this.longpress ? StyleConstants.OPACITY_40 : this.search && this.inputKeyword.length == 0 ? StyleConstants.OPACITY_20 : StyleConstants.OPACITY_100)
       .enabled(this.longpress || this.search && this.inputKeyword.length == 0 ? false : true)
     }
     .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)

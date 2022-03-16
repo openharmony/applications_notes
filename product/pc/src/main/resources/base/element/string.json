@@ -102,7 +102,7 @@
     },
     {
       "name": "searchNote",
-      "value": "搜索笔记"
+      "value": "搜索笔记..."
     },
     {
       "name": "chooseFolder",
@@ -135,6 +135,34 @@
     {
       "name": "check_all",
       "value": "多选"
+    },
+    {
+      "name": "editNoteTitle",
+      "value": "修改标题"
+    },
+    {
+      "name": "list",
+      "value": "清单"
+    },
+    {
+      "name": "style",
+      "value": "样式"
+    },
+    {
+      "name": "photo",
+      "value": "相册"
+    },
+    {
+      "name": "title",
+      "value": "标题"
+    },
+    {
+      "name": "empty_note",
+      "value": "笔记内容为空"
+    },
+    {
+      "name": "restore",
+      "value": "已恢复"
     }
   ]
 }

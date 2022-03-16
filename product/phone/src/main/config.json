@@ -67,6 +67,32 @@
           "autoDesignWidth": false
         }
       }
+    ],
+    "reqPermissions": [
+      {
+        "name": "ohos.permission.READ_MEDIA",
+        "reason": "This is used to access photos and videos"
+      },
+      {
+        "name": "ohos.permission.WRITE_MEDIA",
+        "reason": "This is used to access photos and videos."
+      },
+      {
+        "name": "ohos.permission.WRITE_EXTERNAL_MEDIA_MEMORY",
+        "reason": "This is used to access photos and videos."
+      },
+      {
+        "name": "ohos.permission.MEDIA_LOCATION",
+        "reason": "This is used to access photos and videos."
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO",
+        "reason": "reques permission"
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+        "reason": "reques permission"
+      }
     ]
   }
 }

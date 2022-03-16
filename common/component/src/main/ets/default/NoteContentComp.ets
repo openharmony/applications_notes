@@ -25,8 +25,11 @@ import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUt
 import prompt from '@system.prompt'
 import featureAbility from '@ohos.ability.featureAbility'
 import LogUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import OperationUtils from '../../../../../../common/utils/src/main/ets/default/baseUtil/OperationUtils.ets'
 
 const TAG = "NoteContentComp"
+
+var timeId : number
 
 // Note content component
 @Component
@@ -79,7 +82,22 @@ export struct NoteContentComp {
         this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"})
       }
       return "AceString"
+    },
+
+    callbackScheduledSave: (html) => {
+      LogUtil.info(TAG, 'callbackScheduledSave')
+      this.selectedNoteData.content_text = html
+      this.selectedNoteData.modified_time = new Date().getTime()
+      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+      LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + this.selectedNoteData.uuid)
+      // save continue data
+      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+      AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+      LogUtil.info(TAG, 'callbackScheduledSave, set continue note success')
     }
+
   }
 
   build() {
@@ -102,7 +120,7 @@ export struct NoteContentComp {
                 this.controllerShow.registerJavaScriptProxy({
                   obj: this.noteContent,
                   name: "callBackToApp", // html-->  name.method
-                  methodList: ["callbackhtml","callbackhtmlSave"],
+                  methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave"],
                 })
                 LogUtil.info(TAG, "finish register")
                 this.controllerShow.refresh()
@@ -131,9 +149,14 @@ export struct NoteContentComp {
             this.sectionStatus = 1
             this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
             this.editModel = !this.editModel
+            // 添加定时器：5s自动保存
+            timeId = setInterval(() => {
+              this.controllerShow.runJavaScript({ script: "scheduled_save_content()" })
+            }, 5000)
+            LogUtil.info(TAG, "NoteContentComp, setInterval timeId : " + timeId)
             // save continue data
             AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-            console.log("NoteContentComp, set continue section success")
+            LogUtil.info(TAG, "NoteContentComp, set continue section success")
           }
         })
       }
@@ -218,7 +241,7 @@ export struct NoteContentOverViewComp {
       Row() {
         Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time)))
           .fontSize(12)
-          .padding({ top: 4, bottom: 4 })
+          .padding({ top: 4, bottom: 4 }).fontColor('#A3A7AD')
         Row() {
           Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
             .fontSize(12)
@@ -300,7 +323,6 @@ export struct ToolBarComp {
   })
 
   confirm(excuteJs: string) {
-    prompt.showToast({ message: excuteJs, duration: 2000 })
     this.controllerShow.runJavaScript({ script: excuteJs })
   }
 
@@ -331,6 +353,11 @@ export struct ToolBarComp {
                 LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
                 this.controllerShow.runJavaScript({ script: "save_html_content()" })
                 this.sectionStatus = this.lastSectionStatus
+                // 清除定时器
+                if (timeId != undefined) {
+                  LogUtil.info(TAG, "zoom, clearInterval timeId : " + timeId)
+                  clearInterval(timeId)
+                }
               } else {
                 this.sectionStatus = 3
               }
@@ -399,59 +426,124 @@ export struct ToolBarComp {
                 LogUtil.info(TAG, "note is empty,save note failed")
                 prompt.showToast({ message: $r('app.string.empty_note'), duration: 2000 })
               }
+              // 清除定时器
+              if (timeId != undefined) {
+                LogUtil.info(TAG, "tick_thin, clearInterval timeId : " + timeId)
+                clearInterval(timeId)
+              }
             })
         }.width(120)
       } else if (this.editModel == true) {
-        Row({ space: StyleConstants.SPACE_24 }) {
-          Image($r('app.media.circle_tick1'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              // 清单
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
-            })
-          Image($r('app.media.styles'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              if (this.portraitModel) {
-                this.editContentDialogCtl.open()
-              } else {
-                this.editContentDialogCtl.open()
-              }
-            })
-          Image($r('app.media.picture_white'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              console.info('test select single select!')
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImage()" })
-            })
-          Image($r('app.media.tick_thick'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              // 保存笔记信息到数据库
-              this.controllerShow.runJavaScript({ script: "get_html_content()" })
-              if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
-                LogUtil.info(TAG, "note is empty,save note failed")
-                prompt.showToast({ message: $r('app.string.empty_note'), duration: 2000 })
-              }
-            })
-          Image($r('app.media.undo'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
+        Row({ space: StyleConstants.SPACE_6 }) {
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.circle_tick1'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                // 清单
+                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
 
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
-            })
-          Image($r('app.media.todo'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
-            })
-        }.width(268)
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.styles'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                if (this.portraitModel) {
+                  this.editContentDialogCtl.open()
+                } else {
+                  this.editContentDialogCtl.open()
+                }
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.picture_white')).height(24).width(24)
+              .onClick(async () => {
+                console.log('startAbility start')
+                AppStorage.SetOrCreate<number>('openPhoto', 1)
+                LogUtil.info(TAG, 'globalThis.noteContext is:' + JSON.stringify(globalThis.noteContext))
+                await globalThis.noteContext.startAbilityForResult({
+                  parameters: { uri: "singleselect" },
+                  bundleName: "com.ohos.photos",
+                  abilityName: "com.ohos.photos.MainAbility",
+                })
+                  .then(v => {
+                    AppStorage.SetOrCreate<number>('openPhoto', 0)
+                    let want = v['want'];
+                    console.info(`test select single ${want}`);
+                    if (want != null && want != undefined) {
+                      let param = want['parameters'];
+                      console.info(`test select single ${param}`);
+                      let imageUri = ""
+                      if (param != null && param != undefined) {
+                        let uri = param['select-item-list'];
+                        console.info(`test select single ${uri}`);
+                        imageUri = uri;
+                      }
+
+                      // 拷贝
+                      OperationUtils.copy(imageUri).then((uriPath) => {
+                        var path = "file://" + uriPath
+                        LogUtil.info(TAG, 'image uri is:' + path)
+                        this.controllerShow.runJavaScript({script:"javascript:RICH_EDITOR.insertImage('" + path + "')"})
+                      })
+                    }
+                  });
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.tick_thick'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                // 保存笔记信息到数据库
+                this.controllerShow.runJavaScript({ script: "get_html_content()" })
+                if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
+                  LogUtil.info(TAG, "note is empty,save note failed")
+                }
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.undo'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+
+                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.todo'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+        }.width(274)
       } else {
         Row({ space: StyleConstants.SPACE_24 }) {
           Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') : $r('app.media.favorite_cancel'))

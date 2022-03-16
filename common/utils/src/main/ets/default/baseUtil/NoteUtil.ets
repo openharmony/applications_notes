@@ -138,6 +138,9 @@ export class NoteUtil {
       LogUtil.info(TAG, "NoteBgColor is ffffff")
       return $r("app.color.color_ffffff")
     }
+    if (folderData.color == "#ffffff") {
+      return "#FFEBE1"
+    }
     LogUtil.info(TAG, "isSelected %s, folderData.color: %s", isSelected, folderData.color)
     return isSelected ? selectedNoteBgColorMap[folderData.color] : unSelectedNoteBgColorMap[folderData.color]
   }
@@ -213,7 +216,7 @@ export class NoteUtil {
       if (noteItemRight.is_top != noteItemLeft.is_top) {
         return noteItemRight.is_top - noteItemLeft.is_top
       }
-      return noteItemRight.created_time - noteItemLeft.created_time
+      return noteItemRight.modified_time - noteItemLeft.modified_time
     })
     LogUtil.info(TAG, "noteDataArray size " + noteDataArray.length.toString())
     return noteDataArray
