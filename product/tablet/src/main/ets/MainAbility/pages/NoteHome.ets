@@ -65,17 +65,16 @@ export struct NoteHomeComp {
       .visibility(
           LayoutUtil.getWidthWeightMessage(this.sectionStatus)
           .folderListVisibility == 0 ? Visibility.None : Visibility.Visible)
-      .opacity(this.search ? StyleConstants.OPACITY_40 : StyleConstants.OPACITY_100)
       .enabled(this.search ? false : true)
 
-      Divider()
-        .vertical(true)
-        .strokeWidth(1)
-        .color($r("app.color.divider_color_182431"))
-        .height("100%")
-        .opacity(StyleConstants.OPACITY_10)
       // Note list display area
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
+        Divider()
+          .vertical(true)
+          .strokeWidth(1)
+          .color($r("app.color.divider_color_182431"))
+          .height("100%")
+          .opacity(StyleConstants.OPACITY_10)
         NoteListComp({ controllerShow: this.controllerShow })
       }
       .flexShrink(0)
@@ -86,21 +85,20 @@ export struct NoteHomeComp {
           LayoutUtil.getWidthWeightMessage(this.sectionStatus)
           .noteListVisibility == 0 ? Visibility.None : Visibility.Visible)
 
-      Divider()
-        .vertical(true)
-        .strokeWidth(1)
-        .color($r("app.color.divider_color_182431"))
-        .height("100%")
-        .opacity(StyleConstants.OPACITY_10)
       // Note content display area
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
+        Divider()
+          .vertical(true)
+          .strokeWidth(1)
+          .color($r("app.color.divider_color_182431"))
+          .height("100%")
+          .opacity(StyleConstants.OPACITY_10)
         NoteContentComp({ controllerShow: this.controllerShow })
       }
       .flexShrink(0)
-      .backgroundColor(this.search && this.inputKeyword.length == 0 ? $r("app.color.notecontent_color_000000") : $r("app.color.notecontent_color_ffffff"))
+      .backgroundColor($r("app.color.notecontent_color_ffffff"))
       .width(LayoutUtil.getWidthWeightMessage(this.sectionStatus).noteCotentWeight)
       .height(StyleConstants.PERCENTAGE_100)
-      .opacity(this.longpress ? StyleConstants.OPACITY_40 : this.search && this.inputKeyword.length == 0 ? StyleConstants.OPACITY_20 : StyleConstants.OPACITY_100)
       .enabled(this.longpress || this.search && this.inputKeyword.length == 0 ? false : true)
     }
     .width(StyleConstants.PERCENTAGE_100)

@@ -220,15 +220,14 @@ RICH_EDITOR.setBlockquote = function() {
     document.execCommand('formatBlock', false, '<blockquote>');
 }
 
-RICH_EDITOR.insertImage = function() {
-    var url = './shuxue.png';
+RICH_EDITOR.insertImage = function(url) {
+    console.log("js,url:" + url)
     var html = '<br></br><img src="' + url + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
     RICH_EDITOR.insertHTML(html);
     RICH_EDITOR.editor.scrollIntoView(false)
 }
 
 RICH_EDITOR.insertHTML = function(html) {
-    RICH_EDITOR.restorerange();
     document.execCommand('insertHTML', false, html);
 }
 

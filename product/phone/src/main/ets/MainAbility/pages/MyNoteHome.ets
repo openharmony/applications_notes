@@ -48,15 +48,14 @@ export struct MyNoteHomeComp {
       return
     }
 
-    LogUtil.info(this.TAG, "databaseDir is " + this.context.databaseDir)
-    // /data/storage/el2/database/tablet
+    let databaseDir = this.context.databaseDir
+    LogUtil.info(this.TAG, "databaseDir is " + databaseDir)
 
-    let dbPath = "/data/app/el2/100/database/com.ohos.note/phone/db/note.db"
+    let dbPath = databaseDir + "/db/note.db"
     try {
-      if (fileio.accessSync(dbPath) == undefined) {
-        LogUtil.info(this.TAG, "db has created")
-        RdbStoreUtil.initAppStorage(this.context)
-      }
+      fileio.accessSync(dbPath)
+      LogUtil.info(this.TAG, "db has created")
+      RdbStoreUtil.initAppStorage(this.context)
     } catch (err) {
       LogUtil.info(this.TAG, "db has not created, start to create db")
       RdbStoreUtil.createRdbStore(this.context)

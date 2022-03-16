@@ -72,6 +72,9 @@ export struct NewOrEditFolderDialog {
         .margin({ left: 64 })
         .fontColor("#FA2A2D")
         .visibility((this.isExisted && this.inputName != this.oriInputName) ? Visibility.Visible : Visibility.None)
+      Divider().height(1)
+        .margin({ left: 64, right: 24 })
+        .color($r("app.color.divider_color_182431"))
       // button group
       Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
         Text($r("app.string.cancel"))
@@ -682,69 +685,159 @@ export struct EditContentDialogPortrait {
           })
       }
       .height(48)
+      .padding({ left: 24, right: 24 })
 
 
-      Row({ space: 34 }) {
-        Image($r('app.media.action_bold')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setBold()")
-          })
-        Image($r('app.media.format_italic')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setItalic()")
-          })
-        Image($r('app.media.underline')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setUnderline()")
-          })
-        Image($r('app.media.right_justify')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setJustifyRight()")
-          })
-        Image($r('app.media.mid_justify')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setJustifyCenter()")
-          })
-        Image($r('app.media.left_justify')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setJustifyLeft()")
-          })
+      Row({ space: 16 }) {
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.action_bold'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setBold()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
+
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.format_italic'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setItalic()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
+
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.underline'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setUnderline()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
+
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.right_justify'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setJustifyRight()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
+
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.mid_justify'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setJustifyCenter()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
+
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.left_justify'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setJustifyLeft()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
       }
       .height(48)
 
       Divider().vertical(false).color($r("app.color.divider_color_e4e4e4"))
 
-      Row({ space: 34 }) {
+      Row({ space: 16 }) {
 
-        Image($r('app.media.suojin')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setIndent()")
-          })
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.suojin'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setIndent()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
 
-        Image($r('app.media.suojin_back')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setOutdent()")
-          })
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.suojin_back'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setOutdent()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
 
-        Image($r("app.media.format_menulist_number")).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setNumbers()")
-          })
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r("app.media.format_menulist_number"))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setNumbers()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
 
-        Image($r("app.media.format_menulist_alphabet")).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setABC()")
-          })
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r("app.media.format_menulist_alphabet"))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setABC()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
 
-        Image($r('app.media.format_menubullte2')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setBullets()")
-          })
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.format_menubullte2'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setBullets()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
 
-        Image($r('app.media.format_menubullte1')).height(24).width(24)
-          .onClick(() => {
-            this.confirm("javascript:RICH_EDITOR.setSquare()")
-          })
+        Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Image($r('app.media.format_menubullte1'))
+            .height(24)
+            .width(24)
+            .onClick(() => {
+              this.confirm("javascript:RICH_EDITOR.setSquare()")
+            })
+        }.width(42)
+        .height(42)
+        .borderRadius(8)
+        .backgroundColor($r('app.color.color_ffffff'))
       }
       .height(48)
 
@@ -765,6 +858,7 @@ export struct EditContentDialogPortrait {
         }
       }
       .height(48)
+      .padding({ left: 24, right: 24 })
 
       Divider().vertical(false).color($r("app.color.divider_color_e4e4e4"))
 
@@ -794,11 +888,11 @@ export struct EditContentDialogPortrait {
       .alignItems(VerticalAlign.Top)
       .padding({ top: 5 })
       .height(72)
+      .padding({ left: 24, right: 24 })
     }
     .width(360)
     .height(266)
     .backgroundColor($r("app.color.color_ffffff"))
     .borderRadius(36)
-    .padding({ left: 24, right: 24 })
   }
 }

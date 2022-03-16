@@ -103,13 +103,14 @@ struct NoteOverViewComp {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
             .fontSize(30)
             .fontColor('#182431')
+            .fontWeight(FontWeight.Bold)
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
               .fontSize(14)
-              .fontColor('#182431')
+              .fontColor('#A3A7AD')
             Text($r("app.string.noteslist"))
               .fontSize(14)
-              .fontColor('#182431')
+              .fontColor('#A3A7AD')
           }
           .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
         }.visibility(this.longpress ? Visibility.None : Visibility.Visible)
@@ -174,9 +175,9 @@ export struct NoteItemComp {
               }), item => {
 
                 if (item.data.type == 0) {
-                  Span(item.data.text).fontColor('#182431').fontSize(16)
+                  Span(item.data.text).fontColor('#182431').fontSize(16).fontWeight(FontWeight.Medium)
                 } else if (item.data.type == 1) {
-                  Span(item.data.text).fontColor(Color.Blue).fontSize(16)
+                  Span(item.data.text).fontColor(Color.Blue).fontSize(16).fontWeight(FontWeight.Medium)
                 }
               },
                 item => item.index)
@@ -186,7 +187,8 @@ export struct NoteItemComp {
           Row({ space: 4 }) {
             Text(DateUtil.formateDateForNoteTitle(new Date(this.noteItem.modified_time)))
               .fontSize(14)
-              .fontColor('#182431')
+              .fontColor('#99182431')
+              .fontWeight(FontWeight.Regular)
             Image($r("app.media.favorite"))
               .height(16)
               .width(16)
@@ -206,6 +208,7 @@ export struct NoteItemComp {
           .width(48)
           .borderRadius(12)
           .border({ width: 0.5, color: '#19182431' })
+          .visibility(this.noteItem.content_img ? Visibility.Visible : Visibility.None)
         Stack({ alignContent: Alignment.Center }) {
           Image($r("app.media.unChecked"))
             .height(24)
@@ -349,8 +352,7 @@ export struct NoteItemListComp {
         }.listDirection(Axis.Vertical)
         .edgeEffect(EdgeEffect.Spring)
       }
-      .backgroundColor(this.search && this.inputKeyword.length == 0 ? $r("app.color.notecontent_color_000000") : $r("app.color.notelist_bgcolor_f1f3f5"))
-      .opacity(this.search && this.inputKeyword.length == 0 ? StyleConstants.OPACITY_10 : StyleConstants.OPACITY_100)
+      .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .height('100%')
     }
     .height('80%')
@@ -387,7 +389,9 @@ export struct OperateNoteComp {
       predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
       RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
     })
+    this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
     this.longpress = false
+    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
   }
 
@@ -528,7 +532,12 @@ export struct AddNoteComp {
       .height(24)
       .margin({ right: 12 })
       .onClick(() => {
-        let noteData = new NoteData(0, "标题", new Date().getTime() + "", this.selectedFolderData.uuid, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0)
+        let noteData
+        if (this.selectedFolderData.uuid == SysDefFolderUuid.AllNotes) {
+          noteData = new NoteData(0, "标题", new Date().getTime() + "", SysDefFolderUuid.UnClassified, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0)
+        } else {
+          noteData = new NoteData(0, "标题", new Date().getTime() + "", this.selectedFolderData.uuid, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0)
+        }
 
         this.AllNoteArray.push(noteData)
         RdbStoreUtil.insert(TableName.NoteTable, noteData.toNoteObject(), null)
@@ -577,6 +586,7 @@ export struct SearchComp {
         Image($r('app.media.search')).width(18).height(18)
         TextInput({ text: this.inputKeyword, placeholder: $r('app.string.searchNote') })
           .backgroundColor($r("app.color.color_ffffff"))
+          .caretColor('#F86D05')
           .onChange((value: string) => {
             LogUtil.info(TAG, "Search value: " + value)
             this.inputKeyword = value
@@ -585,11 +595,12 @@ export struct SearchComp {
             this.search = true
           })
       }
-      .width(this.search ? 344 : 384)
-      .height(52)
-      .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+      .width(this.search ? 336 : 384)
+      .height(40)
+      .padding({ left: 6, right: 12, top: 9, bottom: 9 })
       .borderRadius(20)
       .backgroundColor($r("app.color.color_ffffff"))
+      .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
     }
   }
 }
@@ -618,7 +629,9 @@ export struct OperateNoteCompForPortrait {
       predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
       RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
     })
+    this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
     this.longpress = false
+    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
   }
 

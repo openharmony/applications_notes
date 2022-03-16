@@ -26,6 +26,7 @@ import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUt
 import prompt from '@system.prompt'
 import featureAbility from '@ohos.ability.featureAbility';
 import LogUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import OperationUtils from '../../../../../../common/utils/src/main/ets/default/baseUtil/OperationUtils.ets'
 
 const TAG = "NoteContentComp"
 
@@ -242,29 +243,45 @@ export struct ToolBarComp {
         }.width(36)
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       } else {
-        Row({ space: StyleConstants.SPACE_24 }) {
-          Image($r('app.media.undo')).height(24).width(24)
-            .onClick(() => {
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
-            })
-          Image($r('app.media.todo')).height(24).width(24)
-            .onClick(() => {
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
-            })
-          Image($r('app.media.tick_thin')).height(24).width(24)
-            .onClick(() => {
-              // 保存笔记信息到数据库
-              this.controllerShow.runJavaScript({ script: "get_html_content()" })
-              if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
-                LogUtil.info(TAG, "note is empty,save note failed")
-                prompt.showToast({ message: $r('app.string.empty_note'), duration: 2000 })
-              }
-              // 进入预览模式
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
-              this.editModel = false
-            })
+        Row({ space: StyleConstants.SPACE_6 }) {
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.undo')).height(24).width(24)
+              .onClick(() => {
+                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.todo')).height(24).width(24)
+              .onClick(() => {
+                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.tick_thin')).height(24).width(24)
+              .onClick(() => {
+                // 保存笔记信息到数据库
+                this.controllerShow.runJavaScript({ script: "get_html_content()" })
+                if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
+                  LogUtil.info(TAG, "note is empty,save note failed")
+                }
+                // 进入预览模式
+                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
+                this.editModel = false
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
         }
-        .width(120)
+        .width(130)
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       }
     }
@@ -407,8 +424,38 @@ export struct EditNoteCompForPortrait {
         Image($r('app.media.picture_white'))
           .width(24)
           .height(24)
-          .onClick(() => {
+          .onClick(async () => {
+            console.log('startAbility start')
+            AppStorage.SetOrCreate<number>('openPhoto', 1)
+            LogUtil.info(TAG, 'globalThis.noteContext is:' + JSON.stringify(globalThis.noteContext))
+            await globalThis.noteContext.startAbilityForResult({
+              parameters: { uri: "singleselect" },
+              bundleName: "com.ohos.photos",
+              abilityName: "com.ohos.photos.MainAbility",
+            }).then(v => {
+              AppStorage.SetOrCreate<number>('openPhoto', 0)
+              let want = v['want'];
+              console.info(`test select single ${want}`);
+              if (want != null && want != undefined) {
+                let param = want['parameters'];
+                console.info(`test select single ${param}`);
+                let imageUri = ""
+                if (param != null && param != undefined) {
+                  let uri = param['select-item-list'];
+                  console.info(`test select single ${uri}`);
+                  imageUri = uri;
+                }
+
+                // 拷贝
+                OperationUtils.copy(imageUri).then((uriPath) => {
+                  var path = "file://" + uriPath
+                  LogUtil.info(TAG, 'image uri is:' + path)
+                  this.controllerShow.runJavaScript({script:"javascript:RICH_EDITOR.insertImage('" + path + "')"})
+                })
+              }
+            });
           })
+
         Text($r("app.string.photo"))
           .fontSize(10).fontColor('#182431')
           .padding({ top: 5 })

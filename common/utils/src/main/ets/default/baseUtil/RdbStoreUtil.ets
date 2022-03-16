@@ -14,8 +14,10 @@
  */
 
 import ohosDataRdb from '@ohos.data.rdb'
+import fileio from '@ohos.fileio'
 import LogUtil from './LogUtil.ets'
 import FolderUtil from './FolderUtil.ets'
+import NoteUtil from './NoteUtil.ets'
 import SysDefData from '../model/databaseModel/SysDefData.ets'
 import FolderData from '../model/databaseModel/FolderData.ets'
 import NoteData from '../model/databaseModel/NoteData.ets'
@@ -105,6 +107,19 @@ export default {
             noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
             noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time)
 
+          // save img to FileDir
+          LogUtil.info(TAG, "createRdbStore, save img to FileDir")
+          let srcArray = this.getSrcFromHtml(decodeURI(noteObj.content_text))
+          srcArray.forEach((src: string) => {
+            let lastIndex = src.lastIndexOf('/')
+            LogUtil.info(TAG, " createRdbStore, lastIndex : " + lastIndex)
+            if (lastIndex != -1) {
+              let imgName = src.substring(lastIndex + 1)
+              this.writeToFileDir(context, imgName)
+            }
+          })
+          LogUtil.info(TAG, "createRdbStore, save img to FileDir success")
+
           // if not exit this note
           let exist = false
           let folderUuid = ""
@@ -115,15 +130,26 @@ export default {
               break
             }
           }
-          console.log("RdbStoreUtil initAppStorage, exist : " + exist)
-          // 迁移过来的笔记在本地不存在，则保存在未分类文件夹
+          LogUtil.info(TAG, "createRdbStore, exist : " + exist)
           if (!exist) {
+            // 迁移过来的笔记在本地不存在，则保存在未分类文件夹
             noteData.folder_uuid = SysDefFolderUuid.UnClassified
             noteDataArray.push(noteData)
             AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
             this.insert(TableName.NoteTable, noteData.toNoteObject(), null)
             AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, SysDefFolderUuid.UnClassified))
           } else {
+            // 迁移过来的笔记在本地存在，则进行修改
+            for (let i = 0; i < noteDataArray.length; i++) {
+              if (noteData.created_time == noteDataArray[i].created_time) {
+                noteDataArray[i] = noteData
+                LogUtil.info(TAG, "createRdbStore, update noteData in noteDataArray success")
+                break
+              }
+            }
+            let predicates_note = this.getRdbPredicates(TableName.NoteTable)
+            predicates_note.equalTo(NoteTableColumn.CreatedTime, noteData.created_time)
+            this.update(noteData.toNoteObject(), predicates_note, null)
             AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, folderUuid))
           }
           AppStorage.SetOrCreate('Note', noteData)
@@ -131,7 +157,7 @@ export default {
         } else {
           console.info("RdbStoreUtil createRdbStore, IsContinue false")
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
-          AppStorage.SetOrCreate('Note', AppStorage.Get('AllNoteArray')[0])
+          AppStorage.SetOrCreate('Note', NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes))
           AppStorage.SetOrCreate('Section', 3)
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
@@ -213,6 +239,19 @@ export default {
             noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
             noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time)
 
+          // save img to FileDir
+          LogUtil.info(TAG, "initAppStorage, save img to FileDir")
+          let srcArray = this.getSrcFromHtml(decodeURI(noteObj.content_text))
+          srcArray.forEach((src: string) => {
+            let lastIndex = src.lastIndexOf('/')
+            LogUtil.info(TAG, " initAppStorage, lastIndex : " + lastIndex)
+            if (lastIndex != -1) {
+              let imgName = src.substring(lastIndex + 1)
+              this.writeToFileDir(context, imgName)
+            }
+          })
+          LogUtil.info(TAG, "initAppStorage, save img to FileDir success")
+
           // if not exit this note
           let exist = false
           let folderUuid = ""
@@ -223,15 +262,26 @@ export default {
               break
             }
           }
-          console.log("RdbStoreUtil initAppStorage, exist : " + exist)
-          // 迁移过来的笔记在本地不存在，则保存在未分类文件夹
+          LogUtil.info(TAG, "initAppStorage, exist : " + exist)
           if (!exist) {
+            // 迁移过来的笔记在本地不存在，则保存在未分类文件夹
             noteData.folder_uuid = SysDefFolderUuid.UnClassified
             noteDataArray.push(noteData)
             AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
             this.insert(TableName.NoteTable, noteData.toNoteObject(), null)
             AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, SysDefFolderUuid.UnClassified))
           } else {
+            // 迁移过来的笔记在本地存在，则进行修改
+            for (let i = 0; i < noteDataArray.length; i++) {
+              if (noteData.created_time == noteDataArray[i].created_time) {
+                noteDataArray[i] = noteData
+                LogUtil.info(TAG, "initAppStorage, update noteData in noteDataArray success")
+                break
+              }
+            }
+            let predicates_note = this.getRdbPredicates(TableName.NoteTable)
+            predicates_note.equalTo(NoteTableColumn.CreatedTime, noteData.created_time)
+            this.update(noteData.toNoteObject(), predicates_note, null)
             AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, folderUuid))
           }
           AppStorage.SetOrCreate('Note', noteData)
@@ -239,7 +289,7 @@ export default {
         } else {
           console.info("RdbStoreUtil initAppStorage, IsContinue false")
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
-          AppStorage.SetOrCreate('Note', AppStorage.Get('AllNoteArray')[0])
+          AppStorage.SetOrCreate('Note', NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes))
           AppStorage.SetOrCreate('Section', 3)
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
@@ -248,6 +298,48 @@ export default {
       .catch((err) => {
         LogUtil.error(TAG, "initAppStorage, error : " + err)
       })
+  },
+
+  getSrcFromHtml(html: string): any{
+    LogUtil.info(TAG, "getSrcFromHtml, html : " + html)
+    let imgReg = /<img[^>]+>/g
+    let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
+    let imgArray = html.match(imgReg)
+    let srcArray = []
+    if (imgArray != null) {
+      for (let i = 0; i < imgArray.length; i++) {
+        let src = imgArray[i].match(srcReg)
+        LogUtil.info(TAG, "getSrcFromHtml, src[1] : " + src[1])
+        srcArray.push(src[1])
+      }
+    }
+    LogUtil.info(TAG, "getSrcFromHtml, srcArray : " + srcArray)
+    return srcArray
+  },
+
+  writeToFileDir(context, fileName: string) {
+    LogUtil.info(TAG, "writeToFileDir fileName : " + fileName)
+
+    let distributedFilesDir = context.distributedFilesDir
+    let srcPath = distributedFilesDir + "/" + fileName
+
+    let srcFd
+    try {
+      srcFd = fileio.openSync(srcPath, 0o2, 0o666)
+      console.info(TAG, "open srcPath success : " + srcFd)
+    } catch (err) {
+      LogUtil.warn(TAG, "open srcPath failed : " + err)
+    }
+
+    let filesDir = context.filesDir
+    let desPath = filesDir + "/" + fileName
+
+    try {
+      fileio.copyFileSync(srcFd, desPath)
+      LogUtil.info(TAG, "writeToFileDir, copyFile successfully")
+    } catch (err) {
+      LogUtil.warn(TAG, "writeToFileDir, copyFile failed : " + err)
+    }
   },
 
   /**
