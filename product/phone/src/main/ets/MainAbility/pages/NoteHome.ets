@@ -17,7 +17,7 @@ import {FolderListComp} from '../../../../../../../common/component/src/main/ets
 import {NoteListComp} from '../../../../../../../common/component/src/main/ets/default/NoteListComp.ets'
 import {NoteContentComp} from '../../../../../../../common/component/src/main/ets/default/NoteContentComp'
 import StyleConstants from '../../../../../../../common/utils/src/main/ets/default/constants/StyleConstants.ets'
-import LogUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import {circleColorArray} from '../../../../../../../common/utils/src/main/ets/default/model/NoteBaseData.ets'
 import FolderData from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/FolderData.ets'
 import NoteData from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/NoteData.ets'
@@ -33,7 +33,7 @@ export struct NoteHomeComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-// 当前文件夹、笔记、分栏
+  // 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
   @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')
@@ -60,7 +60,6 @@ export struct NoteHomeComp {
       .visibility(
           LayoutUtil.getWidthWeightMessage(this.sectionStatus)
           .folderListVisibility == 0 ? Visibility.None : Visibility.Visible)
-      .opacity(this.search ? StyleConstants.OPACITY_40 : StyleConstants.OPACITY_100)
       .enabled(this.search ? false : true)
 
       Divider()
@@ -92,10 +91,9 @@ export struct NoteHomeComp {
         NoteContentComp()
       }
       .flexShrink(0)
-      .backgroundColor(this.search && this.inputKeyword.length == 0 ? $r("app.color.notecontent_color_000000") : $r("app.color.notecontent_color_ffffff"))
+      .backgroundColor($r("app.color.notecontent_color_ffffff"))
       .width(LayoutUtil.getWidthWeightMessage(this.sectionStatus).noteCotentWeight)
       .height(StyleConstants.PERCENTAGE_100)
-      .opacity(this.longpress ? StyleConstants.OPACITY_40 : this.search && this.inputKeyword.length == 0 ? StyleConstants.OPACITY_20 : StyleConstants.OPACITY_100)
       .enabled(this.longpress || this.search && this.inputKeyword.length == 0 ? false : true)
     }
     .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)

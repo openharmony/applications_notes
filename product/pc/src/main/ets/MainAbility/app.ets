@@ -12,11 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+
+const TAG = "app"
+
 export default {
   onCreate() {
-    console.info('Application onCreate')
+    LogUtil.info(TAG, 'Application onCreate')
   },
   onDestroy() {
-    console.info('Application onDestroy')
+    LogUtil.info(TAG, 'Application onDestroy')
   },
 }

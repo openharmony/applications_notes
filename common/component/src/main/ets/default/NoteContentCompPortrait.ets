@@ -25,7 +25,8 @@ import FolderUtil from '../../../../../../common/utils/src/main/ets/default/base
 import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
 import prompt from '@system.prompt'
 import featureAbility from '@ohos.ability.featureAbility';
-import LogUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import OperationUtils from '../../../../../../common/utils/src/main/ets/default/baseUtil/OperationUtils.ets'
 
 const TAG = "NoteContentComp"
 
@@ -45,14 +46,15 @@ export struct NoteContentCompPortrait {
   private context = getContext(this)
   noteContent = {
     callbackhtml: (html) => {
-      LogUtil.info(TAG, 'html content is:' + html)
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
+      // updata note image
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData)
+      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
       return "AceString";
     }
   }
@@ -84,7 +86,6 @@ export struct NoteContentCompPortrait {
                 this.editContentFlag = true
               }
               LogUtil.info(TAG, "finish loadurl")
-              console.log('onPageEnd:' + e.url)
               // 初次进入预览模式
               this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
               this.controllerShow.runJavaScript({
@@ -232,39 +233,54 @@ export struct ToolBarComp {
               if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
                 this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
                 // 迁移
-                console.log("ToolBarComp, set continue note")
+                LogUtil.info(TAG, "ToolBarComp, set continue note")
                 let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-                console.log("ToolBarComp, continueNote : " + continueNote)
                 AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-                console.log("ToolBarComp, set continue note success")
+                LogUtil.info(TAG, "ToolBarComp, set continue note success")
               }
             })
         }.width(36)
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       } else {
-        Row({ space: StyleConstants.SPACE_24 }) {
-          Image($r('app.media.undo')).height(24).width(24)
-            .onClick(() => {
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
-            })
-          Image($r('app.media.todo')).height(24).width(24)
-            .onClick(() => {
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
-            })
-          Image($r('app.media.tick_thin')).height(24).width(24)
-            .onClick(() => {
-              // 保存笔记信息到数据库
-              this.controllerShow.runJavaScript({ script: "get_html_content()" })
-              if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
-                LogUtil.info(TAG, "note is empty,save note failed")
-                prompt.showToast({ message: $r('app.string.empty_note'), duration: 2000 })
-              }
-              // 进入预览模式
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
-              this.editModel = false
-            })
+        Row({ space: StyleConstants.SPACE_6 }) {
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.undo')).height(24).width(24)
+              .onClick(() => {
+                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.todo')).height(24).width(24)
+              .onClick(() => {
+                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.tick_thin')).height(24).width(24)
+              .onClick(() => {
+                // 保存笔记信息到数据库
+                this.controllerShow.runJavaScript({ script: "get_html_content()" })
+                if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
+                  LogUtil.info(TAG, "note is empty,save note failed")
+                }
+                // 进入预览模式
+                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
+                this.editModel = false
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
         }
-        .width(120)
+        .width(130)
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       }
     }
@@ -407,8 +423,7 @@ export struct EditNoteCompForPortrait {
         Image($r('app.media.picture_white'))
           .width(24)
           .height(24)
-          .onClick(() => {
-          })
+
         Text($r("app.string.photo"))
           .fontSize(10).fontColor('#182431')
           .padding({ top: 5 })

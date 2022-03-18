@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 import Ability from '@ohos.application.Ability'
 import {WebViewUtil} from './WebViewUtil.ets'
+import fileio from '@ohos.fileio'
 
 export default class MainAbility extends Ability {
     onCreate(want, launchParam) {
@@ -32,6 +33,9 @@ export default class MainAbility extends Ability {
             AppStorage.SetOrCreate<number>('IsContinue', 1)
             this.context.restoreWindowStage(null)
         }
+        AppStorage.SetOrCreate<number>('openPhoto', 0)
+        AppStorage.SetOrCreate<number>('openPerm', 0)
+        globalThis.noteContext = this.context
     }
 
     onDestroy() {
@@ -62,34 +66,5 @@ export default class MainAbility extends Ability {
             script: "get_html_content()"
         })
         console.log("MainAbility controllerShow end")
-    }
-
-    onContinue(wantParam: { [key: string]: any }) {
-        console.log("MainAbility onContinue")
-        // 获取本端的迁移数据
-        let continueFolder = AppStorage.Get<string>('ContinueFolder')
-        if (continueFolder == undefined || continueFolder == null) {
-            console.log("MainAbility onContinue, continue first folder")
-            continueFolder = JSON.stringify(AppStorage.Get('AllFolderArray')[0].toFolderObject())
-        }
-
-        let continueNote = AppStorage.Get<string>('ContinueNote')
-        if (continueNote == undefined || continueNote == null) {
-            console.log("MainAbility onContinue, continue first note")
-            continueNote = JSON.stringify(AppStorage.Get('AllNoteArray')[0].toNoteObject())
-        }
-
-        let continueSection = AppStorage.Get<number>('ContinueSection')
-        if (continueSection == undefined || continueSection == null) {
-            console.log("MainAbility onContinue, continue section 3")
-            continueSection = 3
-        }
-
-        // 保存本端的迁移数据
-        wantParam["ContinueFolder"] = continueFolder
-        wantParam["ContinueNote"] = continueNote
-        wantParam["ContinueSection"] = continueSection
-
-        return true
     }
 }

@@ -2,7 +2,7 @@
   "string": [
     {
       "name": "entry_MainAbility",
-      "value": "备忘录"
+      "value": "Notepad"
     },
     {
       "name": "description_mainability",
@@ -10,55 +10,55 @@
     },
     {
       "name": "note",
-      "value": "笔记"
+      "value": "Notes"
     },
     {
       "name": "allNotes",
-      "value": "全部笔记"
+      "value": "All notes"
     },
     {
       "name": "unClassified",
-      "value": "未分类"
+      "value": "No category"
     },
     {
       "name": "recentDeletes",
-      "value": "最近删除"
+      "value": "Recently deleted"
     },
     {
       "name": "myFavorites",
-      "value": "我的收藏"
+      "value": "My favourites"
     },
     {
       "name": "create",
-      "value": "新建"
+      "value": "NEW"
     },
     {
       "name": "createFolder",
-      "value": "新建文件夹"
+      "value": "New Folder"
     },
     {
       "name": "editFolder",
-      "value": "编辑文件夹"
+      "value": "Edit Folder"
     },
     {
       "name": "deleteFolder",
-      "value": "删除文件夹"
+      "value": "Delete Folder"
     },
     {
       "name": "createNote",
-      "value": "新建笔记"
+      "value": "New note"
     },
     {
       "name": "cancel",
-      "value": "取消"
+      "value": "CANCEL"
     },
     {
       "name": "save",
-      "value": "保存"
+      "value": "SAVE"
     },
     {
       "name": "delete",
-      "value": "删除"
+      "value": "DELETE"
     },
     {
       "name": "name",
@@ -66,103 +66,103 @@
     },
     {
       "name": "delete_tips",
-      "value": "是否删除此文件夹及其中的内容？"
+      "value": "Do you want to delete this folder and its contents?"
     },
     {
       "name": "deleteNote",
-      "value": "是否删除此笔记？"
+      "value": "Delete this note?"
     },
     {
       "name": "deleteNoteComplete",
-      "value": "此笔记将被永久删除，无法恢复。是否删除？"
+      "value": "Permanently delete this note?"
     },
     {
       "name": "deleteAllNote",
-      "value": "是否删除全部笔记？"
+      "value": "Delete all note?"
     },
     {
       "name": "deletePartNote",
-      "value": "是否删除%d条笔记？"
+      "value": "Delete %d notes?"
     },
     {
       "name": "selected",
-      "value": "已选择%d项"
+      "value": "%d item selected"
     },
     {
       "name": "none_selected",
-      "value": "未选择"
+      "value": "None selected"
     },
     {
       "name": "noteslist",
-      "value": "条笔记"
+      "value": "notes"
     },
     {
       "name": "Empty_page",
-      "value": "没有笔记"
+      "value": "No notes"
     },
     {
       "name": "searchNote",
-      "value": "搜索笔记..."
+      "value": "Search notes"
     },
     {
       "name": "chooseFolder",
-      "value": "请选择文件夹"
+      "value": "Select folder"
     },
     {
       "name": "category_already_exist",
-      "value": "文件夹名称已存在"
+      "value": "The folder name already exists."
     },
     {
       "name": "input_placeholder",
-      "value": "名称"
+      "value": "Name"
     },
     {
       "name": "permanently_delete_tips",
-      "value": "笔记删除前会显示剩余天数（最长30天），之后将永久删除"
+      "value": "notes will be permanently deleted after the number of days shown (up to 30 days)."
     },
     {
       "name": "set_top",
-      "value": "置顶"
+      "value": "Top"
     },
     {
       "name": "move",
-      "value": "移到"
+      "value": "Move"
     },
     {
       "name": "recover",
-      "value": "恢复"
+      "value": "Restore"
     },
     {
       "name": "check_all",
-      "value": "多选"
+      "value": "Select all"
     },
     {
       "name": "editNoteTitle",
-      "value": "修改标题"
+      "value": "Modify the title"
     },
     {
       "name": "list",
-      "value": "清单"
+      "value": "Checklist"
     },
     {
       "name": "style",
-      "value": "样式"
+      "value": "Style"
     },
     {
       "name": "photo",
-      "value": "相册"
+      "value": "Gallery"
     },
     {
       "name": "title",
-      "value": "标题"
+      "value": "Title"
     },
     {
       "name": "empty_note",
-      "value": "笔记内容为空"
+      "value": "The note content is empty."
     },
     {
       "name": "restore",
-      "value": "已恢复"
+      "value": "Note Restored"
     }
   ]
 }

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import LogUtil from './LogUtil.ets'
+import {LogUtil} from './LogUtil.ets'
 import GlobalResourceManager from './GlobalResourceManager.ets'
 
 const TAG = "DateUtil"
@@ -38,7 +38,7 @@ export class DateUtil {
     let nowDate = new Date()
     let diffMin = Math.floor((nowDate.getTime() - date.getTime()) / 1000 / 60)
     if (diffMin < 0) {
-      LogUtil.info("DateUtils, formateDateForNoteTitle : date is error")
+      LogUtil.info(TAG, "DateUtils, formateDateForNoteTitle : date is error")
       return this.formateDateForNoteContent(date)
     }
 

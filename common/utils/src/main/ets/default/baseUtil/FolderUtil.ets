@@ -18,7 +18,7 @@ import NoteData from '../model/databaseModel/NoteData.ets'
 import {SysDefFolderUuid, FolderType, Favorite, Delete} from '../model/databaseModel/EnumData.ets'
 import GlobalResourceManager from './GlobalResourceManager.ets'
 import StyleConstants from '../constants/StyleConstants.ets'
-import LogUtil from './LogUtil.ets'
+import {LogUtil} from './LogUtil.ets'
 
 const TAG = "FolderUtil"
 
