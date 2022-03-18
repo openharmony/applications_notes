@@ -102,7 +102,7 @@
     },
     {
       "name": "searchNote",
-      "value": "搜索笔记"
+      "value": "搜索笔记..."
     },
     {
       "name": "chooseFolder",
@@ -163,18 +163,6 @@
     {
       "name": "restore",
       "value": "已恢复"
-    },
-    {
-      "name": "per_read_media",
-      "value": "是否允许备忘录访问媒体资源"
-    },
-    {
-      "name": "per_get_bundleInfo",
-      "value": "是否允许备忘录打开图库资源"
-    },
-    {
-      "name": "per_dis_dataSync",
-      "value": "是否允许备忘录流转到其它设备"
     }
   ]
 }

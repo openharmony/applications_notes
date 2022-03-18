@@ -17,7 +17,7 @@ import {FolderListComp} from '../../../../../../../common/component/src/main/ets
 import {NoteListComp} from '../../../../../../../common/component/src/main/ets/default/NoteListComp.ets'
 import {NoteContentComp} from '../../../../../../../common/component/src/main/ets/default/NoteContentComp'
 import StyleConstants from '../../../../../../../common/utils/src/main/ets/default/constants/StyleConstants.ets'
-import LogUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import {circleColorArray} from '../../../../../../../common/utils/src/main/ets/default/model/NoteBaseData.ets'
 import FolderData from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/FolderData.ets'
 import NoteData from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/NoteData.ets'
@@ -33,7 +33,7 @@ export struct NoteHomeComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-// 当前文件夹、笔记、分栏
+  // 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
   @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')

@@ -24,8 +24,9 @@ import FolderUtil from '../../../../../../common/utils/src/main/ets/default/base
 import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
 import prompt from '@system.prompt'
 import featureAbility from '@ohos.ability.featureAbility'
-import LogUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import OperationUtils from '../../../../../../common/utils/src/main/ets/default/baseUtil/OperationUtils.ets'
+import mediaquery from '@ohos.mediaquery'
 
 const TAG = "NoteContentComp"
 
@@ -47,34 +48,36 @@ export struct NoteContentComp {
   private context = getContext(this)
   noteContent = {
     callbackhtml: (html) => {
-      LogUtil.info(TAG, 'html content is:' + html)
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
+      // updata note image
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData)
+      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-      console.log("callbackhtml, set continue note success")
+      LogUtil.info(TAG, "callbackhtml, set continue note success")
       return "AceString"
     },
 
     callbackhtmlSave: (html) => {
-      LogUtil.info(TAG, 'html content is:' + html)
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
+      // updata note image
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData)
+      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-      console.log("callbackhtml, set continue note success")
+      LogUtil.info(TAG, "callbackhtml, set continue note success")
       // 删除空白笔记
       if(NoteUtil.deleteEmptyNote(this.selectedNoteData,this.AllNoteArray,this.controllerShow)) {
         this.selectedNoteData = this.AllNoteArray[0]
@@ -88,6 +91,8 @@ export struct NoteContentComp {
       LogUtil.info(TAG, 'callbackScheduledSave')
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
+      // updata note image
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -102,7 +107,7 @@ export struct NoteContentComp {
 
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
-      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap,
+      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
@@ -127,7 +132,6 @@ export struct NoteContentComp {
                 this.editContentFlag = true
               }
               LogUtil.info(TAG, "finish loadurl")
-              console.log('onPageEnd:' + e.url)
               this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
               // 初次加载为为小屏预览模式
               if (this.sectionStatus != 1) {
@@ -187,6 +191,7 @@ export struct NoteContentOverViewComp {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
   @Consume('EditModel') editModel: boolean
   @Consume('SectionStatus') sectionStatus: number
+  @Consume('RefreshFlag') refreshFlag: number
   editTitleDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditTitleDialog({ confirm: this.confirm.bind(this), dialogType: 0 }),
     alignment: DialogAlignment.Center,
@@ -211,6 +216,10 @@ export struct NoteContentOverViewComp {
           }
           .onClick(() => {
             this.selectedNoteData.folder_uuid = item.uuid
+            let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+            predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+            RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+            this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
           })
         }, noteItem => noteItem.uuid)
       }.listDirection(Axis.Vertical)
@@ -233,7 +242,7 @@ export struct NoteContentOverViewComp {
             this.editTitleDialogCtl.open()
             // save continue data
             AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-            console.log("NoteContentOverViewComp, set continue section success")
+            LogUtil.info(TAG, "NoteContentComp, set continue section success")
           })
       }.height(40)
       .width(StyleConstants.PERCENTAGE_100)
@@ -312,7 +321,7 @@ export struct ToolBarComp {
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-    console.log("ToolBarComp, onDeleteConfirm, set continue note success")
+    LogUtil.info(TAG, "NoteContentOverViewComp, set continue section success")
   }
 
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
@@ -353,6 +362,7 @@ export struct ToolBarComp {
                 LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
                 this.controllerShow.runJavaScript({ script: "save_html_content()" })
                 this.sectionStatus = this.lastSectionStatus
+                this.sectionStatus = mediaquery.matchMediaSync('(width < 2000)').matches ? 2 : 3
                 // 清除定时器
                 if (timeId != undefined) {
                   LogUtil.info(TAG, "zoom, clearInterval timeId : " + timeId)
@@ -364,9 +374,9 @@ export struct ToolBarComp {
             }
             this.editModel = !this.editModel
             // 迁移
-            console.log("ToolBarComp, set continue section")
+            LogUtil.info(TAG, "ToolBarComp, set continue section")
             AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-            console.log("ToolBarComp, set continue section success")
+            LogUtil.info(TAG, "ToolBarComp, set continue section success")
           })
           .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       }
@@ -398,7 +408,7 @@ export struct ToolBarComp {
               // save continue data
               let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
               AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-              console.log("recover, set continue note success")
+              LogUtil.info(TAG, "recover, set continue note success")
             })
         }.width(72)
         .visibility(this.portraitModel ? Visibility.None : Visibility.Visible)
@@ -466,38 +476,6 @@ export struct ToolBarComp {
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.picture_white')).height(24).width(24)
-              .onClick(async () => {
-                console.log('startAbility start')
-                AppStorage.SetOrCreate<number>('openPhoto', 1)
-                LogUtil.info(TAG, 'globalThis.noteContext is:' + JSON.stringify(globalThis.noteContext))
-                await globalThis.noteContext.startAbilityForResult({
-                  parameters: { uri: "singleselect" },
-                  bundleName: "com.ohos.photos",
-                  abilityName: "com.ohos.photos.MainAbility",
-                })
-                  .then(v => {
-                    AppStorage.SetOrCreate<number>('openPhoto', 0)
-                    let want = v['want'];
-                    console.info(`test select single ${want}`);
-                    if (want != null && want != undefined) {
-                      let param = want['parameters'];
-                      console.info(`test select single ${param}`);
-                      let imageUri = ""
-                      if (param != null && param != undefined) {
-                        let uri = param['select-item-list'];
-                        console.info(`test select single ${uri}`);
-                        imageUri = uri;
-                      }
-
-                      // 拷贝
-                      OperationUtils.copy(imageUri).then((uriPath) => {
-                        var path = "file://" + uriPath
-                        LogUtil.info(TAG, 'image uri is:' + path)
-                        this.controllerShow.runJavaScript({script:"javascript:RICH_EDITOR.insertImage('" + path + "')"})
-                      })
-                    }
-                  });
-              })
           }.width(42)
           .height(42)
           .borderRadius(8)
@@ -558,10 +536,11 @@ export struct ToolBarComp {
               RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
               if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
                 this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
+                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
                 // save continue data
                 let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
                 AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-                console.log("ToolBarComp, set continue note success")
+                LogUtil.info(TAG, "ToolBarComp, set continue note success")
               }
             })
           Image($r('app.media.delete'))
@@ -619,7 +598,7 @@ export struct DeleteNoteComp {
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-    console.log("DeleteNoteComp, onDeleteConfirm, set continue note success")
+    LogUtil.info(TAG, "DeleteNoteComp, onDeleteConfirm, set continue note success")
   }
 
   build() {

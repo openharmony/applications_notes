@@ -21,7 +21,7 @@ import StyleConstants from '../../../../../../common/utils/src/main/ets/default/
 import RdbStoreUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
 import FolderUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/FolderUtil.ets'
 import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
-import LogUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 
 // Folder list component
 @Component
@@ -33,45 +33,40 @@ export struct FolderListComp {
   TAG = "FolderListComp"
 
   build() {
-    Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+    Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center }) {
       Column() {
-        Column() {
-          Image($r("app.media.suojin"))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              if (this.sectionStatus == 1) {
-                this.expandStatus = !this.expandStatus
-              } else {
-                this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
-                // 迁移
-                console.log("FolderListComp, set continue section")
-                AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-                console.log("FolderListComp, set continue section success")
-              }
-            })
-        }.alignItems(HorizontalAlign.Start)
-        .width("100%")
-        .margin({ top: 28 })
-        .padding({ left: 24 })
+        Image($r("app.media.suojin"))
+          .height(24)
+          .width(24)
+          .onClick(() => {
+            if (this.sectionStatus == 1) {
+              this.expandStatus = !this.expandStatus
+            } else {
+              this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
+              // 迁移
+              LogUtil.info(this.TAG, "FolderListComp, set continue section")
+              AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
+              LogUtil.info(this.TAG, "FolderListComp, set continue section success")
+            }
+          })
+      }.alignItems(HorizontalAlign.Start)
+      .width("100%")
+      .margin({ top: 28 })
+      .padding({ left: 24 })
 
-        NoteAndCreateComp()
+      NoteAndCreateComp()
         // center
-        Column() {
-          List() {
-            ForEach(this.AllFolderArray, (folderItem: FolderData) => {
-              ListItem() {
-                if (!FolderUtil.isBottomFixedFolder(folderItem)) {
-                  FolderItemComp({ folderItem: folderItem, controllerShow: this.controllerShow })
-                }
-              }
-            }, folderItem => folderItem.name.toString())
+      List() {
+        ForEach(this.AllFolderArray, (folderItem: FolderData) => {
+          ListItem() {
+            if (!FolderUtil.isBottomFixedFolder(folderItem)) {
+              FolderItemComp({ folderItem: folderItem, controllerShow: this.controllerShow })
+            }
           }
-        }.width('100%')
-        .padding({ left: 12, right: 12 })
-        .height(7 * 56) // 列表最多显示7个 每个的高度为56
-      }
-
+        }, folderItem => folderItem.name.toString())
+      }.width('100%')
+      .padding({ left: 12, right: 12 })
+      Blank()
       Column() {
         FolderItemComp({
           folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), SysDefFolderUuid.MyFavorites),
@@ -81,10 +76,12 @@ export struct FolderListComp {
           folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), SysDefFolderUuid.RecentDeletes),
           controllerShow: this.controllerShow
         })
-      }.margin({ bottom: 48 })
+      }
       .width("100%")
       .padding({ left: 12, right: 12 })
     }
+    .padding({ bottom: 48 })
+    .height("100%")
   }
 
   aboutToAppear(): void{
@@ -165,7 +162,7 @@ struct FolderItemComp {
   controllerShow: WebController
   private isLongPress: boolean = false
   TAG = "FolderListComp"
-// Folder Edit Dialog
+  // Folder Edit Dialog
   folderEditDialogCtl: CustomDialogController = new CustomDialogController({
     builder: NewOrEditFolderDialog({
       editFolderUuid: this.folderItem.uuid,
@@ -176,7 +173,7 @@ struct FolderItemComp {
     autoCancel: false,
     customStyle: true,
   })
-// Folder Edit Dialog for portrait model
+  // Folder Edit Dialog for portrait model
   folderEditDialogCtlBottom: CustomDialogController = new CustomDialogController({
     builder: NewOrEditFolderDialog({
       editFolderUuid: this.folderItem.uuid,
@@ -187,7 +184,7 @@ struct FolderItemComp {
     autoCancel: false,
     customStyle: true,
   })
-// Folder Edit Callback
+  // Folder Edit Callback
   onEditConfirm(color:string, name:string) {
     this.folderItem.color = color
     this.folderItem.name = name
@@ -197,21 +194,21 @@ struct FolderItemComp {
     predicates_folder.equalTo(FolderTableColumn.Uuid, this.folderItem.uuid)
     RdbStoreUtil.update(this.folderItem.toFolderObject(), predicates_folder, null)
   }
-// Folder Delete Dialog
+  // Folder Delete Dialog
   folderDeleteDialogCtl: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), deleteFileType: DeleteFileType.FolderData }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
-// Folder Delete Dialog for portrait model
+  // Folder Delete Dialog for portrait model
   folderDeleteDialogCtlBottom: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), deleteFileType: DeleteFileType.FolderData }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
   })
-// Folder Delete Callback
+  // Folder Delete Callback
   onDeleteConfirm() {
     let currentFolder = FolderUtil.getFolderData(this.AllFolderArray, this.folderItem.uuid)
     let index = this.AllFolderArray.indexOf(currentFolder)
@@ -239,24 +236,24 @@ struct FolderItemComp {
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueFolder', continueFolder)
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-      console.log("onDeleteConfirm, set continue folder and note success")
+      LogUtil.info(this.TAG, "onDeleteConfirm, set continue folder and note success")
     }
   }
-// Folder Create Dialog
+  // Folder Create Dialog
   folderCreateDialogCtl: CustomDialogController = new CustomDialogController({
     builder: NewOrEditFolderDialog({ confirm: this.onCreateConfirm.bind(this), dialogType: 0 }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
-// Folder Create Dialog for portrait model
+  // Folder Create Dialog for portrait model
   folderCreateDialogCtlBottom: CustomDialogController = new CustomDialogController({
     builder: NewOrEditFolderDialog({ confirm: this.onCreateConfirm.bind(this), dialogType: 0 }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
   })
-// Folder Create Callback
+  // Folder Create Callback
   onCreateConfirm(color:string, name:string) {
     let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
@@ -373,7 +370,7 @@ struct FolderItemComp {
           AppStorage.SetOrCreate<string>('ContinueFolder', continueFolder)
           AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
           AppStorage.SetOrCreate('ContinueSection', 3)
-          console.log("FolderItemComp, set continue folder and note success")
+          LogUtil.info(this.TAG, "FolderItemComp, set continue folder and note success")
         }
       })
     }

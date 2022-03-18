@@ -24,7 +24,7 @@ import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUt
 import FolderUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/FolderUtil.ets'
 import StyleConstants from '../../../../../../common/utils/src/main/ets/default/constants/StyleConstants.ets'
 import SearchModel from '../../../../../../common/utils/src/main/ets/default/model/searchModel/SearchModel.ets'
-import LogUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 
 const TAG = "NoteListComp"
 
@@ -78,22 +78,24 @@ struct NoteOverViewComp {
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
       Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
-        Image($r("app.media.suojin_back"))
-          .height(24)
-          .width(24)
-          .margin({ right: this.sectionStatus != 3 ? 24 : 0 }) // 两分栏时缩进图片与右边有个24的间距
-          .visibility(this.sectionStatus != 3 ? Visibility.Visible : Visibility.None)
-          .onClick(() => {
-            if (this.sectionStatus == 1) {
-              this.expandStatus = !this.expandStatus
-            } else {
-              this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
-              // 迁移
-              console.log("NoteOverViewComp, set continue section")
-              AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-              console.log("NoteOverViewComp, set continue section success")
-            }
-          })
+        Column() {
+          Image($r("app.media.suojin_back"))
+            .height(24)
+            .width(24)
+            .margin({ right: this.sectionStatus != 3 ? 24 : 0 }) // 两分栏时缩进图片与右边有个24的间距
+            .visibility(this.sectionStatus != 3 ? Visibility.Visible : Visibility.None)
+            .onClick(() => {
+              if (this.sectionStatus == 1) {
+                this.expandStatus = !this.expandStatus
+              } else {
+                this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
+                // 迁移
+                LogUtil.info(TAG, "NoteOverViewComp, set continue section")
+                AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
+                LogUtil.info(TAG, "NoteOverViewComp, set continue section success")
+              }
+            })
+        }.alignItems(HorizontalAlign.Center)
         Flex({
           direction: FlexDirection.Column,
           wrap: FlexWrap.Wrap,
@@ -104,6 +106,7 @@ struct NoteOverViewComp {
             .fontSize(30)
             .fontColor('#182431')
             .fontWeight(FontWeight.Bold)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
               .fontSize(14)
@@ -111,6 +114,7 @@ struct NoteOverViewComp {
             Text($r("app.string.noteslist"))
               .fontSize(14)
               .fontColor('#A3A7AD')
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
         }.visibility(this.longpress ? Visibility.None : Visibility.Visible)
@@ -128,6 +132,7 @@ struct NoteOverViewComp {
             .fontSize(20)
             .fontColor('#182431')
             .margin({ left: 16 })
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
         }.alignItems(VerticalAlign.Center)
         .visibility(this.longpress ? Visibility.Visible : Visibility.None)
       }.padding({ top: 8, bottom: 8 })
@@ -181,7 +186,7 @@ export struct NoteItemComp {
                 }
               },
                 item => item.index)
-            }
+            }.textOverflow({ overflow: TextOverflow.Ellipsis })
           }
 
           Row({ space: 4 }) {
@@ -189,6 +194,7 @@ export struct NoteItemComp {
               .fontSize(14)
               .fontColor('#99182431')
               .fontWeight(FontWeight.Regular)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
             Image($r("app.media.favorite"))
               .height(16)
               .width(16)
@@ -203,12 +209,14 @@ export struct NoteItemComp {
       }.width(240)
 
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
-        Image(this.noteItem.content_img)
-          .height(48)
-          .width(48)
-          .borderRadius(12)
-          .border({ width: 0.5, color: '#19182431' })
-          .visibility(this.noteItem.content_img ? Visibility.Visible : Visibility.None)
+        Stack({ alignContent: Alignment.Center }) {
+          Image(this.noteItem.content_img)
+            .height(48)
+            .width(48)
+            .borderRadius(12)
+            .border({ width: 0.5, color: '#19182431' })
+            .visibility(this.noteItem.content_img ? Visibility.Visible : Visibility.None)
+        }
         Stack({ alignContent: Alignment.Center }) {
           Image($r("app.media.unChecked"))
             .height(24)
@@ -250,7 +258,7 @@ export struct NoteItemComp {
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-        console.log("NoteItemComp, set continue note success")
+        LogUtil.info(TAG, "NoteItemComp, set continue note success")
       }
       if(this.portraitModel == false) {
         this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
@@ -297,10 +305,11 @@ export struct NoteItemListComp {
         } else {
           this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
         }
+        this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-        console.log("doSearch, set continue note success")
+        LogUtil.info(TAG, "doSearch, set continue note success")
         this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
       })
   }
@@ -431,7 +440,7 @@ export struct OperateNoteComp {
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-    console.log("OperateNoteComp, set continue note success")
+    LogUtil.info(TAG, "OperateNoteComp, set continue note success")
   }
 
   build() {
@@ -560,7 +569,7 @@ export struct AddNoteComp {
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-        console.log("addNote, set continue note and section success")
+        LogUtil.info(TAG, "addNote, set continue note and section success")
       })
       .visibility(this.longpress || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
   }
@@ -595,12 +604,12 @@ export struct SearchComp {
             this.search = true
           })
       }
-      .width(this.search ? 336 : 384)
       .height(40)
       .padding({ left: 6, right: 12, top: 9, bottom: 9 })
       .borderRadius(20)
       .backgroundColor($r("app.color.color_ffffff"))
       .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
+      .margin({ right: this.search ? 40 : 0 })
     }
   }
 }
@@ -668,7 +677,7 @@ export struct OperateNoteCompForPortrait {
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-    console.log("OperateNoteCompForPortrait, set continue note success")
+    LogUtil.info(TAG, "OperateNoteCompForPortrait, set continue note success")
   }
 
   build() {

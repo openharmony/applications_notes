@@ -17,7 +17,7 @@ import {FolderListComp} from '../../../../../../../common/component/src/main/ets
 import {NoteListComp} from '../../../../../../../common/component/src/main/ets/default/NoteListComp.ets'
 import {NoteContentComp} from '../../../../../../../common/component/src/main/ets/default/NoteContentComp'
 import StyleConstants from '../../../../../../../common/utils/src/main/ets/default/constants/StyleConstants.ets'
-import LogUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import {circleColorArray} from '../../../../../../../common/utils/src/main/ets/default/model/NoteBaseData.ets'
 import FolderData from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/FolderData.ets'
 import NoteData from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/NoteData.ets'
@@ -25,6 +25,7 @@ import {SysDefFolderUuid} from '../../../../../../../common/utils/src/main/ets/d
 import LayoutUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LayoutUtil.ets'
 import NoteUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
 import {WebViewUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/WebViewUtil.ets'
+import mediaquery from '@ohos.mediaquery'
 
 @Entry
 @Component
@@ -34,7 +35,7 @@ export struct NoteHomeComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-// 当前文件夹、笔记、分栏
+  // 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
   @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')
@@ -52,6 +53,13 @@ export struct NoteHomeComp {
 
   TAG = "NoteHomeComp"
 
+  narrowWinListener = mediaquery.matchMediaSync('(width < 2000)')
+  onWinSizeChange(mediaQueryResult) {
+    if (this.sectionStatus != 1) {
+      this.sectionStatus = (mediaQueryResult.matches) ? 2 : 3
+    }
+  }
+
   build() {
     Flex({ justifyContent: FlexAlign.Start }) {
       // Folder list display area
@@ -60,7 +68,7 @@ export struct NoteHomeComp {
       }
       .flexShrink(0)
       .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
-      .width(LayoutUtil.getWidthWeightMessage(this.sectionStatus).folderListWeight)
+      .width(200)
       .height(StyleConstants.PERCENTAGE_100)
       .visibility(
           LayoutUtil.getWidthWeightMessage(this.sectionStatus)
@@ -79,12 +87,11 @@ export struct NoteHomeComp {
       }
       .flexShrink(0)
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-      .width(LayoutUtil.getWidthWeightMessage(this.sectionStatus).noteListWeight)
+      .layoutWeight(2)
       .height(StyleConstants.PERCENTAGE_100)
       .visibility(
           LayoutUtil.getWidthWeightMessage(this.sectionStatus)
           .noteListVisibility == 0 ? Visibility.None : Visibility.Visible)
-
       // Note content display area
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
         Divider()
@@ -97,7 +104,7 @@ export struct NoteHomeComp {
       }
       .flexShrink(0)
       .backgroundColor($r("app.color.notecontent_color_ffffff"))
-      .width(LayoutUtil.getWidthWeightMessage(this.sectionStatus).noteCotentWeight)
+      .layoutWeight(this.sectionStatus != 1 ? 3 : null)
       .height(StyleConstants.PERCENTAGE_100)
       .enabled(this.longpress || this.search && this.inputKeyword.length == 0 ? false : true)
     }
@@ -107,6 +114,8 @@ export struct NoteHomeComp {
 
   aboutToAppear(): void{
     LogUtil.info(this.TAG, "aboutToAppear")
+    this.narrowWinListener.on('change', this.onWinSizeChange.bind(this))
+    this.sectionStatus = this.narrowWinListener.matches ? 2 : 3
   }
 
   aboutToDisappear(): void{

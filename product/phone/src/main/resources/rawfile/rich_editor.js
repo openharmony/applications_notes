@@ -303,3 +303,10 @@ function save_html_content() {
     var str = callBackToApp.callbackhtmlSave(htmlString)
     console.log('hhh objName.test result:' + str);
 }
+
+function scheduled_save_content() {
+    console.info('scheduled_save_content')
+    var htmlString = encodeURI(RICH_EDITOR.getHtml())
+    var str = callBackToApp.callbackScheduledSave(htmlString)
+    console.info('scheduled_save_content end')
+}

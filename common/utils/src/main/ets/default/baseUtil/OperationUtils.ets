@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import LogUtil from './LogUtil.ets'
+import {LogUtil} from './LogUtil.ets'
 import {MediaLibraryAccess} from '../access/MediaLibraryAccess.ets';
 import fileio from '@ohos.fileio';
 
@@ -26,13 +26,13 @@ export class OperationUtils {
             var context = globalThis.noteContext
             let fileAsset = await this.getFileAssetById(numId,context);
             if (fileAsset == null || fileAsset == undefined) {
-                LogUtil.error(TAG, "Failed to get fileAsset")
+                LogUtil.warn(TAG, "Failed to get fileAsset")
                 return;
             }
 
             let fd = await MediaLibraryAccess.openAsset('RW', fileAsset);
             if (fd <= 0) {
-                LogUtil.error(TAG, "fd is invaild")
+                LogUtil.warn(TAG, "fd is invaild")
                 return;
             }
             LogUtil.info(TAG, 'copyAsset read end!')
@@ -43,7 +43,6 @@ export class OperationUtils {
             // 2、生成本地文件名
             var time = new Date().getTime()
             var imagePath = dir + "/" + time.toString().substr(10) + "_note"+ numId + ".jpg"
-            LogUtil.info(TAG, 'imagePath is :'+ imagePath)
             // 3、拷贝
             fileio.copyFile(fd, imagePath).then(() => {
                 LogUtil.info(TAG, "[save]copyFile successfully")
