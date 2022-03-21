@@ -17,57 +17,19 @@
  * Log Util
  */
 export class LogUtil {
-  getLogFirstStr(tag: string, ...msg) {
-    let firstStr: string = tag + ", " + msg[0] + "  "
-    try {
-      throw new Error();
-    } catch (e) {
-      firstStr += e.stack.split('at ')[3].split(' ')[0]
-    }
-    return firstStr
+  static debug(tag: string, msg: string) {
+    console.debug(tag + ', ' + msg)
   }
 
-  debug(tag: string, ...msg) {
-    if (msg.length == 0) {
-      console.debug(tag)
-      return
-    }
-    let firstStr = this.getLogFirstStr(tag, ...msg)
-    msg.shift()
-    console.debug(firstStr, ...msg)
+  static info(tag: string, msg: string) {
+    console.info(tag + ', ' + msg)
   }
 
-  info(tag: string, ...msg) {
-    if (msg.length == 0) {
-      console.debug(tag)
-      return
-    }
-    let firstStr = this.getLogFirstStr(tag, ...msg)
-    msg.shift()
-    console.info(firstStr, ...msg)
+  static warn(tag: string, msg: string) {
+    console.warn(tag + ', ' + msg)
   }
 
-  warn(tag: string, ...msg) {
-    if (msg.length == 0) {
-      console.debug(tag)
-      return
-    }
-    let firstStr = this.getLogFirstStr(tag, ...msg)
-    msg.shift()
-    console.warn(firstStr, ...msg)
-  }
-
-  error(tag: string, ...msg) {
-    if (msg.length == 0) {
-      console.debug(tag)
-      return
-    }
-    let firstStr = this.getLogFirstStr(tag, ...msg)
-    msg.shift()
-    console.error(firstStr, ...msg)
+  static error(tag: string, msg: string) {
+    console.error(tag + ', ' + msg)
   }
 }
-
-let mLogUtil = new LogUtil();
-
-export default mLogUtil as LogUtil

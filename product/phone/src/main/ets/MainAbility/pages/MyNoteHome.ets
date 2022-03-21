@@ -14,9 +14,11 @@
  */
 
 import fileio from '@ohos.fileio'
+import bundle from '@ohos.bundle'
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl'
 import {NoteHomeComp} from './NoteHome.ets'
 import {NoteHomePortraitComp} from './NoteHomePortrait.ets'
-import LogUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import RdbStoreUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
 
 @Entry
@@ -44,19 +46,54 @@ export struct MyNoteHomeComp {
     LogUtil.info(this.TAG, "aboutToAppear")
 
     if (this.context == undefined || this.context == null) {
-      LogUtil.error(this.TAG, "context is error")
+      LogUtil.warn(this.TAG, "context is error")
       return
     }
 
-    LogUtil.info(this.TAG, "databaseDir is " + this.context.databaseDir)
-    // /data/storage/el2/database/tablet
-
-    let dbPath = "/data/app/el2/100/database/com.ohos.note/phone/db/note.db"
-    try {
-      if (fileio.accessSync(dbPath) == undefined) {
-        LogUtil.info(this.TAG, "db has created")
-        RdbStoreUtil.initAppStorage(this.context)
+    let permissionList: Array<string> = [
+      "ohos.permission.READ_MEDIA",
+      "ohos.permission.DISTRIBUTED_DATASYNC"
+    ]
+    bundle.getApplicationInfo('com.ohos.note', 0, 100).then((appInfo) => {
+      let tokenId = appInfo.accessTokenId
+      let statusPromise: Array<Promise<number>> = []
+      let requestList: Array<string> = []
+      let atManager = abilityAccessCtrl.createAtManager()
+      for (let i = 0; i < permissionList.length; i++) {
+        statusPromise.push(atManager.verifyAccessToken(tokenId, permissionList[i]))
       }
+      Promise.all(statusPromise).then((status) => {
+        for (let i = 0; i < status.length; i++) {
+          if (status[i] == abilityAccessCtrl.GrantStatus.PERMISSION_DENIED) {
+            requestList.push(permissionList[i])
+          }
+        }
+        if (requestList.length != 0) {
+          AppStorage.SetOrCreate<number>('openPerm', 1)
+          LogUtil.info(this.TAG, 'permissions need to require from user: ' + requestList)
+          this.context.requestPermissionsFromUser(requestList).then((data) => {
+            LogUtil.info(this.TAG, 'data permissions : ' + data.permissions)
+            LogUtil.info(this.TAG, 'data result: ' + data.authResults)
+            let sum = 0
+            for (let i = 0; i < data.authResults.length; i++) {
+              sum += data.authResults[i]
+            }
+            LogUtil.info(this.TAG, 'request permissions sum: ' + sum)
+            AppStorage.SetOrCreate<number>('openPerm', 0)
+          }, (err) => {
+            LogUtil.warn(this.TAG, 'failed to requestPermissionsFromUser : ' + err.code);
+          });
+        } else {
+          LogUtil.info(this.TAG, 'check all permissions are granted.')
+        }
+      })
+    })
+
+    let dbPath = this.context.databaseDir + "/db/note.db"
+    try {
+      fileio.accessSync(dbPath)
+      LogUtil.info(this.TAG, "db has created")
+      RdbStoreUtil.initAppStorage(this.context)
     } catch (err) {
       LogUtil.info(this.TAG, "db has not created, start to create db")
       RdbStoreUtil.createRdbStore(this.context)
