@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import LogUtil from '../baseUtil/LogUtil.ets'
+import {LogUtil} from '../baseUtil/LogUtil.ets'
 import MediaLib from '@ohos.multimedia.mediaLibrary';
 
 const TAG = "MediaLibraryAccess"
@@ -23,13 +23,11 @@ export class MediaLibraryAccess {
       count: 0,
       obj: null,
     }
-    LogUtil.debug(TAG, `getFirstObject: ${JSON.stringify(fetchOpt)}`)
     try {
       // 通过Uri拷贝图片到指定指定的包路径下
       // 1、获取本地路径
 
       let fileResult = await MediaLib.getMediaLibrary(context).getFileAssets(fetchOpt)
-      LogUtil.debug(TAG, `fileResult is : ${JSON.stringify(fileResult)}`)
       if (fileResult != undefined) {
         album.count = fileResult.getCount();
         if (album.count <= 0) {
@@ -41,7 +39,7 @@ export class MediaLibraryAccess {
           album.obj = file;
           return album;
         } else {
-          LogUtil.error(TAG, 'Failed getFirstObject')
+          LogUtil.warn(TAG, 'Failed getFirstObject')
         }
       }
       return album;
@@ -58,7 +56,7 @@ export class MediaLibraryAccess {
     LogUtil.info(TAG, `openAsset end. fd: ${fd}`)
 
     if (fd <= 0) {
-      LogUtil.error(TAG, 'openAsset Fail')
+      LogUtil.warn(TAG, 'openAsset Fail')
       return;
     }
 
@@ -69,7 +67,7 @@ export class MediaLibraryAccess {
     LogUtil.info(TAG, 'closeAsset start')
 
     if (fd <= 0) {
-      LogUtil.error(TAG, 'closeAsset fd is invalid')
+      LogUtil.warn(TAG, 'closeAsset fd is invalid')
       return;
     }
 
@@ -78,7 +76,7 @@ export class MediaLibraryAccess {
       LogUtil.info(TAG, 'closeAsset end')
 
     } catch (error) {
-      LogUtil.error(TAG, 'closeAsset fail')
+      LogUtil.warn(TAG, 'closeAsset fail')
     }
   }
 }

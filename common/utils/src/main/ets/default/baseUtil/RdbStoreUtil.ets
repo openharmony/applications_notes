@@ -15,7 +15,7 @@
 
 import ohosDataRdb from '@ohos.data.rdb'
 import fileio from '@ohos.fileio'
-import LogUtil from './LogUtil.ets'
+import {LogUtil} from './LogUtil.ets'
 import FolderUtil from './FolderUtil.ets'
 import NoteUtil from './NoteUtil.ets'
 import SysDefData from '../model/databaseModel/SysDefData.ets'
@@ -93,7 +93,7 @@ export default {
         let isContinue = AppStorage.Get('IsContinue');
         LogUtil.info(TAG, "createRdbStore, isContinue is " + isContinue)
         if (isContinue != undefined && isContinue == 1) {
-          console.info("RdbStoreUtil createRdbStore, IsContinue true")
+          LogUtil.info(TAG, "RdbStoreUtil createRdbStore, IsContinue true")
           let continueFolder: string = AppStorage.Get('ContinueFolder')
           let continueNote: string = AppStorage.Get('ContinueNote')
           let continueSection = AppStorage.Get('ContinueSection')
@@ -155,7 +155,7 @@ export default {
           AppStorage.SetOrCreate('Note', noteData)
           AppStorage.SetOrCreate('Section', continueSection)
         } else {
-          console.info("RdbStoreUtil createRdbStore, IsContinue false")
+          LogUtil.info(TAG, "RdbStoreUtil createRdbStore, IsContinue false")
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
           AppStorage.SetOrCreate('Note', NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes))
           AppStorage.SetOrCreate('Section', 3)
@@ -164,7 +164,7 @@ export default {
         LogUtil.info(TAG, "createRdbStore, set DBQueryFinished 1")
       })
       .catch((err) => {
-        LogUtil.error(TAG, "createRdbStore, error : " + err)
+        LogUtil.warn(TAG, "createRdbStore, error : " + err)
       })
   },
 
@@ -287,7 +287,7 @@ export default {
           AppStorage.SetOrCreate('Note', noteData)
           AppStorage.SetOrCreate('Section', continueSection)
         } else {
-          console.info("RdbStoreUtil initAppStorage, IsContinue false")
+          LogUtil.info(TAG, "RdbStoreUtil initAppStorage, IsContinue false")
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
           AppStorage.SetOrCreate('Note', NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes))
           AppStorage.SetOrCreate('Section', 3)
@@ -296,7 +296,7 @@ export default {
         LogUtil.info(TAG, "initAppStorage, set DBQueryFinished 1")
       })
       .catch((err) => {
-        LogUtil.error(TAG, "initAppStorage, error : " + err)
+        LogUtil.warn(TAG, "initAppStorage, error : " + err)
       })
   },
 
@@ -326,7 +326,7 @@ export default {
     let srcFd
     try {
       srcFd = fileio.openSync(srcPath, 0o2, 0o666)
-      console.info(TAG, "open srcPath success : " + srcFd)
+      LogUtil.info(TAG, "open srcPath success : " + srcFd)
     } catch (err) {
       LogUtil.warn(TAG, "open srcPath failed : " + err)
     }
@@ -355,7 +355,7 @@ export default {
         callback(rowId)
       }
     }).catch((err) => {
-      LogUtil.error(TAG, "insert error : " + err)
+      LogUtil.warn(TAG, "insert error : " + err)
     })
   },
 
@@ -371,7 +371,7 @@ export default {
         callback(affectedRowCount)
       }
     }).catch((err) => {
-      LogUtil.error(TAG, "delete error : " + err)
+      LogUtil.warn(TAG, "delete error : " + err)
     })
   },
 
@@ -388,7 +388,7 @@ export default {
         callback(affectedRowCount)
       }
     }).catch((err) => {
-      LogUtil.error(TAG, "update error : " + err)
+      LogUtil.warn(TAG, "update error : " + err)
     })
   },
 
@@ -405,7 +405,7 @@ export default {
         callback(resultSet)
       }
     }).catch((err) => {
-      LogUtil.error(TAG, "query error : " + err)
+      LogUtil.warn(TAG, "query error : " + err)
     })
   },
 
@@ -415,5 +415,23 @@ export default {
    */
   getRdbPredicates(tableName) {
     return new ohosDataRdb.RdbPredicates(tableName)
+  },
+
+  updataNoteImage(content):string {
+    let srcArray = this.getSrcFromHtml(decodeURI(content))
+    LogUtil.info(TAG, "getSrcFromHtml, srcArray : " + srcArray)
+    if(srcArray.length == 0) {
+      return ""
+    }
+    if(srcArray[0] == './shuxue.png' || srcArray[0] == './lvyou.png' || srcArray[0] == './cake.png') {
+      let lastIndex = srcArray[0].lastIndexOf('/')
+      LogUtil.info(TAG, "lastIndex : " + lastIndex)
+      let imgName = ""
+      if (lastIndex != -1) {
+        imgName = srcArray[0].substring(lastIndex + 1)
+      }
+      return "/res/" + imgName
+    }
+    return srcArray[0]
   }
 }

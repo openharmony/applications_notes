@@ -18,7 +18,7 @@ import NoteData from '../model/databaseModel/NoteData.ets'
 import {SysDefFolderUuid, FolderType, Favorite, Delete, TableName, NoteTableColumn,} from '../model/databaseModel/EnumData.ets'
 import GlobalResourceManager from './GlobalResourceManager.ets'
 import StyleConstants from '../constants/StyleConstants.ets'
-import LogUtil from './LogUtil.ets'
+import {LogUtil} from './LogUtil.ets'
 import FolderUtil from './FolderUtil.ets'
 import RdbStoreUtil from './RdbStoreUtil.ets'
 import prompt from '@system.prompt'
@@ -141,7 +141,7 @@ export class NoteUtil {
     if (folderData.color == "#ffffff") {
       return "#FFEBE1"
     }
-    LogUtil.info(TAG, "isSelected %s, folderData.color: %s", isSelected, folderData.color)
+    LogUtil.info(TAG, "isSelected %s, folderData.color: %s" + isSelected.toString() + folderData.color.toString())
     return isSelected ? selectedNoteBgColorMap[folderData.color] : unSelectedNoteBgColorMap[folderData.color]
   }
 
@@ -158,7 +158,7 @@ export class NoteUtil {
       LogUtil.info(TAG, "NoteBgColor is ffffff")
       return $r("app.color.color_ffffff")
     }
-    LogUtil.info(TAG, "isSelected %s, folderData.color: %s", folderData.color)
+    LogUtil.info(TAG, "isSelected %s, folderData.color: %s" + folderData.color.toString())
     if (folderData.color == "#ffffff") {
       return "#ff9516"
     }
@@ -250,11 +250,9 @@ export class NoteUtil {
   }
 
   deleteEmptyNote(selectedNoteData: NoteData, AllNoteArray: NoteData[],controllerShow: WebController):boolean {
-    LogUtil.info(TAG, selectedNoteData.content_text)
     if (selectedNoteData.title == "标题" && selectedNoteData.content_text == "") {
         // delete note from db
         noteUtil.removeNoteData(AllNoteArray,selectedNoteData.uuid)
-        LogUtil.info(TAG, "delete note:" + selectedNoteData.content_text)
         LogUtil.info(TAG, "delete note:" + selectedNoteData.uuid)
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, selectedNoteData.uuid)

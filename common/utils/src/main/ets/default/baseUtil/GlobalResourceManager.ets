@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 import Rsm from '@ohos.resourceManager';
+import {LogUtil} from './LogUtil.ets'
 
 const TAG = "Note_GlobalResourceManager"
 
@@ -20,7 +21,7 @@ export class GlobalResourceManager {
   public async getStringByResource(res: any): Promise<string> {
     let json = JSON.parse(JSON.stringify(res));
     let id = json.id;
-    console.info(TAG, "ResourceID = %d", id)
+    LogUtil.info(TAG, "ResourceID = %d" + id)
     return await this.getStringById(id);
   }
 
@@ -31,16 +32,16 @@ export class GlobalResourceManager {
         result.getString(id)
           .then((resource) => {
             resolve(resource);
-            console.info('getStringById resolve(resource) : ' + resolve(resource));
-            console.info('getStringById resource : ' + resource);
-            console.info('getStringById resource2 : ' + JSON.stringify(resource));
+            LogUtil.info(TAG, 'getStringById resolve(resource) : ' + resolve(resource));
+            LogUtil.info(TAG, 'getStringById resource : ' + resource);
+            LogUtil.info(TAG, 'getStringById resource2 : ' + JSON.stringify(resource));
           })
           .catch((err) => {
-            console.info('getStringById err : ' + JSON.stringify(err));
+            LogUtil.info(TAG, 'getStringById err : ' + JSON.stringify(err));
           });
       });
     });
-    console.info('getStringById promise: ' + JSON.stringify(promise));
+    LogUtil.info(TAG, 'getStringById promise: ' + JSON.stringify(promise));
     return promise;
   }
 }

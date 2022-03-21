@@ -20,7 +20,9 @@ import {SysDefFolderUuid, DeleteFileType, FolderType} from '../../../../../../co
 import GlobalResourceManager from '../../../../../../common/utils/src/main/ets/default/baseUtil/GlobalResourceManager.ets'
 import FolderUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/FolderUtil.ets'
 import NoteUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
+import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 
+const TAG = "CusDialogComp"
 @CustomDialog
 export struct NewOrEditFolderDialog {
   newOrEditFolderDialogCtl: CustomDialogController
@@ -574,7 +576,7 @@ export struct EditContentDialog {
               this.inSetValue = value
               this.fontSize = value + 20
               this.confirm("javascript:RICH_EDITOR.execFontSize('" + this.fontSize + "')")
-              console.info('value:' + value + 'mode:' + mode.toString())
+              LogUtil.info(TAG, 'value:' + value + 'mode:' + mode.toString())
             })
             .width('88%')
           Image($r('app.media.font_large'))
@@ -880,7 +882,7 @@ export struct EditContentDialogPortrait {
             this.inSetValue = value
             this.fontSize = value + 20
             this.confirm("javascript:RICH_EDITOR.execFontSize('" + this.fontSize + "')")
-            console.info('value:' + value + 'mode:' + mode.toString())
+            LogUtil.info(TAG, 'value:' + value + 'mode:' + mode.toString())
           })
           .width('79%')
         Image($r('app.media.font_large')).height(24).width(24).margin({ top: 7 })

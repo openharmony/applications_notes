@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import LogUtil from '../../baseUtil/LogUtil.ets'
+import {LogUtil} from '../../baseUtil/LogUtil.ets'
 import NoteData from '../../model/databaseModel/NoteData.ets'
 import ohosDataRdb from '@ohos.data.rdb';
 import {TableName, NoteTableColumn} from '../../model/databaseModel/EnumData.ets'
@@ -42,7 +42,7 @@ export class SearchModel {
     }
     let searchData: NoteData[] = [];
     noteDataArray.forEach((noteData) => {
-      if (noteData.content_text.toLowerCase().indexOf(query.toLowerCase()) != -1
+      if (noteData.content_text.replace(/<[^>]+>/g,"").toLowerCase().indexOf(query.toLowerCase()) != -1
       || noteData.title.toLowerCase().indexOf(query.toLowerCase()) != -1) {
         LogUtil.info(TAG, "uuid " + noteData.uuid)
         searchData.push(noteData);

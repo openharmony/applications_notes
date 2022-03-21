@@ -25,7 +25,7 @@ export class WebViewUtil {
 
   public static getWebController(): WebController{
     console.info('WebViewUtil, getWebController')
-    if (!this.controllerShow && AppStorage.Get('openPhoto') == 0) {
+    if (!this.controllerShow && AppStorage.Get('openPhoto') == 0 && AppStorage.Get('openPerm') == 0) {
       console.info('WebViewUtil, controllerShow is null')
       this.controllerShow = new WebController()
     }

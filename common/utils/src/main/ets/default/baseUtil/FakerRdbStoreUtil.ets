@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import LogUtil from '../../common/baseUtil/LogUtil.ets'
+import {LogUtil} from '../../common/baseUtil/LogUtil.ets'
 import SysDefData from '../../model/databaseModel/SysDefData.ets'
 import FolderData from '../../model/databaseModel/FolderData.ets'
 import NoteData from '../../model/databaseModel/NoteData.ets'
@@ -52,10 +52,10 @@ export default {
     AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
     AppStorage.SetOrCreate('AllFolderArray', folderDataArray)
     for (let folderData of folderDataArray) {
-      LogUtil.info(TAG, "folderData : " + JSON.stringify(folderData))
+      LogUtil.info(TAG, "folderDataUuid : " + JSON.stringify(folderData.uuid))
     }
     for (let noteData of noteDataArray) {
-      LogUtil.info(TAG, "noteDataArray : " + JSON.stringify(noteData))
+      LogUtil.info(TAG, "noteDataArrayUuid : " + JSON.stringify(noteData.uuid))
     }
     AppStorage.SetOrCreate('DBQueryFinished', 1)
   }
