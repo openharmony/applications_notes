@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,10 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {WidthWeightMessage, unSelectedNoteBgColorMap, selectedNoteBgColorMap, folderTextMap, widthWeightMessageMap} from '../model/NoteBaseData.ets'
+
+import {WidthWeightMessage, unSelectedNoteBgColorMap, selectedNoteBgColorMap, folderTextMap, widthWeightMessageMap
+} from '../model/NoteBaseData.ets'
 import FolderData from '../model/databaseModel/FolderData.ets'
 import NoteData from '../model/databaseModel/NoteData.ets'
-import {SysDefFolderUuid, FolderType, Favorite, Delete, TableName, NoteTableColumn,} from '../model/databaseModel/EnumData.ets'
+import {SysDefFolderUuid, FolderType, Favorite, Delete, TableName, NoteTableColumn,
+} from '../model/databaseModel/EnumData.ets'
 import GlobalResourceManager from './GlobalResourceManager.ets'
 import StyleConstants from '../constants/StyleConstants.ets'
 import {LogUtil} from './LogUtil.ets'
@@ -141,7 +144,7 @@ export class NoteUtil {
     if (folderData.color == "#ffffff") {
       return "#FFEBE1"
     }
-    LogUtil.info(TAG, "isSelected %s, folderData.color: %s" + isSelected.toString() + folderData.color.toString())
+    LogUtil.info(TAG, "isSelected " + isSelected.toString() + ", folderData.color: " + folderData.color.toString())
     return isSelected ? selectedNoteBgColorMap[folderData.color] : unSelectedNoteBgColorMap[folderData.color]
   }
 
@@ -158,7 +161,7 @@ export class NoteUtil {
       LogUtil.info(TAG, "NoteBgColor is ffffff")
       return $r("app.color.color_ffffff")
     }
-    LogUtil.info(TAG, "isSelected %s, folderData.color: %s" + folderData.color.toString())
+    LogUtil.info(TAG, "isSelected " + folderData.color.toString() + ", folderData.color: " + folderData.color.toString())
     if (folderData.color == "#ffffff") {
       return "#ff9516"
     }
@@ -249,16 +252,16 @@ export class NoteUtil {
     index == -1 ? null : allNoteDataArray.splice(index, 1)
   }
 
-  deleteEmptyNote(selectedNoteData: NoteData, AllNoteArray: NoteData[],controllerShow: WebController):boolean {
+  deleteEmptyNote(selectedNoteData: NoteData, AllNoteArray: NoteData[], controllerShow: WebController): boolean {
     if (selectedNoteData.title == "标题" && selectedNoteData.content_text == "") {
-        // delete note from db
-        noteUtil.removeNoteData(AllNoteArray,selectedNoteData.uuid)
-        LogUtil.info(TAG, "delete note:" + selectedNoteData.uuid)
-        let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-        predicates_note.equalTo(NoteTableColumn.Uuid, selectedNoteData.uuid)
-        RdbStoreUtil.delete(predicates_note, null)
-        LogUtil.info(TAG, "delete note success:" + selectedNoteData.uuid)
-        return true
+      // delete note from db
+      noteUtil.removeNoteData(AllNoteArray, selectedNoteData.uuid)
+      LogUtil.info(TAG, "delete note:" + selectedNoteData.uuid)
+      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+      predicates_note.equalTo(NoteTableColumn.Uuid, selectedNoteData.uuid)
+      RdbStoreUtil.delete(predicates_note, null)
+      LogUtil.info(TAG, "delete note success:" + selectedNoteData.uuid)
+      return true
     }
     return false
   }

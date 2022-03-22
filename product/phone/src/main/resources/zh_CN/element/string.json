@@ -61,10 +61,6 @@
       "value": "删除"
     },
     {
-      "name": "name",
-      "value": "名称"
-    },
-    {
       "name": "delete_tips",
       "value": "是否删除此文件夹及其中的内容？"
     },
