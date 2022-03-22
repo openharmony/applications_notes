@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,19 +23,6 @@ RICH_EDITOR.setHtml = function(contents) {
 
 RICH_EDITOR.getHtml = function() {
     return RICH_EDITOR.editor.innerHTML;
-}
-
-RICH_EDITOR.getText = function() {
-    console.log(RICH_EDITOR.editor.innerText);
-    return RICH_EDITOR.editor.innerText;
-}
-
-RICH_EDITOR.setBaseTextColor = function(color) {
-    RICH_EDITOR.editor.style.color  = color;
-}
-
-RICH_EDITOR.setBaseFontSize = function(size) {
-    RICH_EDITOR.editor.style.fontSize = size;
 }
 
 RICH_EDITOR.undo = function() {
@@ -174,13 +161,6 @@ RICH_EDITOR.setTextColor = function (color) {
     document.execCommand('foreColor', false, color);
 }
 
-RICH_EDITOR.setTextBackgroundColor = function(color) {
-    RICH_EDITOR.restorerange();
-    document.execCommand("styleWithCSS", null, true);
-    document.execCommand('hiliteColor', false, color);
-    document.execCommand("styleWithCSS", null, false);
-}
-
 RICH_EDITOR.setFontSize = function(fontSize){
     document.execCommand("fontSize", false, fontSize);
 }
@@ -191,10 +171,6 @@ RICH_EDITOR.execFontSize = function (size, unit) {
     fontElements.removeAttribute("size");
     fontElements.style.fontSize = size + 'px'
 };
-
-RICH_EDITOR.setHeading = function(heading) {
-    document.execCommand('formatBlock', false, '<h'+heading+'>');
-}
 
 RICH_EDITOR.setIndent = function() {
     document.execCommand('indent', false, null);
@@ -216,12 +192,7 @@ RICH_EDITOR.setJustifyRight = function() {
     document.execCommand('justifyRight', false, null);
 }
 
-RICH_EDITOR.setBlockquote = function() {
-    document.execCommand('formatBlock', false, '<blockquote>');
-}
-
 RICH_EDITOR.insertImage = function(url) {
-    console.log("js,url:" + url)
     var html = '<br></br><img src="' + url + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
     RICH_EDITOR.insertHTML(html);
     RICH_EDITOR.editor.scrollIntoView(false)
@@ -291,17 +262,17 @@ RICH_EDITOR.getSelectedAnchorNode=function(){
 }
 
 function get_html_content() {
-    console.log('hhh Ark WebComponent');
+    console.log('get_html_content');
     var htmlString =  encodeURI(RICH_EDITOR.getHtml())
     var str = callBackToApp.callbackhtml(htmlString)
-    console.log('hhh objName.test result:' + str);
+    console.log('get_html_content end');
 }
 
 function save_html_content() {
-    console.log('hhh Ark WebComponent');
+    console.log('save_html_content');
     var htmlString =  encodeURI(RICH_EDITOR.getHtml())
     var str = callBackToApp.callbackhtmlSave(htmlString)
-    console.log('hhh objName.test result:' + str);
+    console.log('save_html_content end');
 }
 
 function scheduled_save_content() {

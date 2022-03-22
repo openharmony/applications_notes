@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,8 +17,7 @@ import DateUtil from '../../../../../../common/utils/src/main/ets/default/baseUt
 import RdbStoreUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
 import FolderData from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/FolderData.ets'
 import NoteData from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/NoteData.ets'
-import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
-} from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
+import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete} from '../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
 import StyleConstants from '../../../../../../common/utils/src/main/ets/default/constants/StyleConstants.ets'
 import {EditContentDialogPortrait, DeleteDialog, EditTitleDialog} from './CusDialogComp.ets'
 import FolderUtil from '../../../../../../common/utils/src/main/ets/default/baseUtil/FolderUtil.ets'
@@ -28,7 +27,9 @@ import featureAbility from '@ohos.ability.featureAbility';
 import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import OperationUtils from '../../../../../../common/utils/src/main/ets/default/baseUtil/OperationUtils.ets'
 
-const TAG = "NoteContentComp"
+var timeId : number
+
+const TAG = "NoteContentCompPortrait"
 
 // Note content component
 @Component
@@ -55,8 +56,29 @@ export struct NoteContentCompPortrait {
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
       LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
-      return "AceString";
+      // save continue data
+      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+      AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+      LogUtil.info(TAG, "callbackhtml, set continue note success")
+      return "AceString"
+    },
+
+    callbackScheduledSave: (html) => {
+      LogUtil.info(TAG, 'callbackScheduledSave')
+      this.selectedNoteData.content_text = html
+      this.selectedNoteData.modified_time = new Date().getTime()
+      // updata note image
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
+      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+      LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + this.selectedNoteData.uuid)
+      // save continue data
+      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+      AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+      LogUtil.info(TAG, 'callbackScheduledSave, set continue note success')
     }
+
   }
 
   build() {
@@ -77,9 +99,9 @@ export struct NoteContentCompPortrait {
             .onPageEnd((e) => {
               if (this.editContentFlag == false) {
                 this.controllerShow.registerJavaScriptProxy({
-                  obj: this.noteContent,
+                  object: this.noteContent,
                   name: "callBackToApp", // html-->  name.method
-                  methodList: ["callbackhtml"],
+                  methodList: ["callbackhtml","callbackScheduledSave"],
                 });
                 LogUtil.info(TAG, "finish register")
                 this.controllerShow.refresh()
@@ -103,6 +125,11 @@ export struct NoteContentCompPortrait {
         .onClick(() => {
           this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
           this.editModel = true
+          // 添加定时器：3s自动保存
+          timeId = setInterval(() => {
+            this.controllerShow.runJavaScript({ script: "scheduled_save_content()" })
+          }, 3000)
+          LogUtil.info(TAG, "NoteContentCompPortrait, setInterval timeId : " + timeId)
         })
       }
       .height(StyleConstants.PERCENTAGE_100)
@@ -217,6 +244,12 @@ export struct ToolBarComp {
           // 进入预览模式
           this.controllerShow.runJavaScript({ script: "RE.setInputEnabled(false)" })
           this.editModel = false
+          AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
+          // 清除定时器
+          if (timeId != undefined) {
+            LogUtil.info(TAG, "back, clearInterval timeId : " + timeId)
+            clearInterval(timeId)
+          }
         })
 
       if (this.editModel == false) {
@@ -274,6 +307,11 @@ export struct ToolBarComp {
                 // 进入预览模式
                 this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
                 this.editModel = false
+                // 清除定时器
+                if (timeId != undefined) {
+                  LogUtil.info(TAG, "tick_thin, clearInterval timeId : " + timeId)
+                  clearInterval(timeId)
+                }
               })
           }.width(42)
           .height(42)
@@ -323,6 +361,7 @@ export struct DeleteNoteComp {
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     this.chooseNote = false
+    AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
   }
 
   build() {
@@ -335,7 +374,8 @@ export struct DeleteNoteComp {
             this.noteDataDeleteDialogCtlBottom.open()
           })
         Text($r("app.string.delete"))
-          .fontSize(10).fontColor('#182431')
+          .fontSize(10)
+          .fontColor($r('app.color.delete_font_color'))
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)
@@ -350,13 +390,15 @@ export struct DeleteNoteComp {
             prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             this.chooseNote = false
+            AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
             RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
           })
         Text($r("app.string.recover"))
-          .fontSize(10).fontColor('#182431')
+          .fontSize(10)
+          .fontColor($r('app.color.recover_font_color'))
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)
@@ -401,7 +443,8 @@ export struct EditNoteCompForPortrait {
             this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
           })
         Text($r("app.string.list"))
-          .fontSize(10).fontColor('#182431')
+          .fontSize(10)
+          .fontColor($r('app.color.list_font_color'))
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)
@@ -414,7 +457,8 @@ export struct EditNoteCompForPortrait {
             this.editContentDialogCtl.open()
           })
         Text($r("app.string.style"))
-          .fontSize(10).fontColor('#182431')
+          .fontSize(10)
+          .fontColor($r('app.color.style_font_color'))
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)
@@ -425,7 +469,8 @@ export struct EditNoteCompForPortrait {
           .height(24)
 
         Text($r("app.string.photo"))
-          .fontSize(10).fontColor('#182431')
+          .fontSize(10)
+          .fontColor($r('app.color.photo_font_color'))
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)

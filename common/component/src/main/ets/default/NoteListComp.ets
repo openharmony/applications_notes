@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -87,6 +87,7 @@ struct NoteOverViewComp {
             .onClick(() => {
               if (this.sectionStatus == 1) {
                 this.expandStatus = !this.expandStatus
+                AppStorage.SetOrCreate('ContinueExpand', this.expandStatus)
               } else {
                 this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
                 // 迁移
@@ -104,16 +105,16 @@ struct NoteOverViewComp {
         }) {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
             .fontSize(30)
-            .fontColor('#182431')
+            .fontColor($r("app.color.all_notes_font_color"))
             .fontWeight(FontWeight.Bold)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
               .fontSize(14)
-              .fontColor('#A3A7AD')
+              .fontColor($r("app.color.num_of_notes_font_color"))
             Text($r("app.string.noteslist"))
               .fontSize(14)
-              .fontColor('#A3A7AD')
+              .fontColor($r("app.color.num_of_notes_font_color"))
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
@@ -130,7 +131,7 @@ struct NoteOverViewComp {
             })
           Text(this.CheckedNoteArray.length == 0 ? $r("app.string.none_selected") : $r("app.string.selected", this.CheckedNoteArray.length))
             .fontSize(20)
-            .fontColor('#182431')
+            .fontColor($r("app.color.note_selected_font_color"))
             .margin({ left: 16 })
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }.alignItems(VerticalAlign.Center)
@@ -180,9 +181,9 @@ export struct NoteItemComp {
               }), item => {
 
                 if (item.data.type == 0) {
-                  Span(item.data.text).fontColor('#182431').fontSize(16).fontWeight(FontWeight.Medium)
+                  Span(item.data.text).fontColor($r("app.color.note_title_font_color")).fontSize(16).fontWeight(FontWeight.Medium)
                 } else if (item.data.type == 1) {
-                  Span(item.data.text).fontColor(Color.Blue).fontSize(16).fontWeight(FontWeight.Medium)
+                  Span(item.data.text).fontColor($r("app.color.note_title_font_color_blue")).fontSize(16).fontWeight(FontWeight.Medium)
                 }
               },
                 item => item.index)
@@ -192,7 +193,7 @@ export struct NoteItemComp {
           Row({ space: 4 }) {
             Text(DateUtil.formateDateForNoteTitle(new Date(this.noteItem.modified_time)))
               .fontSize(14)
-              .fontColor('#99182431')
+              .fontColor($r("app.color.list_modified_time_font_color"))
               .fontWeight(FontWeight.Regular)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
             Image($r("app.media.favorite"))
@@ -255,6 +256,7 @@ export struct NoteItemComp {
       } else {
         this.selectedNoteData = this.noteItem
         this.chooseNote = true
+        AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -325,7 +327,7 @@ export struct NoteItemListComp {
       Flex({ justifyContent: FlexAlign.Center }) {
         Text($r("app.string.permanently_delete_tips"))
           .fontSize(12)
-          .fontColor('#18181A')
+          .fontColor($r("app.color.Recently_delete_prompt_font_color"))
       }
       .margin({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
       .width('100%')
@@ -340,7 +342,7 @@ export struct NoteItemListComp {
                 .height(120)
               Text($r("app.string.Empty_page"))
                 .fontSize(12)
-                .fontColor('#A3A7AD')
+                .fontColor($r("app.color.Empty_page_font_color"))
             }
           }
           .width('100%')
@@ -565,6 +567,7 @@ export struct AddNoteComp {
         }
         this.editModel = true
         this.chooseNote = true
+        AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -593,9 +596,9 @@ export struct SearchComp {
 
       Flex({ justifyContent: FlexAlign.Start }) {
         Image($r('app.media.search')).width(18).height(18)
-        TextInput({ text: this.inputKeyword, placeholder: $r('app.string.searchNote') })
+        TextInput({ placeholder: $r('app.string.searchNote') })
           .backgroundColor($r("app.color.color_ffffff"))
-          .caretColor('#F86D05')
+          .caretColor($r("app.color.search_note_caret_color"))
           .onChange((value: string) => {
             LogUtil.info(TAG, "Search value: " + value)
             this.inputKeyword = value
@@ -700,7 +703,7 @@ export struct OperateNoteCompForPortrait {
             })
           Text($r("app.string.set_top"))
             .fontSize(10)
-            .fontColor('#182431')
+            .fontColor($r("app.color.set_top_font_color"))
             .padding({ top: 5 })
         }
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
@@ -717,7 +720,7 @@ export struct OperateNoteCompForPortrait {
           })
         Text($r("app.string.delete"))
           .fontSize(10)
-          .fontColor('#182431')
+          .fontColor($r("app.color.delete_font_color"))
           .padding({ top: 5 })
       }
       .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
@@ -734,7 +737,7 @@ export struct OperateNoteCompForPortrait {
             })
           Text($r("app.string.move"))
             .fontSize(10)
-            .fontColor('#182431')
+            .fontColor($r("app.color.move_font_color"))
             .padding({ top: 5 })
         }
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
@@ -764,7 +767,7 @@ export struct OperateNoteCompForPortrait {
             })
           Text($r("app.string.recover"))
             .fontSize(10)
-            .fontColor('#182431')
+            .fontColor($r("app.color.recover_font_color"))
             .padding({ top: 5 })
         }
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
@@ -788,7 +791,7 @@ export struct OperateNoteCompForPortrait {
           })
         Text($r("app.string.check_all"))
           .fontSize(10)
-          .fontColor('#182431')
+          .fontColor($r("app.color.check_all_font_color"))
           .padding({ top: 5 })
       }
       .alignItems(HorizontalAlign.Center)
