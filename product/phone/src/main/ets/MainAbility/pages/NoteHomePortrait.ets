@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,8 +41,11 @@ export struct NoteHomePortraitComp {
   @Provide('LastSectionStatus') lastSectionStatus: number = 1; // 记录分栏上一次的状态
   @Provide('SelectedColor') selectedColor: string = circleColorArray[0];
   @Provide('Longpress') longpress: boolean = false // 第二栏长按状态
-  @Provide('ExpandStatus') expandStatus: boolean = false // 笔记本折叠展开状态
-  @Provide('ChooseNote') chooseNote: boolean = false // 是否选择笔记进行打开
+
+  // 分栏状态
+  @Provide('ExpandStatus') expandStatus: boolean = AppStorage.Get<boolean>('Expand') // 笔记本折叠展开状态
+  @Provide('ChooseNote') chooseNote: boolean = AppStorage.Get<boolean>('Choose') // 是否选择笔记进行打开
+
   @Provide('Search') search: boolean = false // 是否处于搜索状态
   @Provide('SearchResultList') searchResultList: NoteData[] = [] // 搜索得到的笔记列表
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串

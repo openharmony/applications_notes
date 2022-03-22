@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -116,6 +116,17 @@ export struct NoteHomeComp {
     LogUtil.info(this.TAG, "aboutToAppear")
     this.narrowWinListener.on('change', this.onWinSizeChange.bind(this))
     this.sectionStatus = this.narrowWinListener.matches ? 2 : 3
+    let isContinue = AppStorage.Get<boolean>('IsContinue')
+    LogUtil.info(this.TAG, "aboutToAppear, isContinue : " + isContinue)
+    if (isContinue) {
+      this.sectionStatus = AppStorage.Get('Section')
+    }
+    // continue from phone
+    let isChoose = AppStorage.Get<boolean>('IsChoose')
+    LogUtil.info(this.TAG, "aboutToAppear, isChoose : " + isChoose)
+    if (isChoose) {
+      this.sectionStatus = 1
+    }
   }
 
   aboutToDisappear(): void{

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {LogUtil} from './LogUtil.ets'
 import {MediaLibraryAccess} from '../access/MediaLibraryAccess.ets';
 import fileio from '@ohos.fileio';
@@ -42,15 +43,10 @@ export class OperationUtils {
             var dir = context.filesDir
             // 2、生成本地文件名
             var time = new Date().getTime()
-            var imagePath = dir + "/" + time.toString().substr(10) + "_note"+ numId + ".jpg"
+            var imagePath = dir + "/" + time.toString().substr(5) + "_note" + numId + ".jpg"
             // 3、拷贝
-            fileio.copyFile(fd, imagePath).then(() => {
-                LogUtil.info(TAG, "[save]copyFile successfully")
-            }).catch((err) => {
-                LogUtil.info(TAG, "[save]copyFile failed : " + err)
-            });
+            await fileio.copyFile(fd, imagePath)
             // 4、关闭安fd,Asset
-            fileAsset.close(fd);
             await MediaLibraryAccess.closeAsset(fd, fileAsset);
         } catch (error) {
             LogUtil.info(TAG, "create error: " + error);

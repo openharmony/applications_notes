@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -59,7 +59,7 @@ export struct NewOrEditFolderDialog {
           .placeholderFont({ size: 18 })
           .maxLength(20)
           .borderRadius(15)
-          .backgroundColor(Color.White)
+          .backgroundColor($r("app.color.New_folder_input_box_color"))
           .width('90%')
           .onChange((value: string) => {
             this.inputName = value
@@ -72,9 +72,10 @@ export struct NewOrEditFolderDialog {
       Text($r("app.string.category_already_exist"))
         .fontSize(10)
         .margin({ left: 64 })
-        .fontColor("#FA2A2D")
+        .fontColor($r("app.color.category_already_exist_font_color"))
         .visibility((this.isExisted && this.inputName != this.oriInputName) ? Visibility.Visible : Visibility.None)
-      Divider().height(1)
+      Divider()
+        .height(1)
         .margin({ left: 64, right: 24 })
         .color($r("app.color.divider_color_182431"))
       // button group
@@ -114,7 +115,7 @@ export struct NewOrEditFolderDialog {
     }
     .width(336)
     .borderRadius(36)
-    .backgroundColor(Color.White)
+    .backgroundColor($r("app.color.create_folder_bg_color"))
     .alignItems(HorizontalAlign.Start)
     .margin({ bottom: 16, left: 12, right: 12 })
   }
@@ -242,7 +243,7 @@ export struct DeleteDialog {
     .height(117)
     .borderRadius(36)
     .padding({ top: 24, bottom: 16, left: 16, right: 16 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r("app.color.delete_note_bg_color"))
     .margin({ bottom: 16, left: 12, right: 12 })
   }
 }
@@ -335,7 +336,7 @@ export struct NoteDataMoveDialog {
     .borderRadius(36)
     .height(this.AllFolderArray.length > 12 ? 616 : (this.AllFolderArray.length - 1) * 56)
     .padding({ left: 24, right: 24 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r("app.color.choose_folder_bg_color"))
     .margin({ bottom: 16, left: 12, right: 12 })
   }
 }
@@ -618,7 +619,7 @@ export struct EditTitleDialog {
           .placeholderFont({ size: 18 })
           .maxLength(20)
           .borderRadius(15)
-          .backgroundColor(Color.White)
+          .backgroundColor($r("app.color.title_input_bg_color"))
           .width('90%')
           .onChange((value: string) => {
             this.inputName = value
@@ -657,7 +658,7 @@ export struct EditTitleDialog {
     }
     .width(336)
     .borderRadius(36)
-    .backgroundColor(Color.White)
+    .backgroundColor($r("app.color.Edit_title_bg_color"))
     .alignItems(HorizontalAlign.Start)
     .margin({ bottom: 16, left: 12, right: 12 })
   }

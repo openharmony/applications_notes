@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -90,17 +90,11 @@ export default {
         LogUtil.info(TAG, "AppStorage[sysdef] set AllFolderArray and AllNoteArray success")
 
         // save continue data
-        let isContinue = AppStorage.Get('IsContinue');
+        let isContinue = AppStorage.Get<boolean>('IsContinue');
         LogUtil.info(TAG, "createRdbStore, isContinue is " + isContinue)
-        if (isContinue != undefined && isContinue == 1) {
-          LogUtil.info(TAG, "RdbStoreUtil createRdbStore, IsContinue true")
-          let continueFolder: string = AppStorage.Get('ContinueFolder')
+        if (isContinue) {
           let continueNote: string = AppStorage.Get('ContinueNote')
           let continueSection = AppStorage.Get('ContinueSection')
-
-          let folderObj = JSON.parse(continueFolder)
-          let folderData = new FolderData(folderObj.uuid, folderObj.name, folderObj.uuid, folderObj.color,
-            folderObj.folder_type, folderObj.is_deleted, folderObj.created_time, folderObj.modified_time)
 
           let noteObj = JSON.parse(continueNote)
           let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
@@ -155,9 +149,11 @@ export default {
           AppStorage.SetOrCreate('Note', noteData)
           AppStorage.SetOrCreate('Section', continueSection)
         } else {
-          LogUtil.info(TAG, "RdbStoreUtil createRdbStore, IsContinue false")
+          LogUtil.info(TAG, "createRdbStore, IsContinue false")
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
-          AppStorage.SetOrCreate('Note', NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes))
+          let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
+          AppStorage.SetOrCreate('Note', note)
+          AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
           AppStorage.SetOrCreate('Section', 3)
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
@@ -223,16 +219,11 @@ export default {
         LogUtil.info(TAG, "AppStorage[query] set AllFolderArray and AllNoteArray success")
 
         // 迁移
-        let isContinue = AppStorage.Get('IsContinue');
+        let isContinue = AppStorage.Get<boolean>('IsContinue');
         LogUtil.info(TAG, "initAppStorage, isContinue is " + isContinue)
-        if (isContinue != undefined && isContinue == 1) {
-          let continueFolder: string = AppStorage.Get('ContinueFolder')
+        if (isContinue) {
           let continueNote: string = AppStorage.Get('ContinueNote')
           let continueSection = AppStorage.Get('ContinueSection')
-
-          let folderObj = JSON.parse(continueFolder)
-          let folderData = new FolderData(folderObj.uuid, folderObj.name, folderObj.uuid, folderObj.color,
-            folderObj.folder_type, folderObj.is_deleted, folderObj.created_time, folderObj.modified_time)
 
           let noteObj = JSON.parse(continueNote)
           let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
@@ -289,7 +280,9 @@ export default {
         } else {
           LogUtil.info(TAG, "RdbStoreUtil initAppStorage, IsContinue false")
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
-          AppStorage.SetOrCreate('Note', NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes))
+          let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
+          AppStorage.SetOrCreate('Note', note)
+          AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
           AppStorage.SetOrCreate('Section', 3)
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
