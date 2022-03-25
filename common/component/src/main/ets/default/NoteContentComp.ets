@@ -27,6 +27,7 @@ import featureAbility from '@ohos.ability.featureAbility'
 import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import OperationUtils from '../../../../../../common/utils/src/main/ets/default/baseUtil/OperationUtils.ets'
 import mediaquery from '@ohos.mediaquery'
+import inputMethod from '@ohos.inputMethod';
 
 const TAG = "NoteContentComp"
 
@@ -42,6 +43,7 @@ export struct NoteContentComp {
   @Consume('EditModel') editModel: boolean
   @Consume('SectionStatus') sectionStatus: number
   @Consume('LastSectionStatus') lastSectionStatus: number
+  @Consume('Issave') issave: number
   controllerShow: WebController
   private editContentFlag = false
   @State uri1: string = ""
@@ -74,22 +76,13 @@ export struct NoteContentComp {
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
       LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
-      // save continue data
-      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-      AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-      LogUtil.info(TAG, "callbackhtml, set continue note success")
-      // 删除空白笔记
-      if(NoteUtil.deleteEmptyNote(this.selectedNoteData,this.AllNoteArray,this.controllerShow)) {
-        this.selectedNoteData = this.AllNoteArray[0]
-        LogUtil.info(TAG, "selectedNoteData note:" + this.selectedNoteData.uuid)
-        this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"})
-      }
       this.sectionStatus = this.lastSectionStatus
       this.sectionStatus = mediaquery.matchMediaSync('(width < 2000)').matches ? 2 : 3
       // save continue data
-      LogUtil.info(TAG, "callbackhtmlSave, set continue section")
+      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+      AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-      LogUtil.info(TAG, "callbackhtmlSave, set continue section success")
+      LogUtil.info(TAG, "callbackhtmlSave, set continue note and section success")
       return "AceString"
     },
 
@@ -152,6 +145,7 @@ export struct NoteContentComp {
         .width(StyleConstants.PERCENTAGE_100)
         .enabled(this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .onClick(() => {
+          this.issave = 0
           // 点击第三屏进入全屏编辑模式
           if (this.sectionStatus != 1) {
             this.lastSectionStatus = this.sectionStatus
@@ -287,6 +281,7 @@ export struct ToolBarComp {
   @Consume('PortraitModel') portraitModel: boolean
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('EditModel') editModel: boolean
+  @Consume('Issave') issave: number
   controllerShow: WebController
   private context = getContext(this)
 
@@ -347,6 +342,8 @@ export struct ToolBarComp {
             this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
           } else {
             if (this.lastSectionStatus != undefined) {
+              // 退出键盘
+              inputMethod.getInputMethodController().stopInput();
               // 切换为小屏预览模式
               this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
               // 退出全屏时存库
@@ -362,8 +359,7 @@ export struct ToolBarComp {
             }
           }
           this.editModel = !this.editModel
-          // 迁移
-          LogUtil.info(TAG, "ToolBarComp, set continue section")
+          // save continue data
           AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
           LogUtil.info(TAG, "ToolBarComp, set continue section success")
         })
@@ -407,8 +403,15 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
                 // 清单
                 this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+                // 清除定时器
+                if (timeId != undefined) {
+                  LogUtil.info(TAG, "circle_tick1, clearInterval timeId : " + timeId)
+                  clearInterval(timeId)
+                }
               })
           }.width(42)
           .height(42)
@@ -420,11 +423,9 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
-                if (this.portraitModel) {
-                  this.editContentDialogCtl.open()
-                } else {
-                  this.editContentDialogCtl.open()
-                }
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
+                this.editContentDialogCtl.open()
               })
           }.width(42)
           .height(42)
@@ -432,34 +433,9 @@ export struct ToolBarComp {
           .backgroundColor($r('app.color.color_ffffff'))
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.picture_white')).height(24).width(24)
-              .onClick(async () => {
-                LogUtil.info(TAG, 'startAbility start')
-                AppStorage.SetOrCreate<number>('openPhoto', 1)
-                await globalThis.noteContext.startAbilityForResult({
-                  parameters: { uri: "singleselect" },
-                  bundleName: "com.ohos.photos",
-                  abilityName: "com.ohos.photos.MainAbility",
-                })
-                  .then(v => {
-                    AppStorage.SetOrCreate<number>('openPhoto', 0)
-                    let want = v['want'];
-                    if (want != null && want != undefined) {
-                      let param = want['parameters'];
-                      let imageUri = ""
-                      if (param != null && param != undefined) {
-                        let uri = param['select-item-list'];
-                        imageUri = uri;
-                      }
-                      // 拷贝
-                      OperationUtils.copy(imageUri).then((uriPath) => {
-                        var path = "file://" + uriPath
-                        LogUtil.info(TAG, 'image uri is:' + path)
-                        this.controllerShow.runJavaScript({script:"javascript:RICH_EDITOR.insertImage('" + path + "')"})
-                      })
-                    }
-                  });
-              })
+            Image($r('app.media.picture_white'))
+              .height(24)
+              .width(24)
           }.width(42)
           .height(42)
           .borderRadius(8)
@@ -469,6 +445,17 @@ export struct ToolBarComp {
             Image($r('app.media.tick_thick'))
               .height(24)
               .width(24)
+              .fillColor(this.issave == 0 ? Color.Black : Color.Grey)
+              .onClick(() => {
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
+                this.issave = 1
+                // 保存笔记信息到数据库
+                this.controllerShow.runJavaScript({ script: "get_html_content()" })
+                if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
+                  LogUtil.info(TAG, "note is empty,save note failed")
+                }
+              })
           }.width(42)
           .height(42)
           .borderRadius(8)
@@ -479,7 +466,8 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
-
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
                 this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
               })
           }.width(42)
@@ -492,6 +480,8 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
                 this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
               })
           }.width(42)

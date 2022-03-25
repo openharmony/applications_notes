@@ -24,18 +24,16 @@ import NoteData from '../../../../../../../common/utils/src/main/ets/default/mod
 import {SysDefFolderUuid} from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/EnumData.ets'
 import LayoutUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LayoutUtil.ets'
 import NoteUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/NoteUtil.ets'
-import {WebViewUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/WebViewUtil.ets'
 import mediaquery from '@ohos.mediaquery'
 
 @Entry
 @Component
 export struct NoteHomeComp {
-  @Provide('RefreshFlag') refreshFlag: number = 0
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-  // 当前文件夹、笔记、分栏
+// 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
   @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')
@@ -49,7 +47,8 @@ export struct NoteHomeComp {
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串
   @Provide('SelectedAll') selectedAll: boolean = false
   @Provide('EditModel') editModel: boolean = false //编辑模式：临时方案
-  private controllerShow: WebController = WebViewUtil.getWebController() //第三栏展示
+  @Provide('Issave') issave: number = 0
+  controllerShow: WebController
 
   TAG = "NoteHomeComp"
 

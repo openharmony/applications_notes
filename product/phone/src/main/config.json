@@ -59,7 +59,8 @@
         },
         "pages": [
           "pages/MyNoteHome",
-          "pages/NoteHomePortrait"
+          "pages/NoteHomePortrait",
+          "pages/NoteContentHome"
         ],
         "name": "MainAbility",
         "window": {

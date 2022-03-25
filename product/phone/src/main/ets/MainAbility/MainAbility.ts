@@ -14,8 +14,8 @@
  */
 
 import Ability from '@ohos.application.Ability'
-import {WebViewUtil} from './WebViewUtil.ets'
 import fileio from '@ohos.fileio'
+import inputMethod from '@ohos.inputMethod';
 
 export default class MainAbility extends Ability {
     private Tag = "Phone_Note_MainAbility"
@@ -45,6 +45,7 @@ export default class MainAbility extends Ability {
             if (continueExpand == undefined && continueChoose == undefined) {
                 console.info(this.Tag + " from tablet")
                 AppStorage.SetOrCreate<boolean>('Choose', true)
+                AppStorage.SetOrCreate<boolean>('Expand', false)
                 AppStorage.SetOrCreate('ContinueChoose', true)
             }
 
@@ -74,14 +75,7 @@ export default class MainAbility extends Ability {
 
     onBackground() {
         console.info(this.Tag + " onBackground")
-        let controllerShow = WebViewUtil.getWebController()
-        if (controllerShow == undefined || controllerShow == null) {
-            console.info("MainAbility onBackground, controllerShow is error")
-        }
-        console.info(this.Tag + " controllerShow : " + controllerShow)
-        controllerShow.runJavaScript({
-            script: "get_html_content()"
-        })
-        console.info(this.Tag + " controllerShow end")
+        // 退出键盘
+        inputMethod.getInputMethodController().stopInput();
     }
 }

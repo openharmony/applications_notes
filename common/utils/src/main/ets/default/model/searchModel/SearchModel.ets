@@ -42,7 +42,7 @@ export class SearchModel {
     }
     let searchData: NoteData[] = [];
     noteDataArray.forEach((noteData) => {
-      if (decodeURI(noteData.content_text).replace(/<[^>]+>/g,"").toLowerCase().indexOf(query.toLowerCase()) != -1
+      if (noteData.content_text.replace(/<[^>]+>/g,"").toLowerCase().indexOf(query.toLowerCase()) != -1
       || noteData.title.toLowerCase().indexOf(query.toLowerCase()) != -1) {
         LogUtil.info(TAG, "uuid " + noteData.uuid)
         searchData.push(noteData);

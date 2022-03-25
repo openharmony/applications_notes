@@ -19,19 +19,22 @@ import abilityAccessCtrl from '@ohos.abilityAccessCtrl'
 import {NoteHomePortraitComp} from './NoteHomePortrait.ets'
 import {LogUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import RdbStoreUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
+import inputMethod from '@ohos.inputMethod';
 
 @Entry
 @Component
 export struct MyNoteHomeComp {
   @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
   @Provide('PortraitModel') portraitModel: boolean = true
+  @Provide('RefreshFlag') refreshFlag: number = 0
+  private controllerShow: WebController = new WebController()
   private context = getContext(this)
   TAG = "MyNoteHomeComp"
 
   build() {
     Flex() {
       if (this.dBQueryFinished == 1) {
-        NoteHomePortraitComp()
+        NoteHomePortraitComp({ controllerShow: this.controllerShow })
       }
     }
     .width('100%').height('100%')
@@ -97,5 +100,16 @@ export struct MyNoteHomeComp {
 
   aboutToDisappear(): void{
     LogUtil.info(this.TAG, "aboutToDisappear")
+  }
+
+  onPageShow(): void{
+    LogUtil.info(this.TAG, "onPageShow")
+    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+  }
+
+  onBackPress():void{
+    LogUtil.info(this.TAG, "onBackPress")
+    // 退出键盘
+    inputMethod.getInputMethodController().stopInput();
   }
 }
