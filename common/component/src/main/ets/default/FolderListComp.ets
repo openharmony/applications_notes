@@ -38,14 +38,14 @@ export struct FolderListComp {
         Image($r("app.media.suojin"))
           .height(24)
           .width(24)
+          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
           .onClick(() => {
             if (this.sectionStatus == 1) {
               this.expandStatus = !this.expandStatus
               AppStorage.SetOrCreate('ContinueExpand', this.expandStatus)
             } else {
               this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
-              // 迁移
-              LogUtil.info(this.TAG, "FolderListComp, set continue section")
+              // save continue data
               AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
               LogUtil.info(this.TAG, "FolderListComp, set continue section success")
             }

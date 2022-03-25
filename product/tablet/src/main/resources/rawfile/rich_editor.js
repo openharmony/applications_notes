@@ -18,7 +18,7 @@ var RICH_EDITOR = {};
 RICH_EDITOR.editor = document.getElementById('editorjs');
 
 RICH_EDITOR.setHtml = function(contents) {
-    RICH_EDITOR.editor.innerHTML = decodeURIComponent(contents.replace(/\+/g, '%20'));
+    RICH_EDITOR.editor.innerHTML = contents.replace(/\+/g, '%20');
 }
 
 RICH_EDITOR.getHtml = function() {
@@ -57,7 +57,39 @@ RICH_EDITOR.setUnderline = function() {
     document.execCommand('underline', false, null);
 }
 
+RICH_EDITOR.setStart = function () {
+    var selection, type;
+    if (window.getSelection) {
+        selection = getSelection();
+    }
+    if (selection) {
+        var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+        try {
+            var child = range.commonAncestorContainer.parentNode;
+            for (var i = 0; i < 10; i++) {
+                if (child.nodeName == "OL") {
+                    console.info('insertOrderedList')
+                    document.execCommand('insertOrderedList', false, null);
+                    break;
+                }
+                if (child.nodeName == "UL") {
+                    console.info('insertUnorderedList')
+                    document.execCommand('insertUnorderedList', false, null);
+                    break;
+                }
+                if (child.parentNode) {
+                    child = child.parentNode
+                }
+            }
+        } catch (err) {
+
+        }
+    }
+}
+
+
 RICH_EDITOR.setNumbers = function () {
+    RICH_EDITOR.setStart()
     document.execCommand('insertOrderedList', false, null);
     var selection, type;
     if (window.getSelection) {
@@ -83,6 +115,7 @@ RICH_EDITOR.setNumbers = function () {
 }
 
 RICH_EDITOR.setABC = function () {
+    RICH_EDITOR.setStart()
     document.execCommand('insertOrderedList', false, null);
     var selection, type;
     if (window.getSelection) {
@@ -108,6 +141,7 @@ RICH_EDITOR.setABC = function () {
 }
 
 RICH_EDITOR.setBullets = function () {
+    RICH_EDITOR.setStart()
     document.execCommand('insertUnorderedList', false, null);
     var selection, type;
     if (window.getSelection) {
@@ -133,6 +167,7 @@ RICH_EDITOR.setBullets = function () {
 }
 
 RICH_EDITOR.setSquare = function () {
+    RICH_EDITOR.setStart()
     document.execCommand('insertUnorderedList', false, null);
     var selection, type;
     if (window.getSelection) {
@@ -263,21 +298,21 @@ RICH_EDITOR.getSelectedAnchorNode=function(){
 
 function get_html_content() {
     console.log('get_html_content');
-    var htmlString =  encodeURI(RICH_EDITOR.getHtml())
+    var htmlString =  RICH_EDITOR.getHtml()
     var str = callBackToApp.callbackhtml(htmlString)
     console.log('get_html_content end');
 }
 
 function save_html_content() {
     console.log('save_html_content');
-    var htmlString =  encodeURI(RICH_EDITOR.getHtml())
+    var htmlString =  RICH_EDITOR.getHtml()
     var str = callBackToApp.callbackhtmlSave(htmlString)
     console.log('save_html_content end');
 }
 
 function scheduled_save_content() {
     console.info('scheduled_save_content')
-    var htmlString = encodeURI(RICH_EDITOR.getHtml())
+    var htmlString = RICH_EDITOR.getHtml()
     var str = callBackToApp.callbackScheduledSave(htmlString)
     console.info('scheduled_save_content end')
 }

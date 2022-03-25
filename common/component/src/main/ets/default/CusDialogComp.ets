@@ -345,7 +345,7 @@ export struct NoteDataMoveDialog {
 export struct EditContentDialog {
   editContentDialogCtl: CustomDialogController
   confirm: (excuteJs: string) => void
-  @Consume('SelectedColor') selectedColor: string
+  @State selectFontColor: string = fontColorArray[0]
   @State inSetValue: number = 20
   private circleColor: string
   private fontSize: number
@@ -451,6 +451,7 @@ export struct EditContentDialog {
             Image($r('app.media.suojin_back'))
               .height(24)
               .width(24)
+              .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
               .onClick(() => {
                 this.confirm("javascript:RICH_EDITOR.setOutdent()")
               })
@@ -541,10 +542,10 @@ export struct EditContentDialog {
                   .fill(colorStr)
                 Circle({ width: 12, height: 12 })
                   .fill($r("app.color.color_ffffff"))
-                  .visibility(colorStr == this.selectedColor ? Visibility.Visible : Visibility.None)
+                  .visibility(colorStr == this.selectFontColor ? Visibility.Visible : Visibility.None)
               }.onClick(() => {
-                this.selectedColor = colorStr
-                this.confirm("javascript:RICH_EDITOR.setTextColor('" + this.selectedColor + "')")
+                this.selectFontColor = colorStr
+                this.confirm("javascript:RICH_EDITOR.setTextColor('" + this.selectFontColor + "')")
               })
             }, colorStr => colorStr)
           }.padding({ bottom: 11 })
@@ -668,12 +669,10 @@ export struct EditTitleDialog {
 export struct EditContentDialogPortrait {
   editContentDialogCtl: CustomDialogController;
   confirm: (excuteJs: string) => void
-  @Consume('SelectedColor') selectedColor: string;
+  @State selectFontColor: string = fontColorArray[0]
   @State inSetValue: number = 20
   private circleColor: string
   private fontSize: number
-
-
 
   build() {
     Column() {
@@ -786,6 +785,7 @@ export struct EditContentDialogPortrait {
           Image($r('app.media.suojin_back'))
             .height(24)
             .width(24)
+            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
             .onClick(() => {
               this.confirm("javascript:RICH_EDITOR.setOutdent()")
             })
@@ -852,10 +852,10 @@ export struct EditContentDialogPortrait {
             Stack({ alignContent: Alignment.Center }) {
               Circle({ width: 24, height: 24 }).fill(colorStr)
               Circle({ width: 12, height: 12 }).fill($r("app.color.color_ffffff"))
-                .visibility(colorStr == this.selectedColor ? Visibility.Visible : Visibility.None)
+                .visibility(colorStr == this.selectFontColor ? Visibility.Visible : Visibility.None)
             }.onClick(() => {
-              this.selectedColor = colorStr
-              this.confirm("javascript:RICH_EDITOR.setTextColor('" + this.selectedColor + "')")
+              this.selectFontColor = colorStr
+              this.confirm("javascript:RICH_EDITOR.setTextColor('" + this.selectFontColor + "')")
             })
           }, colorStr => colorStr)
         }

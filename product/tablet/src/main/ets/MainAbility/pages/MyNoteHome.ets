@@ -19,19 +19,23 @@ import abilityAccessCtrl from '@ohos.abilityAccessCtrl'
 import {NoteHomeComp} from './NoteHome.ets'
 import {LogUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import RdbStoreUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
+import NoteData from '../../../../../../../common/utils/src/main/ets/default/model/databaseModel/NoteData.ets'
+import inputMethod from '@ohos.inputMethod';
 
 @Entry
 @Component
 export struct MyNoteHomeComp {
   @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
   @Provide('PortraitModel') portraitModel: boolean = false
+  @Provide('RefreshFlag') refreshFlag: number = 0
+  private controllerShow: WebController = new WebController()
   private context = getContext(this)
   TAG = "MyNoteHomeComp"
 
   build() {
     Row() {
       if (this.dBQueryFinished == 1) {
-          NoteHomeComp()
+        NoteHomeComp({ controllerShow: this.controllerShow })
       }
     }
     .width('100%')
@@ -98,5 +102,20 @@ export struct MyNoteHomeComp {
 
   aboutToDisappear(): void{
     LogUtil.info(this.TAG, "aboutToDisappear")
+  }
+
+  onPageShow(): void{
+    LogUtil.info(this.TAG, "onPageShow")
+    let currentNote = AppStorage.Get<NoteData>('NewNote')
+    if (currentNote != null) {
+      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + currentNote.content_text + "')" })
+    }
+    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+  }
+
+  onBackPress():void{
+    LogUtil.info(this.TAG, "onBackPress")
+    // 退出键盘
+    inputMethod.getInputMethodController().stopInput();
   }
 }

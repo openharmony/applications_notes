@@ -25,8 +25,20 @@ import FolderUtil from '../../../../../../common/utils/src/main/ets/default/base
 import StyleConstants from '../../../../../../common/utils/src/main/ets/default/constants/StyleConstants.ets'
 import SearchModel from '../../../../../../common/utils/src/main/ets/default/model/searchModel/SearchModel.ets'
 import {LogUtil} from '../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
+import router from '@system.router';
 
 const TAG = "NoteListComp"
+
+async function routePage() {
+  let options = {
+    uri: 'pages/NoteContentHome'
+  }
+  try {
+    await router.push(options)
+  } catch (err) {
+    LogUtil.info(TAG, "fail callback")
+  }
+}
 
 // Note list component
 @Component
@@ -82,6 +94,7 @@ struct NoteOverViewComp {
           Image($r("app.media.suojin_back"))
             .height(24)
             .width(24)
+            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
             .margin({ right: this.sectionStatus != 3 ? 24 : 0 }) // 两分栏时缩进图片与右边有个24的间距
             .visibility(this.sectionStatus != 3 ? Visibility.Visible : Visibility.None)
             .onClick(() => {
@@ -90,8 +103,7 @@ struct NoteOverViewComp {
                 AppStorage.SetOrCreate('ContinueExpand', this.expandStatus)
               } else {
                 this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
-                // 迁移
-                LogUtil.info(TAG, "NoteOverViewComp, set continue section")
+                // save continue data
                 AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
                 LogUtil.info(TAG, "NoteOverViewComp, set continue section success")
               }
@@ -124,6 +136,7 @@ struct NoteOverViewComp {
           Image($r("app.media.cross"))
             .height(24)
             .width(24)
+            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
             .onClick(() => {
               this.longpress = false
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -264,6 +277,11 @@ export struct NoteItemComp {
       }
       if(this.portraitModel == false) {
         this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+      }
+      if(this.portraitModel == true) {
+        AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
+        AppStorage.SetOrCreate<FolderData>('NewFolder', this.selectedFolderData)
+        routePage()
       }
       this.selectedAll = this.CheckedNoteArray.length ==
       NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length
@@ -542,6 +560,7 @@ export struct AddNoteComp {
       .width(24)
       .height(24)
       .margin({ right: 12 })
+      .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
       .onClick(() => {
         let noteData
         if (this.selectedFolderData.uuid == SysDefFolderUuid.AllNotes) {
@@ -555,24 +574,22 @@ export struct AddNoteComp {
         LogUtil.info(TAG, 'insert new note is:' + noteData.uuid)
 
         this.selectedNoteData = noteData
-        if (this.sectionStatus != 1) {
-          this.lastSectionStatus = this.sectionStatus
-          this.sectionStatus = 1
-          this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
-        } else {
-          this.sectionStatus = this.lastSectionStatus
+        AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
+        if (this.portraitModel == false) {
+          this.controllerShow.runJavaScript({
+            script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+          })
         }
-        if(this.portraitModel == false) {
-          this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+        if (this.portraitModel == true) {
+          this.editModel = true
         }
-        this.editModel = true
         this.chooseNote = true
         AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-        AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-        LogUtil.info(TAG, "addNote, set continue note and section success")
+        LogUtil.info(TAG, "addNote, set continue note success")
+        routePage()
       })
       .visibility(this.longpress || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
   }
@@ -588,6 +605,7 @@ export struct SearchComp {
       Image($r('app.media.back'))
         .width(24)
         .height(24)
+        .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
         .margin({ right: this.search ? 16 : 0 })
         .visibility(this.search ? Visibility.Visible : Visibility.None)
         .onClick(() => {
@@ -690,6 +708,7 @@ export struct OperateNoteCompForPortrait {
           Image($r("app.media.set_top"))
             .width(24)
             .height(24)
+            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
             .onClick(() => {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_top = (noteItem.is_top == Top.Yes) ? Top.No : Top.Yes
@@ -715,6 +734,7 @@ export struct OperateNoteCompForPortrait {
         Image($r('app.media.delete'))
           .width(24)
           .height(24)
+          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
           .onClick(() => {
             this.noteDataDeleteDialogCtlBottom.open()
           })
@@ -732,6 +752,7 @@ export struct OperateNoteCompForPortrait {
           Image($r('app.media.move'))
             .width(24)
             .height(24)
+            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
             .onClick(() => {
               this.noteDataMoveDialogCtlBottom.open()
             })
@@ -751,6 +772,7 @@ export struct OperateNoteCompForPortrait {
           Image($r('app.media.recover'))
             .width(24)
             .height(24)
+            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
             .onClick(() => {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_deleted = Delete.No
@@ -779,6 +801,7 @@ export struct OperateNoteCompForPortrait {
         Image($r('app.media.check_all'))
           .width(24)
           .height(24)
+          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
           .onClick(() => {
             if (this.CheckedNoteArray.length <
             NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)

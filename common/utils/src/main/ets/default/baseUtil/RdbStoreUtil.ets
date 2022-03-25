@@ -103,7 +103,7 @@ export default {
 
           // save img to FileDir
           LogUtil.info(TAG, "createRdbStore, save img to FileDir")
-          let srcArray = this.getSrcFromHtml(decodeURI(noteObj.content_text))
+          let srcArray = this.getSrcFromHtml(noteObj.content_text)
           srcArray.forEach((src: string) => {
             let lastIndex = src.lastIndexOf('/')
             LogUtil.info(TAG, " createRdbStore, lastIndex : " + lastIndex)
@@ -232,7 +232,7 @@ export default {
 
           // save img to FileDir
           LogUtil.info(TAG, "initAppStorage, save img to FileDir")
-          let srcArray = this.getSrcFromHtml(decodeURI(noteObj.content_text))
+          let srcArray = this.getSrcFromHtml(noteObj.content_text)
           srcArray.forEach((src: string) => {
             let lastIndex = src.lastIndexOf('/')
             LogUtil.info(TAG, " initAppStorage, lastIndex : " + lastIndex)
@@ -294,7 +294,7 @@ export default {
   },
 
   getSrcFromHtml(html: string): any{
-    LogUtil.info(TAG, "getSrcFromHtml, html : " + html)
+    LogUtil.info(TAG, "getSrcFromHtml")
     let imgReg = /<img[^>]+>/g
     let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
     let imgArray = html.match(imgReg)
@@ -302,11 +302,9 @@ export default {
     if (imgArray != null) {
       for (let i = 0; i < imgArray.length; i++) {
         let src = imgArray[i].match(srcReg)
-        LogUtil.info(TAG, "getSrcFromHtml, src[1] : " + src[1])
         srcArray.push(src[1])
       }
     }
-    LogUtil.info(TAG, "getSrcFromHtml, srcArray : " + srcArray)
     return srcArray
   },
 
@@ -411,12 +409,11 @@ export default {
   },
 
   updataNoteImage(content):string {
-    let srcArray = this.getSrcFromHtml(decodeURI(content))
-    LogUtil.info(TAG, "getSrcFromHtml, srcArray : " + srcArray)
+    let srcArray = this.getSrcFromHtml(content)
     if(srcArray.length == 0) {
       return ""
     }
-    if(srcArray[0] == './shuxue.png' || srcArray[0] == './lvyou.png' || srcArray[0] == './cake.png') {
+    if(srcArray[0] == './shuxue.png' || srcArray[0] == './cake.png') {
       let lastIndex = srcArray[0].lastIndexOf('/')
       LogUtil.info(TAG, "lastIndex : " + lastIndex)
       let imgName = ""
