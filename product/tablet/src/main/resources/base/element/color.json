@@ -91,6 +91,110 @@
     {
       "name": "font_stylecolor_AD182431",
       "value": "#AD182431"
+    },
+    {
+      "name": "New_folder_input_box_color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "category_already_exist_font_color",
+      "value": "#FA2A2D"
+    },
+    {
+      "name": "create_folder_bg_color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "delete_note_bg_color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "choose_folder_bg_color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "title_input_bg_color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "Edit_title_bg_color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "press_folder_bg_color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "modified_time_font_color",
+      "value": "#A3A7AD"
+    },
+    {
+      "name": "delete_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "recover_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "list_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "style_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "photo_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "all_notes_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "num_of_notes_font_color",
+      "value": "#A3A7AD"
+    },
+    {
+      "name": "note_selected_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "note_title_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "note_title_font_color_blue",
+      "value": "#0000ff"
+    },
+    {
+      "name": "list_modified_time_font_color",
+      "value": "#99182431"
+    },
+    {
+      "name": "Recently_delete_prompt_font_color",
+      "value": "#18181A"
+    },
+    {
+      "name": "Empty_page_font_color",
+      "value": "#A3A7AD"
+    },
+    {
+      "name": "search_note_caret_color",
+      "value": "#F86D05"
+    },
+    {
+      "name": "set_top_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "move_font_color",
+      "value": "#182431"
+    },
+    {
+      "name": "check_all_font_color",
+      "value": "#182431"
     }
   ]
 }

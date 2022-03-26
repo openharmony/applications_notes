@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,7 +42,7 @@ export class SearchModel {
     }
     let searchData: NoteData[] = [];
     noteDataArray.forEach((noteData) => {
-      if (noteData.content_text.replace(/<[^>]+>/g,"").toLowerCase().indexOf(query.toLowerCase()) != -1
+      if (decodeURI(noteData.content_text).replace(/<[^>]+>/g,"").toLowerCase().indexOf(query.toLowerCase()) != -1
       || noteData.title.toLowerCase().indexOf(query.toLowerCase()) != -1) {
         LogUtil.info(TAG, "uuid " + noteData.uuid)
         searchData.push(noteData);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 import fileio from '@ohos.fileio'
 import bundle from '@ohos.bundle'
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl'
-import {NoteHomeComp} from './NoteHome.ets'
 import {NoteHomePortraitComp} from './NoteHomePortrait.ets'
 import {LogUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
 import RdbStoreUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
@@ -32,11 +31,7 @@ export struct MyNoteHomeComp {
   build() {
     Flex() {
       if (this.dBQueryFinished == 1) {
-        if (this.portraitModel == true) {
-          NoteHomePortraitComp()
-        } else {
-          NoteHomeComp()
-        }
+        NoteHomePortraitComp()
       }
     }
     .width('100%').height('100%')

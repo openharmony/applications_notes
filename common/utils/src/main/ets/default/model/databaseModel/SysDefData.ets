@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -114,7 +114,7 @@ export default {
     "title": "数学公式",
     "uuid": "note1_uuid",
     "folder_uuid": SysDefFolderUuid.UnClassified,
-    "content_text": '好好学习，天天向上<div style="text-align:center;"><img src="./shuxue.png"  height="700"/></div><br><br>',
+    "content_text": '<p>好好学习，天天向上</p><div style="text-align:center;"><img src="./shuxue.png"  height="700" style="border-radius:10px"/></div><br><br>',
     "content_img": "/res/shuxue.png",
     "note_type": NoteType.SysDef,
     "is_top": Top.Yes,
@@ -146,7 +146,7 @@ export default {
     "title": "旅游心得",
     "uuid": "note3_uuid",
     "folder_uuid": SysDefFolderUuid.Work,
-    "content_text": '旅游心得<div style="text-align:center;"><img src="./lvyou.png"  height="700"/></div><br><br>',
+    "content_text": '<p>旅游心得</p><div style="text-align:center;"><img src="./lvyou.png"  height="700" style="border-radius:10px"/></div><br><br>',
     "content_img": "/res/lvyou.png",
     "note_type": NoteType.SysDef,
     "is_top": Top.No,
@@ -162,7 +162,7 @@ export default {
     "title": "蛋糕做法",
     "uuid": "note4_uuid",
     "folder_uuid": SysDefFolderUuid.Life,
-    "content_text": '蛋糕做法<div style="text-align:center;"><img src="./cake.png"  height="700"/></div><br><br>',
+    "content_text": '<p>蛋糕做法</p><div style="text-align:center;"><img src="./cake.png"  height="600" style="border-radius:10px"/></div><br><br>',
     "content_img": "/res/cake.png",
     "note_type": NoteType.CusDef,
     "is_top": Top.No,

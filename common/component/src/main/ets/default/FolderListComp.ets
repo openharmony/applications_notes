@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,6 +41,7 @@ export struct FolderListComp {
           .onClick(() => {
             if (this.sectionStatus == 1) {
               this.expandStatus = !this.expandStatus
+              AppStorage.SetOrCreate('ContinueExpand', this.expandStatus)
             } else {
               this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
               // 迁移
@@ -232,11 +233,9 @@ struct FolderItemComp {
       this.selectedFolderData = FolderUtil.getFolderData(this.AllFolderArray, SysDefFolderUuid.AllNotes)
       this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, SysDefFolderUuid.AllNotes)
       // save continue data
-      let continueFolder: string = JSON.stringify(this.selectedFolderData.toFolderObject())
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-      AppStorage.SetOrCreate<string>('ContinueFolder', continueFolder)
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-      LogUtil.info(this.TAG, "onDeleteConfirm, set continue folder and note success")
+      LogUtil.info(this.TAG, "onDeleteConfirm, set continue note success")
     }
   }
   // Folder Create Dialog
@@ -318,7 +317,7 @@ struct FolderItemComp {
     .height(154)
     .padding({ top: 4, bottom: 4, left: 16, right: 16 })
     .borderRadius(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r("app.color.press_folder_bg_color"))
     .visibility(this.folderItem.folder_type == FolderType.CusDef ? Visibility.Visible : Visibility.None)
   }
 
@@ -365,12 +364,10 @@ struct FolderItemComp {
           // 刷新web界面
           this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
           // save continue data
-          let continueFolder: string = JSON.stringify(this.selectedFolderData.toFolderObject())
           let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-          AppStorage.SetOrCreate<string>('ContinueFolder', continueFolder)
           AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
           AppStorage.SetOrCreate('ContinueSection', 3)
-          LogUtil.info(this.TAG, "FolderItemComp, set continue folder and note success")
+          LogUtil.info(this.TAG, "FolderItemComp, set continue note success")
         }
       })
     }
