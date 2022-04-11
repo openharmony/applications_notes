@@ -85,6 +85,10 @@
       "value": "#FA2A2D"
     },
     {
+      "name": "category_already_exist_divider_color",
+      "value": "#FA2A2D"
+    },
+    {
       "name": "create_folder_bg_color",
       "value": "#FFFFFF"
     },
@@ -158,7 +162,7 @@
     },
     {
       "name": "Recently_delete_prompt_font_color",
-      "value": "#18181A"
+      "value": "#99182431"
     },
     {
       "name": "Empty_page_font_color",

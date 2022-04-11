@@ -43,7 +43,7 @@ export class OperationUtils {
             var dir = context.filesDir
             // 2、生成本地文件名
             var time = new Date().getTime()
-            var imagePath = dir + "/" + time.toString().substr(5) + "_note" + numId + ".jpg"
+            var imagePath = dir + "/" + time.toString() + "_note" + ".jpg"
             // 3、拷贝
             await fileio.copyFile(fd, imagePath)
             // 4、关闭安fd,Asset

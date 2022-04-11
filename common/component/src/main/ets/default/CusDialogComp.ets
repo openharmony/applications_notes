@@ -60,7 +60,7 @@ export struct NewOrEditFolderDialog {
           .maxLength(20)
           .borderRadius(15)
           .backgroundColor($r("app.color.New_folder_input_box_color"))
-          .width('90%')
+          .width('100%')
           .onChange((value: string) => {
             this.inputName = value
             FolderUtil.duplicateDetection(this.inputName, this.AllFolderArray).then(result => {
@@ -69,15 +69,17 @@ export struct NewOrEditFolderDialog {
           })
       }.margin({ bottom: 4, left: 24, right: 24 })
 
+        Divider()
+          .height(1)
+          .margin({ left: 64, right: 24 })
+          .color((this.isExisted && this.inputName != this.oriInputName) ? $r("app.color.category_already_exist_divider_color"):$r("app.color.divider_color_182431"))
+
       Text($r("app.string.category_already_exist"))
         .fontSize(10)
-        .margin({ left: 64 })
+        .margin({ left: 64, top: 4 })
         .fontColor($r("app.color.category_already_exist_font_color"))
         .visibility((this.isExisted && this.inputName != this.oriInputName) ? Visibility.Visible : Visibility.None)
-      Divider()
-        .height(1)
-        .margin({ left: 64, right: 24 })
-        .color($r("app.color.divider_color_182431"))
+
       // button group
       Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
         Text($r("app.string.cancel"))
@@ -305,6 +307,7 @@ export struct NoteDataMoveDialog {
       Flex({ alignItems: ItemAlign.Center }) {
         Text($r("app.string.chooseFolder"))
           .fontSize(20)
+          .fontWeight(600)
       }.height(56)
       .width(288)
 
@@ -325,7 +328,7 @@ export struct NoteDataMoveDialog {
       Flex({ alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
         Text($r("app.string.cancel"))
           .fontSize(16)
-          .fontColor($r("app.color.text_color_3f97e9"))
+          .fontColor($r("app.color.button_color_f86d05"))
           .onClick(() => {
             this.noteDataMoveDialogCtl.close()
           })

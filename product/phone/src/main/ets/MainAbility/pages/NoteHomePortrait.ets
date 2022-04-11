@@ -32,8 +32,7 @@ export struct NoteHomePortraitComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-
-// 当前文件夹、笔记、分栏
+  // 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
   @Provide('SectionStatus') sectionStatus: number = 1; // 表示分栏状态， 3表示三分栏， 2表示二分栏，1表示一分栏
@@ -41,7 +40,7 @@ export struct NoteHomePortraitComp {
   @Provide('SelectedColor') selectedColor: string = circleColorArray[0];
   @Provide('Longpress') longpress: boolean = false // 第二栏长按状态
 
-// 分栏状态
+  // 分栏状态
   @Provide('ExpandStatus') expandStatus: boolean = AppStorage.Get<boolean>('Expand') // 笔记本折叠展开状态
   @Provide('ChooseNote') chooseNote: boolean = AppStorage.Get<boolean>('Choose') // 是否选择笔记进行打开
 
@@ -50,9 +49,8 @@ export struct NoteHomePortraitComp {
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串
   @Provide('SelectedAll') selectedAll:boolean = false;
   @Provide('EditModel') editModel: boolean = false
-  controllerShow: WebController
 
-  TAG = "NoteHomeComp"
+  TAG = "NoteHomePortraitComp_Phone"
 
   build() {
     Stack({ alignContent: Alignment.Start }) {

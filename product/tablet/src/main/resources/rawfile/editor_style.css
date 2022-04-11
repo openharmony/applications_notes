@@ -25,7 +25,7 @@ body {
   table-layout: fixed;
   width: 100%;
   min-height:100%;
-  color: #333333;
+  color: #182431;
   margin: 0;
 }
 
@@ -38,7 +38,7 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  color: #333333;
+  color: #182431;
   font-size:40px;
 }
 
@@ -58,8 +58,8 @@ body {
 }
 
 .note-checkbox {
-  width: 23px;
-  height: 23px;
+  width: 36px;
+  height: 36px;
   background-color: #ffffff;
   border: 2px solid #555555;
 -webkit-border-radius: 50%;

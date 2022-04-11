@@ -30,7 +30,7 @@ export struct MyNoteHomeComp {
   @Provide('RefreshFlag') refreshFlag: number = 0
   private controllerShow: WebController = new WebController()
   private context = getContext(this)
-  TAG = "MyNoteHomeComp"
+  TAG = "MyNoteHomeComp_Tablet"
 
   build() {
     Row() {
@@ -54,39 +54,17 @@ export struct MyNoteHomeComp {
       "ohos.permission.READ_MEDIA",
       "ohos.permission.DISTRIBUTED_DATASYNC"
     ]
-    bundle.getApplicationInfo('com.ohos.note', 0, 100).then((appInfo) => {
-      let tokenId = appInfo.accessTokenId
-      let statusPromise: Array<Promise<number>> = []
-      let requestList: Array<string> = []
-      let atManager = abilityAccessCtrl.createAtManager()
-      for (let i = 0; i < permissionList.length; i++) {
-        statusPromise.push(atManager.verifyAccessToken(tokenId, permissionList[i]))
+    LogUtil.info(this.TAG, 'permissions need to require from user')
+    this.context.requestPermissionsFromUser(permissionList).then((data) => {
+      LogUtil.info(this.TAG, 'data permissions : ' + data.permissions)
+      LogUtil.info(this.TAG, 'data result: ' + data.authResults)
+      let sum = 0
+      for (let i = 0; i < data.authResults.length; i++) {
+        sum += data.authResults[i]
       }
-      Promise.all(statusPromise).then((status) => {
-        for (let i = 0; i < status.length; i++) {
-          if (status[i] == abilityAccessCtrl.GrantStatus.PERMISSION_DENIED) {
-            requestList.push(permissionList[i])
-          }
-        }
-        if (requestList.length != 0) {
-          AppStorage.SetOrCreate<number>('openPerm', 1)
-          LogUtil.info(this.TAG, 'permissions need to require from user: ' + requestList)
-          this.context.requestPermissionsFromUser(requestList).then((data) => {
-            LogUtil.info(this.TAG, 'data permissions : ' + data.permissions)
-            LogUtil.info(this.TAG, 'data result: ' + data.authResults)
-            let sum = 0
-            for (let i = 0; i < data.authResults.length; i++) {
-              sum += data.authResults[i]
-            }
-            LogUtil.info(this.TAG, 'request permissions sum: ' + sum)
-            AppStorage.SetOrCreate<number>('openPerm', 0)
-          }, (err) => {
-            LogUtil.warn(this.TAG, 'failed to requestPermissionsFromUser : ' + err.code);
-          });
-        } else {
-          LogUtil.info(this.TAG, 'check all permissions are granted.')
-        }
-      })
+      LogUtil.info(this.TAG, 'request permissions sum: ' + sum)
+    }, (err) => {
+      LogUtil.warn(this.TAG, 'failed to requestPermissionsFromUser : ' + err.code);
     })
 
     let dbPath = this.context.databaseDir + "/db/note.db"
@@ -107,8 +85,10 @@ export struct MyNoteHomeComp {
   onPageShow(): void{
     LogUtil.info(this.TAG, "onPageShow")
     let currentNote = AppStorage.Get<NoteData>('NewNote')
-    if (currentNote != null) {
+    let needRefesh = AppStorage.Get<boolean>('needRefresh')
+    if (currentNote != null && needRefesh == true) {
       this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + currentNote.content_text + "')" })
+      AppStorage.SetOrCreate<boolean>('needRefresh',false)
     }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
   }

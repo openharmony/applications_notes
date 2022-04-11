@@ -114,8 +114,8 @@ export default {
     "title": "数学公式",
     "uuid": "note1_uuid",
     "folder_uuid": SysDefFolderUuid.UnClassified,
-    "content_text": '<p>好好学习，天天向上</p><div style="text-align:center;"><img src="./shuxue.png"  height="700" style="border-radius:24px"/></div><br><br>',
-    "content_img": "/res/shuxue.png",
+    "content_text": '<text>好好学习，天天向上</text>',
+    "content_img": "",
     "note_type": NoteType.SysDef,
     "is_top": Top.Yes,
     "is_favorite": Favorite.Yes,
@@ -146,12 +146,7 @@ export default {
     "title": "旅游心得",
     "uuid": "note3_uuid",
     "folder_uuid": SysDefFolderUuid.Work,
-    "content_text": '<div style="line-height:1.4;"><p>出门在外首要是安全问题，不然命都没有了还谈什么?其次是身上的财物，要知道，你一到某地，身上的行李很容易被狼盯上。' +
-                    '背着旅行袋的人到那里都是任人宰割的对象，所以不要完成全相信陌生人的话，也不要走行人稀少的小道，方便的话最好是将包裹就近寄存，免去这道危险。' +
-                    '同时在身上相对安全的地方保留贴身的救命钱，狡兔三窟，千万不要将开心的旅游变成伤心的流浪!</p>' +
-                    '<p>出门在外要想整个旅程无遗憾，关键是心态。首先要对即将到的目的地有一个正确的认识和恰当的期望。</p>' +
-                    '<p>一般每个自然风景区旅游区都有着自己的特色，带著一种游九寨沟桂林山水的心情和期望去陕西的人肯定会失望而归。' +
-                    '同样带着游西部的心情和期望去海南.桂林你也会觉得那里也没有什么，只不过山和水比别的地方特别一点。</p></div>',
+    "content_text": '<div style="line-height:1.4;"><text>要想整个旅程无遗憾，关键是心态,首先要对即将到的目的地有一个正确的认识和恰当的期望。</text></div>',
     "content_img": "",
     "note_type": NoteType.SysDef,
     "is_top": Top.No,
@@ -172,11 +167,10 @@ export default {
                     '<span class="note-checkbox-txt">&nbsp;&nbsp;糖60g</span><br>' +
                     '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox">' +
                     '<span class="note-checkbox-txt">&nbsp;&nbsp;玉米油40g</span><br><div>' +
-                    '<div style="margin-top:14px; margin-top:14px;"><text>&nbsp;&nbsp;&nbsp;&nbsp;1. 准备小盆打入三个鸡蛋，加盐加糖，蛋糕粉分两次加入蛋糊内。<br>' +
-                    '&nbsp;&nbsp;&nbsp;&nbsp;2. 玉米油倒入碗里，再加入牛奶，用打蛋器打到完全融为一体，烤箱预热15分钟。<br>' +
-                    '&nbsp;&nbsp;&nbsp;&nbsp;3. 再加入葡萄干、核桃仁，把蛋糕放进烤箱，定时40分钟，取出即可食用。<br><br></text><div>' +
-                    '<div style="text-align:center;"><img src="./cake.png"  height="600" style="border-radius:24px"/></div><br><br>',
-    "content_img": "/res/cake.png",
+                    '<div style="margin-top:14px; margin-top:14px;"><text>&nbsp;&nbsp;&nbsp;&nbsp;1. 添加鸡蛋、盐、糖、蛋糕粉<br>' +
+                    '&nbsp;&nbsp;&nbsp;&nbsp;2. 加入玉米油、牛奶，烤箱预热15分钟<br>' +
+                    '&nbsp;&nbsp;&nbsp;&nbsp;3. 加入葡萄干、核桃仁，烤箱定时40分钟<br><br></text><div>',
+    "content_img": "",
     "note_type": NoteType.CusDef,
     "is_top": Top.No,
     "is_favorite": Favorite.Yes,

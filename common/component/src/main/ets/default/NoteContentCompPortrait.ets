@@ -37,7 +37,7 @@ const TAG = "NoteContentCompPortrait"
 // Note content component
 @Component
 export struct NoteContentCompPortrait {
-  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get("NewNote")
+  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('NewNote')
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get("NewFolder")
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Provide('EditModel') editModel: boolean = false
@@ -49,7 +49,7 @@ export struct NoteContentCompPortrait {
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -65,7 +65,7 @@ export struct NoteContentCompPortrait {
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -79,7 +79,7 @@ export struct NoteContentCompPortrait {
 
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
-      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap,
+      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
@@ -107,16 +107,16 @@ export struct NoteContentCompPortrait {
               })
             })
             .zoomAccess(false)
-            .height(450)
+            .height('70%')
             .width('100%')
         }
         .onClick(() => {
-          this.editModel = true
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
             this.controllerShow.runJavaScript({ script: "scheduled_save_content()" })
           }, 3000)
           LogUtil.info(TAG, "setInterval time_id : " + time_id)
+          this.editModel = true
         })
         .margin({ top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
@@ -251,8 +251,6 @@ export struct ToolBarComp {
             LogUtil.info(TAG, "back, clearInterval time_id : " + time_id)
             clearInterval(time_id)
           }
-          // 退出键盘
-          inputMethod.getInputMethodController().stopInput();
           router.back()
         })
 
@@ -305,16 +303,9 @@ export struct ToolBarComp {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.tick_thin')).height(24).width(24)
               .onClick(() => {
-                // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
                 // 保存笔记信息到数据库
                 this.controllerShow.runJavaScript({ script: "get_html_content()" })
                 this.editModel = false
-                // 清除定时器
-                if (time_id != undefined) {
-                  LogUtil.info(TAG, "tick_thin, clearInterval time_id : " + time_id)
-                  clearInterval(time_id)
-                }
               })
           }.width(42)
           .height(42)
@@ -464,6 +455,32 @@ export struct EditNoteCompForPortrait {
           .width(24)
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+          .onClick(async () => {
+            LogUtil.info(TAG, 'startAbility start')
+            await globalThis.noteContext.startAbilityForResult({
+              parameters: { uri: "singleselect" },
+              bundleName: "com.ohos.photos",
+              abilityName: "com.ohos.photos.MainAbility",
+            }).then(v => {
+              let want = v['want'];
+              if (want != null && want != undefined) {
+                let param = want['parameters'];
+                let imageUri = ""
+                if (param != null && param != undefined) {
+                  let uri = param['select-item-list'];
+                  imageUri = uri;
+                }
+                // 拷贝
+                if (imageUri != null && imageUri != "") {
+                  OperationUtils.copy(imageUri).then((uriPath) => {
+                    var path = "file://" + uriPath
+                    LogUtil.info(TAG, 'image uri is:' + path)
+                    this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImage('" + path + "')" })
+                  })
+                }
+              }
+            });
+          })
 
         Text($r("app.string.photo"))
           .fontSize(10)

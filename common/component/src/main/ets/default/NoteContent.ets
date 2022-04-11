@@ -37,9 +37,10 @@ var timeID: number
 
 @Component
 export struct NoteContent {
-  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get("NewNote")
+  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('NewNote')
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Provide('Issave') issave: number = 0
+  @Provide('EditModel') editModel: boolean = false
   controllerShow: WebController
   private editContentFlag = false
 
@@ -49,12 +50,13 @@ export struct NoteContent {
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
       LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
       AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
+      AppStorage.SetOrCreate<boolean>('needRefresh',true)
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -66,7 +68,7 @@ export struct NoteContent {
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -80,11 +82,11 @@ export struct NoteContent {
 
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
-      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap,
+      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
-        }
+        }.margin({ left: 24, right: 24 })
 
         Column() {
           NoteContentOverViewComp()
@@ -106,22 +108,22 @@ export struct NoteContent {
               this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
             })
             .zoomAccess(false)
-            .height(450)
+            .height('70%')
             .width('100%')
         }
-        .margin({ top: 16 })
+        .margin({ left: 12, right: 24, top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
         .onClick(() => {
-          this.issave = 0
           // 添加定时器：3s自动保存
           timeID = setInterval(() => {
             this.controllerShow.runJavaScript({ script: "scheduled_save_content()" })
           }, 3000)
           LogUtil.info(TAG, "setInterval timeID : " + timeID)
+          this.issave = 0
+          this.editModel = true
         })
       }
       .height(StyleConstants.PERCENTAGE_100)
-      .margin({ left: 24, right: 24 })
     }
     .height(StyleConstants.PERCENTAGE_100)
     .width(StyleConstants.PERCENTAGE_100)
@@ -141,6 +143,7 @@ export struct ToolBarComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('Issave') issave: number
+  @Consume('EditModel') editModel: boolean
   controllerShow: WebController
 
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
@@ -157,7 +160,7 @@ export struct ToolBarComp {
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
       justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
-      Image($r('app.media.zoom'))
+      Image($r('app.media.narrow'))
         .height(24)
         .width(24)
         .onClick(() => {
@@ -168,131 +171,141 @@ export struct ToolBarComp {
             LogUtil.info(TAG, "zoom, clearInterval timeID : " + timeID)
             clearInterval(timeID)
           }
-          // 退出键盘
-          inputMethod.getInputMethodController().stopInput();
           router.back()
         })
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
 
-      Row({ space: StyleConstants.SPACE_6 }) {
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Image($r('app.media.circle_tick1'))
-            .height(24)
-            .width(24)
+      if (this.editModel == false) {
+        Row({ space: StyleConstants.SPACE_24 }) {
+          Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') : $r('app.media.favorite_cancel'))
+            .height(24).width(24)
             .onClick(() => {
-              // 退出键盘
-              inputMethod.getInputMethodController().stopInput();
-              // 清单
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+              this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
+              // update note to db
+              let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+              predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+              // save continue data
+              let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+              AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+              LogUtil.info(TAG, 'ToolBarComp, set continue note success')
             })
-        }.width(42)
-        .height(42)
-        .borderRadius(8)
-        .backgroundColor($r('app.color.color_ffffff'))
-
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Image($r('app.media.font_style'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              // 退出键盘
-              inputMethod.getInputMethodController().stopInput();
-              LogUtil.info(TAG, 'editContentDialogCtl start')
-              this.editContentDialogCtl.open()
-            })
-        }.width(42)
-        .height(42)
-        .borderRadius(8)
-        .backgroundColor($r('app.color.color_ffffff'))
-
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Image($r('app.media.picture_white')).height(24).width(24)
-            .onClick(async () => {
-              // 退出键盘
-              inputMethod.getInputMethodController().stopInput();
-              LogUtil.info(TAG, 'startAbility start')
-              AppStorage.SetOrCreate<number>('openPhoto', 1)
-              await globalThis.noteContext.startAbilityForResult({
-                parameters: { uri: "singleselect" },
-                bundleName: "com.ohos.photos",
-                abilityName: "com.ohos.photos.MainAbility",
+        }.width(36)
+        .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
+      } else {
+        Row({ space: StyleConstants.SPACE_6 }) {
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.circle_tick1'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
+                // 清单
+                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
               })
-                .then(v => {
-                  AppStorage.SetOrCreate<number>('openPhoto', 0)
-                  let want = v['want'];
-                  if (want != null && want != undefined) {
-                    let param = want['parameters'];
-                    let imageUri = ""
-                    if (param != null && param != undefined) {
-                      let uri = param['select-item-list'];
-                      imageUri = uri;
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.font_style'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
+                LogUtil.info(TAG, 'editContentDialogCtl start')
+                this.editContentDialogCtl.open()
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.picture_white')).height(24).width(24)
+              .onClick(async () => {
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
+                LogUtil.info(TAG, 'startAbility start')
+                await globalThis.noteContext.startAbilityForResult({
+                  parameters: { uri: "singleselect" },
+                  bundleName: "com.ohos.photos",
+                  abilityName: "com.ohos.photos.MainAbility",
+                })
+                  .then(v => {
+                    let want = v['want'];
+                    if (want != null && want != undefined) {
+                      let param = want['parameters'];
+                      let imageUri = ""
+                      if (param != null && param != undefined) {
+                        let uri = param['select-item-list'];
+                        imageUri = uri;
+                      }
+                      // 拷贝
+                      if(imageUri != null && imageUri != "") {
+                        OperationUtils.copy(imageUri).then((uriPath) => {
+                          var path = "file://" + uriPath
+                          LogUtil.info(TAG, 'image uri is:' + path)
+                          this.controllerShow.runJavaScript({script:"javascript:RICH_EDITOR.insertImage('" + path + "')"})
+                        })
+                      }
                     }
-                    // 拷贝
-                    if(imageUri != null && imageUri != "") {
-                      OperationUtils.copy(imageUri).then((uriPath) => {
-                        var path = "file://" + uriPath
-                        LogUtil.info(TAG, 'image uri is:' + path)
-                        this.controllerShow.runJavaScript({script:"javascript:RICH_EDITOR.insertImage('" + path + "')"})
-                      })
-                    }
-                  }
-                });
-            })
-        }.width(42)
-        .height(42)
-        .borderRadius(8)
-        .backgroundColor($r('app.color.color_ffffff'))
+                  });
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Image($r('app.media.tick_thick'))
-            .height(24)
-            .width(24)
-            .fillColor(this.issave == 0 ? Color.Black : Color.Grey)
-            .onClick(() => {
-              this.issave = 1
-              // 清除定时器
-              if (timeID != undefined) {
-                LogUtil.info(TAG, "tick_thick, clearInterval timeID : " + timeID)
-                clearInterval(timeID)
-              }
-              // 退出键盘
-              inputMethod.getInputMethodController().stopInput();
-              // 保存笔记信息到数据库
-              this.controllerShow.runJavaScript({ script: "get_html_content()" })
-            })
-        }.width(42)
-        .height(42)
-        .borderRadius(8)
-        .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Image($r('app.media.undo'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              // 退出键盘
-              inputMethod.getInputMethodController().stopInput();
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
-            })
-        }.width(42)
-        .height(42)
-        .borderRadius(8)
-        .backgroundColor($r('app.color.color_ffffff'))
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.undo'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
+                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Image($r('app.media.todo'))
-            .height(24)
-            .width(24)
-            .onClick(() => {
-              // 退出键盘
-              inputMethod.getInputMethodController().stopInput();
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
-            })
-        }.width(42)
-        .height(42)
-        .borderRadius(8)
-        .backgroundColor($r('app.color.color_ffffff'))
-      }.width(274)
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.todo'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
+                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.tick_thick'))
+              .height(24)
+              .width(24)
+              .fillColor(this.issave == 0 ? Color.Black : Color.Grey)
+              .onClick(() => {
+                this.issave = 1
+                // 保存笔记信息到数据库
+                this.controllerShow.runJavaScript({ script: "get_html_content()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+        }.width(274)
+      }
     }
     .width(StyleConstants.PERCENTAGE_100)
     .height(80)
@@ -354,7 +367,9 @@ export struct NoteContentOverViewComp {
     Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
       justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
       Row() {
-        Text(this.selectedNoteData.title).fontSize(30)
+        Text(this.selectedNoteData.title)
+          .fontSize(30)
+          .margin({ left: 12, right: 24 })
           .onClick(() => {
             this.editTitleDialogCtl.open()
           })
@@ -366,9 +381,11 @@ export struct NoteContentOverViewComp {
           .fontSize(12)
           .padding({ top: 4, bottom: 4 })
           .fontColor($r("app.color.modified_time_font_color"))
+          .margin({ left: 12 })
         Row() {
           Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
             .fontSize(12)
+            .fontColor($r("app.color.list_modified_time_font_color"))
           Image($r('app.media.triangle'))
             .width(6)
             .height(12)

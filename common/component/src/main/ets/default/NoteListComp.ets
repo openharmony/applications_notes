@@ -100,7 +100,6 @@ struct NoteOverViewComp {
             .onClick(() => {
               if (this.sectionStatus == 1) {
                 this.expandStatus = !this.expandStatus
-                AppStorage.SetOrCreate('ContinueExpand', this.expandStatus)
               } else {
                 this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
                 // save continue data
@@ -269,7 +268,6 @@ export struct NoteItemComp {
       } else {
         this.selectedNoteData = this.noteItem
         this.chooseNote = true
-        AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -313,6 +311,7 @@ export struct NoteItemListComp {
   @Consume @Watch('doSearch') inputKeyword: string
   @Consume('SearchResultList') searchResultList: NoteData[]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
+  @Consume('PortraitModel') portraitModel:boolean
   controllerShow: WebController
 
   doSearch() {
@@ -325,7 +324,9 @@ export struct NoteItemListComp {
         } else {
           this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
         }
-        this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+        if(this.portraitModel == false) {
+          this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+        }
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -419,6 +420,13 @@ export struct OperateNoteComp {
       RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
     })
     this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
+    // save continue data
+    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+    LogUtil.info(TAG, "onMoveConfirm, set continue note success")
+    if(this.portraitModel == false) {
+      this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+    }
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
@@ -584,7 +592,6 @@ export struct AddNoteComp {
           this.editModel = true
         }
         this.chooseNote = true
-        AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -660,6 +667,10 @@ export struct OperateNoteCompForPortrait {
       RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
     })
     this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
+    // save continue data
+    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+    LogUtil.info(TAG, "onMoveConfirm, set continue note success")
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)

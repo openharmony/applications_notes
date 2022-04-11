@@ -57,7 +57,7 @@ RICH_EDITOR.setUnderline = function() {
     document.execCommand('underline', false, null);
 }
 
-RICH_EDITOR.setStart = function () {
+RICH_EDITOR.getListStyle = function () {
     var selection, type;
     if (window.getSelection) {
         selection = getSelection();
@@ -70,12 +70,12 @@ RICH_EDITOR.setStart = function () {
                 if (child.nodeName == "OL") {
                     console.info('insertOrderedList')
                     document.execCommand('insertOrderedList', false, null);
-                    break;
+                    return child.style["list-style"]
                 }
                 if (child.nodeName == "UL") {
                     console.info('insertUnorderedList')
                     document.execCommand('insertUnorderedList', false, null);
-                    break;
+                    return child.style["list-style"]
                 }
                 if (child.parentNode) {
                     child = child.parentNode
@@ -85,11 +85,14 @@ RICH_EDITOR.setStart = function () {
 
         }
     }
+
 }
 
-
 RICH_EDITOR.setNumbers = function () {
-    RICH_EDITOR.setStart()
+    let listStyle = RICH_EDITOR.getListStyle()
+    if(listStyle == "decimal") {
+        return
+    }
     document.execCommand('insertOrderedList', false, null);
     var selection, type;
     if (window.getSelection) {
@@ -115,7 +118,10 @@ RICH_EDITOR.setNumbers = function () {
 }
 
 RICH_EDITOR.setABC = function () {
-    RICH_EDITOR.setStart()
+    let listStyle = RICH_EDITOR.getListStyle()
+    if(listStyle == "lower-alpha") {
+        return
+    }
     document.execCommand('insertOrderedList', false, null);
     var selection, type;
     if (window.getSelection) {
@@ -141,7 +147,10 @@ RICH_EDITOR.setABC = function () {
 }
 
 RICH_EDITOR.setBullets = function () {
-    RICH_EDITOR.setStart()
+    let listStyle = RICH_EDITOR.getListStyle()
+    if(listStyle == "disc") {
+        return
+    }
     document.execCommand('insertUnorderedList', false, null);
     var selection, type;
     if (window.getSelection) {
@@ -167,7 +176,10 @@ RICH_EDITOR.setBullets = function () {
 }
 
 RICH_EDITOR.setSquare = function () {
-    RICH_EDITOR.setStart()
+    let listStyle = RICH_EDITOR.getListStyle()
+    if(listStyle == "square") {
+        return
+    }
     document.execCommand('insertUnorderedList', false, null);
     var selection, type;
     if (window.getSelection) {
