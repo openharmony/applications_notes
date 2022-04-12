@@ -54,7 +54,7 @@ export struct NoteContentComp {
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -71,7 +71,7 @@ export struct NoteContentComp {
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -91,7 +91,7 @@ export struct NoteContentComp {
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData.content_text)
+      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -111,9 +111,10 @@ export struct NoteContentComp {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
         }
+        .margin({ left: 24, right: 24 })
 
         Column() {
-          NoteContentOverViewComp()
+          NoteContentOverViewComp({ controllerShow: this.controllerShow })
           Text(this.refreshFlag.toString()).visibility(Visibility.None)
           Text(this.AllNoteArray.length.toString()).visibility(Visibility.None) // 用于强制刷新使用
 
@@ -138,20 +139,22 @@ export struct NoteContentComp {
               }
             })
             .zoomAccess(false)
-            .height(450)
+            .height('70%')
             .width('100%')
         }
-        .margin({ top: 16 })
+        .margin({ left: 12, right: 24, top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
         .enabled(this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .onClick(() => {
           this.issave = 0
+          LogUtil.info(TAG, "editModel : " + this.editModel + ", sectionStatus : " + this.sectionStatus)
+          let isContinue = AppStorage.Get<boolean>('IsContinue')
+          LogUtil.info(TAG, "isContinue : " + isContinue)
           // 点击第三屏进入全屏编辑模式
-          if (this.sectionStatus != 1) {
+          if (this.sectionStatus != 1 || isContinue) {
             this.lastSectionStatus = this.sectionStatus
             this.sectionStatus = 1
             this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
-            this.editModel = !this.editModel
             // 添加定时器：3s自动保存
             timeId = setInterval(() => {
               this.controllerShow.runJavaScript({ script: "scheduled_save_content()" })
@@ -160,11 +163,12 @@ export struct NoteContentComp {
             // save continue data
             AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
             LogUtil.info(TAG, "set continue section success")
+            this.editModel = !this.editModel
+            AppStorage.SetOrCreate<boolean>('IsContinue', false)
           }
         })
       }
       .height(StyleConstants.PERCENTAGE_100)
-      .margin({ left: 24, right: 24 })
       .visibility(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0 ? Visibility.Hidden : Visibility.Visible)
     }
     .height(StyleConstants.PERCENTAGE_100)
@@ -186,9 +190,12 @@ export struct NoteContentOverViewComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
+  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
+  @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('EditModel') editModel: boolean
   @Consume('SectionStatus') sectionStatus: number
   @Consume('RefreshFlag') refreshFlag: number
+  controllerShow: WebController
   editTitleDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditTitleDialog({ confirm: this.confirm.bind(this), dialogType: 0 }),
     alignment: DialogAlignment.Center,
@@ -216,7 +223,17 @@ export struct NoteContentOverViewComp {
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
             RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-            this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+            if(this.sectionStatus != 1) {
+              this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
+              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+              this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+            } else {
+              this.selectedFolderData = FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), item.uuid)
+            }
+            // save continue data
+            let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+            AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+            LogUtil.info(TAG, "NoteContentOverViewComp, MenuBuilder, set continue note success")
           })
         }, noteItem => noteItem.uuid)
       }.listDirection(Axis.Vertical)
@@ -232,7 +249,9 @@ export struct NoteContentOverViewComp {
     Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
       justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
       Row() {
-        Text(this.selectedNoteData.title).fontSize(30)
+        Text(this.selectedNoteData.title)
+          .fontSize(30)
+          .margin({ left: 12, right: 24 })
           .onClick(() => {
             this.editModel = true
             this.sectionStatus = 1
@@ -249,9 +268,11 @@ export struct NoteContentOverViewComp {
           .fontSize(12)
           .padding({ top: 4, bottom: 4 })
           .fontColor($r("app.color.modified_time_font_color"))
+	  .margin({ left: 12 })
         Row() {
           Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
             .fontSize(12)
+	    .fontColor($r("app.color.list_modified_time_font_color"))
           Image($r('app.media.triangle'))
             .width(6)
             .height(12)
@@ -311,11 +332,10 @@ export struct ToolBarComp {
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
     this.chooseNote = false
-    AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-    LogUtil.info(TAG, "NoteContentOverViewComp, set continue section success")
+    LogUtil.info(TAG, "NoteContentOverViewComp, set continue note success")
   }
 
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
@@ -332,7 +352,7 @@ export struct ToolBarComp {
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
       justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
-      Image($r('app.media.zoom'))
+      Image(this.sectionStatus == 1 ? $r('app.media.narrow') : $r('app.media.zoom'))
         .height(24)
         .width(24)
         .onClick(() => {
@@ -342,8 +362,6 @@ export struct ToolBarComp {
             this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
           } else {
             if (this.lastSectionStatus != undefined) {
-              // 退出键盘
-              inputMethod.getInputMethodController().stopInput();
               // 切换为小屏预览模式
               this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
               // 退出全屏时存库
@@ -382,7 +400,6 @@ export struct ToolBarComp {
               prompt.showToast({ message: "已恢复", duration: 2000 })
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               this.chooseNote = false
-              AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
               // update note to db
               let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
               predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
@@ -403,15 +420,10 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
-                // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
                 // 清单
                 this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
-                // 清除定时器
-                if (timeId != undefined) {
-                  LogUtil.info(TAG, "circle_tick1, clearInterval timeId : " + timeId)
-                  clearInterval(timeId)
-                }
+                // 退出键盘
+                inputMethod.getInputMethodController().stopInput();
               })
           }.width(42)
           .height(42)
@@ -436,30 +448,40 @@ export struct ToolBarComp {
             Image($r('app.media.picture_white'))
               .height(24)
               .width(24)
-          }.width(42)
-          .height(42)
-          .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
-
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
-            Image($r('app.media.tick_thick'))
-              .height(24)
-              .width(24)
-              .fillColor(this.issave == 0 ? Color.Black : Color.Grey)
-              .onClick(() => {
+              .onClick(async () => {
                 // 退出键盘
                 inputMethod.getInputMethodController().stopInput();
-                this.issave = 1
-                // 保存笔记信息到数据库
-                this.controllerShow.runJavaScript({ script: "get_html_content()" })
-                if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
-                  LogUtil.info(TAG, "note is empty,save note failed")
-                }
+                LogUtil.info(TAG, 'startAbility start')
+                await globalThis.noteContext.startAbilityForResult({
+                  parameters: { uri: "singleselect" },
+                  bundleName: "com.ohos.photos",
+                  abilityName: "com.ohos.photos.MainAbility",
+                })
+                  .then(v => {
+                    let want = v['want'];
+                    if (want != null && want != undefined) {
+                      let param = want['parameters'];
+                      let imageUri = ""
+                      if (param != null && param != undefined) {
+                        let uri = param['select-item-list'];
+                        imageUri = uri;
+                      }
+                      // 拷贝
+                      if(imageUri != null && imageUri != "") {
+                        OperationUtils.copy(imageUri).then((uriPath) => {
+                          var path = "file://" + uriPath
+                          LogUtil.info(TAG, 'image uri is:' + path)
+                          this.controllerShow.runJavaScript({script:"javascript:RICH_EDITOR.insertImage('" + path + "')"})
+                        })
+                      }
+                    }
+                  });
               })
           }.width(42)
           .height(42)
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
+
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.undo'))
@@ -483,6 +505,25 @@ export struct ToolBarComp {
                 // 退出键盘
                 inputMethod.getInputMethodController().stopInput();
                 this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_ffffff'))
+
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.tick_thick'))
+              .height(24)
+              .width(24)
+              .fillColor(this.issave == 0 ? Color.Black : Color.Grey)
+              .onClick(() => {
+                // 保存笔记信息到数据库
+                this.controllerShow.runJavaScript({ script: "get_html_content()" })
+                if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
+                  LogUtil.info(TAG, "note is empty,save note failed")
+                }
+                this.issave = 1
               })
           }.width(42)
           .height(42)

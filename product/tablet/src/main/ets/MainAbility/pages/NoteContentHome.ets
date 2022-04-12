@@ -15,18 +15,21 @@
 
 import {NoteContent} from '../../../../../../../common/component/src/main/ets/default/NoteContent.ets'
 import {LogUtil} from '../../../../../../../common/utils/src/main/ets/default/baseUtil/LogUtil.ets'
-import inputMethod from '@ohos.inputMethod';
+import RdbStoreUtil from '../../../../../../../common/utils/src/main/ets/default/baseUtil/RdbStoreUtil.ets'
 
 @Entry
 @Component
 struct NoteContentHome {
   private controllerShow: WebController = new WebController()
-  TAG = "NoteContentHome"
+  @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
+  TAG = "NoteContentHome_Tablet"
 
   build() {
     // Note content display area
     Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
-      NoteContent({ controllerShow: this.controllerShow })
+      if (this.dBQueryFinished == 1) {
+        NoteContent({ controllerShow: this.controllerShow })
+      }
     }
     .backgroundColor($r("app.color.notecontent_color_ffffff"))
     .width('100%')
@@ -37,8 +40,15 @@ struct NoteContentHome {
      LogUtil.info(this.TAG, "onBackPress")
      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
      this.controllerShow.runJavaScript({ script: "get_html_content()" })
-     // 退出键盘
-     inputMethod.getInputMethodController().stopInput();
+  }
+
+  aboutToAppear(): void{
+    LogUtil.info(this.TAG, "aboutToAppear")
+    let isContinue = AppStorage.Get<boolean>('IsContinue')
+    LogUtil.info(this.TAG, "aboutToAppear, isContinue : " + isContinue)
+    if (isContinue) {
+      RdbStoreUtil.initAppStorage(globalThis.noteContext)
+    }
   }
 
 }

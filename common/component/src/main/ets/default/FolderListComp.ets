@@ -42,7 +42,6 @@ export struct FolderListComp {
           .onClick(() => {
             if (this.sectionStatus == 1) {
               this.expandStatus = !this.expandStatus
-              AppStorage.SetOrCreate('ContinueExpand', this.expandStatus)
             } else {
               this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
               // save continue data
@@ -56,7 +55,7 @@ export struct FolderListComp {
       .padding({ left: 24 })
 
       NoteAndCreateComp()
-        // center
+      // center
       List() {
         ForEach(this.AllFolderArray, (folderItem: FolderData) => {
           ListItem() {
@@ -67,6 +66,7 @@ export struct FolderListComp {
         }, folderItem => folderItem.name.toString())
       }.width('100%')
       .padding({ left: 12, right: 12 })
+
       Blank()
       Column() {
         FolderItemComp({
@@ -92,7 +92,6 @@ export struct FolderListComp {
   aboutToDisappear(): void{
     LogUtil.info(this.TAG, "aboutToDisappear")
   }
-
 }
 
 @Component
@@ -362,7 +361,11 @@ struct FolderItemComp {
           this.selectedFolderData = this.folderItem
           this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
           // 刷新web界面
-          this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+          if (this.portraitModel == false) {
+            this.controllerShow.runJavaScript({
+              script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+            })
+          }
           // save continue data
           let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
           AppStorage.SetOrCreate<string>('ContinueNote', continueNote)

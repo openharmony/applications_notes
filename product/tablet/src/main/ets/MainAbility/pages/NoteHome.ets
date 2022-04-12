@@ -33,7 +33,7 @@ export struct NoteHomeComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
 
-// 当前文件夹、笔记、分栏
+  // 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
   @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')
@@ -50,12 +50,15 @@ export struct NoteHomeComp {
   @Provide('Issave') issave: number = 0
   controllerShow: WebController
 
-  TAG = "NoteHomeComp"
+  TAG = "NoteHomeComp_Tablet"
 
   narrowWinListener = mediaquery.matchMediaSync('(width < 2000)')
   onWinSizeChange(mediaQueryResult) {
     if (this.sectionStatus != 1) {
       this.sectionStatus = (mediaQueryResult.matches) ? 2 : 3
+      // save continue data
+      AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
+      LogUtil.info(this.TAG, "onWinSizeChange, set continue section success")
     }
   }
 
@@ -121,11 +124,14 @@ export struct NoteHomeComp {
       this.sectionStatus = AppStorage.Get('Section')
     }
     // continue from phone
-    let isChoose = AppStorage.Get<boolean>('IsChoose')
-    LogUtil.info(this.TAG, "aboutToAppear, isChoose : " + isChoose)
-    if (isChoose) {
-      this.sectionStatus = 1
+    let continueFromPhone = AppStorage.Get<boolean>('ContinueFromPhone')
+    LogUtil.info(this.TAG, "aboutToAppear, continueFromPhone : " + continueFromPhone)
+    if (continueFromPhone) {
+      this.sectionStatus = 3
     }
+    // save continue data
+    AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
+    LogUtil.info(this.TAG, "aboutToAppear, set continue section success")
   }
 
   aboutToDisappear(): void{
