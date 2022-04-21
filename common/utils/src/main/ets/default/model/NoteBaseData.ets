@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import NoteData from '../model/databaseModel/NoteData.ets'
+import NoteData from '../model/databaseModel/NoteData'
 
 export const circleColorArray: string[] = [
   "#e84026", // 深红

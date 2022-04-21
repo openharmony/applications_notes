@@ -1,0 +1,64 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "material": {
+          "certpath": "C:\\Users\\guozejun\\.ohos\\config\\openharmony\\auto_ohos.cer",
+          "storePassword": "00000018035E698FB1A7DFC883238A2A69A2877CEA9F7EADF6BC5D3D8918BD43F98F9E26BED5AC6D",
+          "keyAlias": "debugKey",
+          "keyPassword": "00000018E6C69A0418CAC1A82D15325871C768E48F487BF0FCC9D9CDB175416838102FE38F73863C",
+          "profile": "C:\\Users\\guozejun\\.ohos\\config\\openharmony\\auto_ohos_default_com.ohos.note.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\guozejun\\.ohos\\config\\openharmony\\auto_ohos.p12"
+        }
+      }
+    ],
+    "compileSdkVersion": 9,
+    "compatibleSdkVersion": 9,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "phone",
+      "srcPath": "./product/phone",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tablet",
+      "srcPath": "./product/tablet",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "utils",
+      "srcPath": "./common/utils"
+    },
+    {
+      "name": "component",
+      "srcPath": "./common/component"
+    },
+    {
+      "name": "resources",
+      "srcPath": "./common/resources"
+    }
+  ]
+}
