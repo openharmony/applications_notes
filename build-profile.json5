@@ -1,25 +1,25 @@
+/*
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 {
   "app": {
-    "signingConfigs": [
-      {
-        "name": "default",
-        "material": {
-          "certpath": "C:\\Users\\guozejun\\.ohos\\config\\openharmony\\auto_ohos.cer",
-          "storePassword": "00000018035E698FB1A7DFC883238A2A69A2877CEA9F7EADF6BC5D3D8918BD43F98F9E26BED5AC6D",
-          "keyAlias": "debugKey",
-          "keyPassword": "00000018E6C69A0418CAC1A82D15325871C768E48F487BF0FCC9D9CDB175416838102FE38F73863C",
-          "profile": "C:\\Users\\guozejun\\.ohos\\config\\openharmony\\auto_ohos_default_com.ohos.note.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\guozejun\\.ohos\\config\\openharmony\\auto_ohos.p12"
-        }
-      }
-    ],
     "compileSdkVersion": 9,
     "compatibleSdkVersion": 9,
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
       }
     ]
   },
