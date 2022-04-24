@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {NoteType, Favorite, Delete, Top} from './EnumData.ets'
+import {NoteType, Favorite, Delete, Top} from './EnumData'
 
 /**
  * 笔记类

@@ -14,7 +14,7 @@
  */
 
 import Rsm from '@ohos.resourceManager';
-import {LogUtil} from './LogUtil.ets'
+import {LogUtil} from './LogUtil'
 
 const TAG = "Note_GlobalResourceManager"
 
@@ -49,5 +49,4 @@ export class GlobalResourceManager {
 
 let mGlobalResourceManager = new GlobalResourceManager();
 
-export default mGlobalResourceManager as GlobalResourceManager
-;
+export default mGlobalResourceManager as GlobalResourceManager;

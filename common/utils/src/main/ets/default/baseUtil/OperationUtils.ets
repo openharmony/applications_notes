@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import {LogUtil} from './LogUtil.ets'
-import {MediaLibraryAccess} from '../access/MediaLibraryAccess.ets';
+import {LogUtil} from './LogUtil'
+import {MediaLibraryAccess} from '../access/MediaLibraryAccess';
 import fileio from '@ohos.fileio';
 
 const TAG = "OperationUtils"

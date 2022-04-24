@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {SysDefFolder, SysDefFolderUuid, FolderType, NoteType, Favorite, Top, Delete} from './EnumData.ets'
+import {SysDefFolder, SysDefFolderUuid, FolderType, NoteType, Favorite, Top, Delete} from './EnumData'
 
 export default {
   /**

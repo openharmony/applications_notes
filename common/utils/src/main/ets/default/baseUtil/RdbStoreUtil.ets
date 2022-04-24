@@ -15,13 +15,13 @@
 
 import ohosDataRdb from '@ohos.data.rdb'
 import fileio from '@ohos.fileio'
-import {LogUtil} from './LogUtil.ets'
-import FolderUtil from './FolderUtil.ets'
-import NoteUtil from './NoteUtil.ets'
-import SysDefData from '../model/databaseModel/SysDefData.ets'
-import FolderData from '../model/databaseModel/FolderData.ets'
-import NoteData from '../model/databaseModel/NoteData.ets'
-import {TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid} from '../model/databaseModel/EnumData.ets'
+import {LogUtil} from './LogUtil'
+import FolderUtil from './FolderUtil'
+import NoteUtil from './NoteUtil'
+import SysDefData from '../model/databaseModel/SysDefData'
+import FolderData from '../model/databaseModel/FolderData'
+import NoteData from '../model/databaseModel/NoteData'
+import {TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid} from '../model/databaseModel/EnumData'
 
 const TAG = "RdbStoreUtil"
 
