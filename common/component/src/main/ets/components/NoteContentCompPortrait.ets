@@ -78,16 +78,15 @@ export struct NoteContentCompPortrait {
   }
 
   build() {
-    Stack({ alignContent: Alignment.Bottom }) {
+    Column() {
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
+          NoteContentOverViewComp()
         }
 
         Column() {
-          NoteContentOverViewComp()
-
           Web({ src: $rawfile('editor.html'), controller: this.controllerShow })
             .javaScriptAccess(true)
             .onPageEnd((e) => {
@@ -110,6 +109,7 @@ export struct NoteContentCompPortrait {
             .height('70%')
             .width('100%')
         }
+        .flexShrink(1)
         .onClick(() => {
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
@@ -121,7 +121,7 @@ export struct NoteContentCompPortrait {
         .margin({ top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
       }
-      .height(StyleConstants.PERCENTAGE_100)
+      .flexShrink(1)
       .margin({ left: 24, right: 24 })
 
       EditNoteCompForPortrait({ controllerShow: this.controllerShow })
@@ -224,7 +224,7 @@ export struct NoteContentOverViewComp {
     }
     .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
     .width(StyleConstants.PERCENTAGE_100)
-    .height(80)
+    .height(82)
   }
 }
 
@@ -317,7 +317,7 @@ export struct ToolBarComp {
       }
     }
     .width(StyleConstants.PERCENTAGE_100)
-    .height(80)
+    .height(40)
   }
 }
 
@@ -418,9 +418,9 @@ export struct EditNoteCompForPortrait {
   }
 
   build() {
-    Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
+    Row() {
       Column() {
-        Image($r('app.media.circle_tick'))
+        Image($r('app.media.circle_tick1'))
           .width(24)
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
@@ -433,6 +433,9 @@ export struct EditNoteCompForPortrait {
           .fontColor($r('app.color.list_font_color'))
           .padding({ top: 5 })
       }
+      .height("100%")
+      .width(120)
+      .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
 
       Column() {
@@ -448,6 +451,9 @@ export struct EditNoteCompForPortrait {
           .fontColor($r('app.color.style_font_color'))
           .padding({ top: 5 })
       }
+      .height("100%")
+      .width(120)
+      .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
 
       Column() {
@@ -470,6 +476,7 @@ export struct EditNoteCompForPortrait {
                   let uri = param['select-item-list'];
                   imageUri = uri;
                 }
+                LogUtil.info(TAG, "image url" + imageUri)
                 // 拷贝
                 if (imageUri != null && imageUri != "") {
                   OperationUtils.copy(imageUri).then((uriPath) => {
@@ -487,6 +494,9 @@ export struct EditNoteCompForPortrait {
           .fontColor($r('app.color.photo_font_color'))
           .padding({ top: 5 })
       }
+      .height("100%")
+      .width(120)
+      .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
     }
     .width(360)

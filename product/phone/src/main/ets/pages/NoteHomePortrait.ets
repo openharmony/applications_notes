@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {FolderListComp} from '@ohos/component/src/main/ets/components/FolderListComp'
+import {FolderListComp, FolderListBackGround} from '@ohos/component/src/main/ets/components/FolderListComp'
 import {NoteListComp} from '@ohos/component/src/main/ets/components/NoteListComp'
 import {NoteContentCompPortrait} from '@ohos/component/src/main/ets/components/NoteContentCompPortrait'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
@@ -64,11 +64,11 @@ export struct NoteHomePortraitComp {
       .enabled(this.expandStatus ? false : true)
 
       //Folder list display area
-      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
+      Stack() {
+        FolderListBackGround()
         FolderListComp()
       }
-      .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
-      .width(StyleConstants.PERCENTAGE_60)
+      .width(200)
       .height(StyleConstants.PERCENTAGE_100)
       .visibility(this.expandStatus == false ? Visibility.None : Visibility.Visible)
     }

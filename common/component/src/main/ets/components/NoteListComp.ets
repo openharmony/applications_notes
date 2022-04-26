@@ -49,18 +49,22 @@ export struct NoteListComp {
   controllerShow: WebController
 
   build() {
-    Stack({ alignContent: Alignment.Bottom }) {
+    Flex({direction: FlexDirection.Column}) {
 
-      Flex({ direction: FlexDirection.Column }) {
+      Flex({direction: FlexDirection.Column}) {
         NoteOverViewComp({ controllerShow: this.controllerShow })
         NoteItemListComp({ controllerShow: this.controllerShow })
       }
       .padding({ top: this.search ? 15 : 0 })
       .width('100%')
-      .height('100%')
+      .flexShrink(1)
 
-      OperateNoteCompForPortrait()
+      Column() {
+        OperateNoteCompForPortrait()
+      }
+      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
     }
+    .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
     .height('100%')
     .width('100%')
   }
@@ -155,6 +159,7 @@ struct NoteOverViewComp {
       OperateNoteComp({ controllerShow: this.controllerShow })
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
     }
+    .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
     .width('100%').height(82)
     .padding({ left: this.sectionStatus == 2 ? 24 : 36, right: 24 }) // 两分栏时缩进图标与左侧不需要间距
     .visibility(this.search ? Visibility.None : Visibility.Visible)
@@ -265,6 +270,7 @@ export struct NoteItemComp {
           NoteUtil.setNoteChecked(this.CheckedNoteArray, this.noteItem)
           this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
         }
+        return;
       } else {
         this.selectedNoteData = this.noteItem
         this.chooseNote = true
@@ -336,11 +342,14 @@ export struct NoteItemListComp {
   }
 
   build() {
-    Column() {
+    Flex({direction: FlexDirection.Column}) {
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
       Flex() {
         SearchComp()
-      }.margin({ left: 24, right: 24, bottom: 12 })
+      }
+      .width("100%")
+      .padding({ left: 24, right: 24, bottom: 12 })
+      .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
 
       Flex({ justifyContent: FlexAlign.Center }) {
@@ -348,7 +357,8 @@ export struct NoteItemListComp {
           .fontSize(12)
           .fontColor($r("app.color.Recently_delete_prompt_font_color"))
       }
-      .margin({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
+      .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
+      .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .width('100%')
       .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
 
@@ -364,6 +374,7 @@ export struct NoteItemListComp {
                 .fontColor($r("app.color.Empty_page_font_color"))
             }
           }
+          .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
           .width('100%')
           .height('100%')
           .padding({ bottom: 120 })
@@ -372,20 +383,28 @@ export struct NoteItemListComp {
           ForEach(this.inputKeyword.length == 0 ?
           NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) : this.searchResultList, (noteItem) => {
             ListItem() {
-              NoteItemComp({
-                noteItem: noteItem,
-                spans: SearchModel.splitToHighlightText(noteItem.title, this.inputKeyword),
-                controllerShow: this.controllerShow
-              })
-            }.margin({ left: 24, right: 24, bottom: 12 })
+              Column() {
+                NoteItemComp({
+                  noteItem: noteItem,
+                  spans: SearchModel.splitToHighlightText(noteItem.title, this.inputKeyword),
+                  controllerShow: this.controllerShow
+                })
+              }
+              .padding({ left: 24, right: 24, bottom: 12 })
+            }
+            .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
           }, noteItem => noteItem.uuid.toString())
-        }.listDirection(Axis.Vertical)
+        }
+        .height("100%")
+        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+        .listDirection(Axis.Vertical)
         .edgeEffect(EdgeEffect.Spring)
       }
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-      .height('100%')
+      .flexGrow(1)
     }
-    .height('80%')
+    .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+    .flexGrow(1)
     .padding({ bottom: 1 })
     .onClick(() => {
       this.search = false
@@ -648,15 +667,26 @@ export struct OperateNoteCompForPortrait {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
-  @Consume('RefreshFlag') refreshFlag: number
+  @Consume('RefreshFlag') @Watch('opacityChange') refreshFlag: number
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('PortraitModel') portraitModel: boolean
+  @State greyOpacity: boolean = false
   noteDataMoveDialogCtlBottom: CustomDialogController = new CustomDialogController({
     builder: NoteDataMoveDialog({ onConfirm: this.onMoveConfirm.bind(this) }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
   })
+
+  opacityChange() {
+    if (this.CheckedNoteArray.length == 0) {
+      this.greyOpacity = true
+      LogUtil.info(TAG, "none checked array")
+    } else {
+      this.greyOpacity = false
+      LogUtil.info(TAG, this.CheckedNoteArray.length.toString())
+    }
+  }
 
   onMoveConfirm(folderUuid: string) {
     this.CheckedNoteArray.forEach((noteItem) => {
@@ -713,10 +743,11 @@ export struct OperateNoteCompForPortrait {
   }
 
   build() {
-    Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
+    Row() {
       if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
         Column() {
           Image($r("app.media.set_top"))
+            .opacity(this.greyOpacity ? 0.4 : 1)
             .width(24)
             .height(24)
             .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
@@ -732,17 +763,23 @@ export struct OperateNoteCompForPortrait {
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             })
           Text($r("app.string.set_top"))
+            .opacity(this.greyOpacity ? 0.4 : 1)
             .fontSize(10)
             .fontColor($r("app.color.set_top_font_color"))
             .padding({ top: 5 })
         }
-        .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
-        .enabled(this.CheckedNoteArray.length == 0 ? false : true)
+        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
+        .width("25%")
+        .height("100%")
+        .opacity(this.greyOpacity ? 0.4 : 1)
+        .enabled(this.greyOpacity ? false : true)
         .alignItems(HorizontalAlign.Center)
+        .justifyContent(FlexAlign.Center)
       }
 
       Column() {
         Image($r('app.media.delete'))
+          .opacity(this.greyOpacity ? 0.4 : 1)
           .width(24)
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
@@ -750,17 +787,23 @@ export struct OperateNoteCompForPortrait {
             this.noteDataDeleteDialogCtlBottom.open()
           })
         Text($r("app.string.delete"))
+          .opacity(this.greyOpacity ? 0.4 : 1)
           .fontSize(10)
           .fontColor($r("app.color.delete_font_color"))
           .padding({ top: 5 })
       }
-      .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
-      .enabled(this.CheckedNoteArray.length == 0 ? false : true)
+      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
+      .width("25%")
+      .height("100%")
+      .opacity(this.greyOpacity ? 0.4 : 1)
+      .enabled(this.greyOpacity ? false : true)
       .alignItems(HorizontalAlign.Center)
+      .justifyContent(FlexAlign.Center)
 
       if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
         Column() {
           Image($r('app.media.move'))
+            .opacity(this.greyOpacity ? 0.4 : 1)
             .width(24)
             .height(24)
             .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
@@ -768,13 +811,18 @@ export struct OperateNoteCompForPortrait {
               this.noteDataMoveDialogCtlBottom.open()
             })
           Text($r("app.string.move"))
+            .opacity(this.greyOpacity ? 0.4 : 1)
             .fontSize(10)
             .fontColor($r("app.color.move_font_color"))
             .padding({ top: 5 })
         }
-        .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
-        .enabled(this.CheckedNoteArray.length == 0 ? false : true)
+        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
+        .width("25%")
+        .height("100%")
+        .opacity(this.greyOpacity ? 0.4 : 1)
+        .enabled(this.greyOpacity ? false : true)
         .alignItems(HorizontalAlign.Center)
+        .justifyContent(FlexAlign.Center)
       }
 
 
@@ -803,9 +851,13 @@ export struct OperateNoteCompForPortrait {
             .fontColor($r("app.color.recover_font_color"))
             .padding({ top: 5 })
         }
-        .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
-        .enabled(this.CheckedNoteArray.length == 0 ? false : true)
+        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
+        .width("25%")
+        .height("100%")
+        .opacity(this.greyOpacity ? 0.4 : 1)
+        .enabled(this.greyOpacity ? false : true)
         .alignItems(HorizontalAlign.Center)
+        .justifyContent(FlexAlign.Center)
       }
 
       Column() {
@@ -828,9 +880,13 @@ export struct OperateNoteCompForPortrait {
           .fontColor($r("app.color.check_all_font_color"))
           .padding({ top: 5 })
       }
+      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
+      .width("25%")
+      .height("100%")
       .alignItems(HorizontalAlign.Center)
+      .justifyContent(FlexAlign.Center)
     }
-    .width(360)
+    .width("100%")
     .height(56)
     .visibility(this.longpress && this.portraitModel == true ? Visibility.Visible : Visibility.None)
   }

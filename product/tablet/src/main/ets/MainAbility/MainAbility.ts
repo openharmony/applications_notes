@@ -23,7 +23,7 @@ export default class MainAbility extends Ability {
 
     onCreate(want, launchParam) {
         console.info(this.Tag + " onCreate, launchReason is " + launchParam.launchReason)
-        if (launchParam.launchReason == 3) {
+        if (launchParam.launchReason == AbilityConstant.LaunchReason.CONTINUATION) {
             // 设置迁移标记
             AppStorage.SetOrCreate<boolean>('IsContinue', true)
             // 获取对端的迁移数据

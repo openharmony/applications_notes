@@ -16,20 +16,36 @@
 /**
  * Log Util
  */
+
 export class LogUtil {
-  static debug(tag: string, msg: string) {
-    console.debug(tag + ', ' + msg)
+  private static readonly IS_DEBUG_ON: boolean = false;
+  private static readonly CONTACTS_DOMAIN: string = "00902";
+  private static readonly SLASH: string = "/";
+  private static readonly COLON: string = ": ";
+  constructor() {
   }
 
-  static info(tag: string, msg: string) {
-    console.info(tag + ', ' + msg)
+  private static prefix(tag: string) {
+    return this.CONTACTS_DOMAIN + this.SLASH + tag + this.COLON;
   }
 
-  static warn(tag: string, msg: string) {
-    console.warn(tag + ', ' + msg)
+  static debug(tag: string, msg: string, ...args: any[]) {
+    if (this.IS_DEBUG_ON) {
+      console.info(this.prefix(tag) + msg, args);
+    } else {
+      console.debug(this.prefix(tag) + msg, args);
+    }
   }
 
-  static error(tag: string, msg: string) {
-    console.error(tag + ', ' + msg)
+  static info(tag: string, msg: string, ...args: any[]) {
+    console.info(this.prefix(tag) + msg, args);
+  }
+
+  static warn(tag: string, msg: string, ...args: any[]) {
+    console.warn(this.prefix(tag) + msg, args);
+  }
+
+  static error(tag: string, msg: string, ...args: any[]) {
+    console.error(this.prefix(tag) + msg, args);
   }
 }

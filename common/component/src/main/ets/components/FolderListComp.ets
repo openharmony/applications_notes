@@ -33,39 +33,42 @@ export struct FolderListComp {
   TAG = "FolderListComp"
 
   build() {
-    Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center }) {
+    Flex({direction: FlexDirection.Column, justifyContent: FlexAlign.SpaceBetween}) {
       Column() {
-        Image($r("app.media.suojin"))
-          .height(24)
-          .width(24)
-          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
-          .onClick(() => {
-            if (this.sectionStatus == 1) {
-              this.expandStatus = !this.expandStatus
-            } else {
-              this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
-              // save continue data
-              AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-              LogUtil.info(this.TAG, "FolderListComp, set continue section success")
-            }
-          })
-      }.alignItems(HorizontalAlign.Start)
-      .width("100%")
-      .margin({ top: 28 })
-      .padding({ left: 24 })
+        Column() {
+          Image($r("app.media.suojin"))
+            .height(24)
+            .width(24)
+            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+            .onClick(() => {
+              if (this.sectionStatus == 1) {
+                this.expandStatus = !this.expandStatus
+              } else {
+                this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
+                // save continue data
+                AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
+                LogUtil.info(this.TAG, "FolderListComp, set continue section success")
+              }
+            })
+        }.alignItems(HorizontalAlign.Start)
+        .width("100%")
+        .margin({ top: 28 })
+        .padding({ left: 24 })
 
-      NoteAndCreateComp()
-      // center
-      List() {
-        ForEach(this.AllFolderArray, (folderItem: FolderData) => {
-          ListItem() {
-            if (!FolderUtil.isBottomFixedFolder(folderItem)) {
-              FolderItemComp({ folderItem: folderItem, controllerShow: this.controllerShow })
+        NoteAndCreateComp()
+        // center
+        List() {
+          ForEach(this.AllFolderArray, (folderItem: FolderData) => {
+            ListItem() {
+              if (!FolderUtil.isBottomFixedFolder(folderItem)) {
+                FolderItemComp({ folderItem: folderItem, controllerShow: this.controllerShow })
+              }
             }
-          }
-        }, folderItem => folderItem.name.toString())
-      }.width('100%')
-      .padding({ left: 12, right: 12 })
+          }, folderItem => folderItem.name.toString())
+        }.width('100%')
+        .padding({ left: 12, right: 12 })
+      }
+
 
       Column() {
         FolderItemComp({
@@ -80,7 +83,7 @@ export struct FolderListComp {
       .width("100%")
       .padding({ left: 12, right: 12 })
     }
-    .padding({ bottom: 48 })
+    .padding({ bottom: 24 })
     .height("100%")
   }
 
@@ -349,7 +352,7 @@ struct FolderItemComp {
       .height(56)
       .padding({ left: 12, right: 12 })
       .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
-                                                                                    ? $r("app.color.folder_color_ffffff") : $r("app.color.folder_color_19ffffff"))
+                                                                                    ? $r("app.color.folder_color_ffffff") : "")
       .bindContextMenu(this.menuBuilder, ResponseType.LongPress)
       .bindContextMenu(this.menuBuilder, ResponseType.RightClick)
       .onClick(() => {
@@ -388,5 +391,22 @@ struct FolderItemComp {
       })
     )
     )
+  }
+}
+
+
+@Component
+export struct FolderListBackGround {
+  build() {
+    Column() { }
+    .shadow({
+      radius: 54,
+      offsetY: 24
+    })
+    .width("100%")
+    .height("100%")
+    .backgroundColor($r('app.color.folder_color_d6d6d6'))
+    .opacity(0.4)
+    .blur(60)
   }
 }
