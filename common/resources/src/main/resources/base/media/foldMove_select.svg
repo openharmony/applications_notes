@@ -3,7 +3,7 @@
 <svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#007DFF;}
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#FF6100;}
 	.st1{filter:url(#filter-2);}
 	.st2{fill-rule:evenodd;clip-rule:evenodd;}
 	.st3{fill:none;stroke:#000000;stroke-opacity:5.000000e-02;}
@@ -18,15 +18,13 @@
 	<feGaussianBlur  in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="0.5"></feGaussianBlur>
 	<feColorMatrix  in="shadowBlurOuter1" type="matrix" values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0"></feColorMatrix>
 </filter>
-<title>选中</title>
-<g transform="translate(2.000000, 2.000000)">
-	<circle id="Oval-21" class="st0" cx="10" cy="10" r="10"/>
-	<g id="Oval-43">
-		<g class="st1">
-			<circle id="path-1_1_" class="st2" cx="10" cy="10" r="5"/>
-		</g>
-		<circle class="st3" cx="10" cy="10" r="5.5"/>
+<title>画板</title>
+<circle id="Oval-21" class="st0" cx="12" cy="12" r="10"/>
+<g id="Oval-43">
+	<g class="st1">
+		<circle id="path-1_1_" class="st2" cx="12" cy="12" r="5"/>
 	</g>
-	<circle class="st4" cx="10" cy="10" r="5"/>
+	<circle class="st3" cx="12" cy="12" r="5.5"/>
 </g>
+<circle class="st4" cx="12" cy="12" r="5"/>
 </svg>

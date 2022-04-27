@@ -50,6 +50,8 @@ export struct MyNoteHomeComp {
 
     let permissionList: Array<string> = [
       "ohos.permission.READ_MEDIA",
+      "ohos.permission.WRITE_MEDIA",
+      "ohos.permission.MEDIA_LOCATION",
       "ohos.permission.DISTRIBUTED_DATASYNC"
     ]
     LogUtil.info(this.TAG, 'permissions need to require from user')

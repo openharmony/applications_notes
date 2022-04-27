@@ -67,7 +67,7 @@ export class OperationUtils {
     }
 
     async getFileAssetById(id,context){
-        LogUtil.info(TAG, 'getFileAssetById');
+        LogUtil.info(TAG, 'getFileAssetById', id);
         let fetchOpt = {
             selections : 'file_id =?',
             selectionArgs : [`${id}`],
