@@ -333,6 +333,7 @@ struct FolderItemComp {
             .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
             .margin({ right: 16 })
           Text(FolderUtil.getFolderText(this.folderItem))
+            .fontWeight(FontWeight.Medium)
             .fontSize(16)
             .textAlign(TextAlign.Center)
             .maxLines(1)
@@ -344,6 +345,7 @@ struct FolderItemComp {
         }.width(118)
 
         Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+          .fontWeight(FontWeight.Regular)
           .fontSize(14)
           .textAlign(TextAlign.Center)
       }
