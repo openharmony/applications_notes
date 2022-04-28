@@ -78,15 +78,16 @@ export struct NoteContentCompPortrait {
   }
 
   build() {
-    Column() {
+    Stack({ alignContent: Alignment.Bottom }) {
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
-          NoteContentOverViewComp()
         }
 
         Column() {
+          NoteContentOverViewComp()
+
           Web({ src: $rawfile('editor.html'), controller: this.controllerShow })
             .javaScriptAccess(true)
             .onPageEnd((e) => {
@@ -109,7 +110,6 @@ export struct NoteContentCompPortrait {
             .height('70%')
             .width('100%')
         }
-        .flexShrink(1)
         .onClick(() => {
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
@@ -121,7 +121,7 @@ export struct NoteContentCompPortrait {
         .margin({ top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
       }
-      .flexShrink(1)
+      .height(StyleConstants.PERCENTAGE_100)
       .margin({ left: 24, right: 24 })
 
       EditNoteCompForPortrait({ controllerShow: this.controllerShow })
@@ -169,7 +169,7 @@ export struct NoteContentOverViewComp {
       List() {
         ForEach(this.AllFolderArray, (item) => {
           ListItem() {
-            NoteDataMoveItemComp({ folderItem: item })
+            NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
           }
           .onClick(() => {
             this.selectedNoteData.folder_uuid = item.uuid
@@ -219,12 +219,13 @@ export struct NoteContentOverViewComp {
         .margin({ left: 8 })
         .borderRadius(16)
         .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
-        .bindMenu(this.MenuBuilder)
+        // 传递当前显示的分类uuid
+        .bindMenu(this.MenuBuilder())
       }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
     }
     .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
     .width(StyleConstants.PERCENTAGE_100)
-    .height(82)
+    .height(80)
   }
 }
 
@@ -317,7 +318,7 @@ export struct ToolBarComp {
       }
     }
     .width(StyleConstants.PERCENTAGE_100)
-    .height(40)
+    .height(80)
   }
 }
 
@@ -418,9 +419,9 @@ export struct EditNoteCompForPortrait {
   }
 
   build() {
-    Row() {
+    Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
       Column() {
-        Image($r('app.media.circle_tick1'))
+        Image($r('app.media.circle_tick'))
           .width(24)
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
@@ -433,9 +434,6 @@ export struct EditNoteCompForPortrait {
           .fontColor($r('app.color.list_font_color'))
           .padding({ top: 5 })
       }
-      .height("100%")
-      .width(120)
-      .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
 
       Column() {
@@ -451,9 +449,6 @@ export struct EditNoteCompForPortrait {
           .fontColor($r('app.color.style_font_color'))
           .padding({ top: 5 })
       }
-      .height("100%")
-      .width(120)
-      .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
 
       Column() {
@@ -476,7 +471,6 @@ export struct EditNoteCompForPortrait {
                   let uri = param['select-item-list'];
                   imageUri = uri;
                 }
-                LogUtil.info(TAG, "image url" + imageUri)
                 // 拷贝
                 if (imageUri != null && imageUri != "") {
                   OperationUtils.copy(imageUri).then((uriPath) => {
@@ -494,9 +488,6 @@ export struct EditNoteCompForPortrait {
           .fontColor($r('app.color.photo_font_color'))
           .padding({ top: 5 })
       }
-      .height("100%")
-      .width(120)
-      .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
     }
     .width(360)
@@ -507,10 +498,11 @@ export struct EditNoteCompForPortrait {
 }
 
 @Component
-struct NoteDataMoveItemComp {
+struct NoteDataMoveItemCompMenu {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
-  private folderItem: FolderData
+  folderItem: FolderData
+  uuid: String
 
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
@@ -527,7 +519,7 @@ struct NoteDataMoveItemComp {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Text(FolderUtil.getFolderText(this.folderItem))
             .fontSize(16)
-            .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
+            .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid == this.uuid ? this.folderItem.uuid : '', false))
             .textAlign(TextAlign.Center)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
