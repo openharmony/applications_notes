@@ -224,13 +224,13 @@ export struct NoteItemComp {
           }
           .padding({ left: 12 })
         }.alignItems(HorizontalAlign.Start)
-      }.width(240)
+      }.flexShrink(1)
 
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Stack({ alignContent: Alignment.Center }) {
           Image(this.noteItem.content_img)
-            .height(48)
-            .width(48)
+            .height(47)
+            .width(47)
             .borderRadius(12)
             .border({ width: 0.5, color: '#19182431' })
             .visibility(this.noteItem.content_img ? Visibility.Visible : Visibility.None)
@@ -246,7 +246,9 @@ export struct NoteItemComp {
         }.width(24)
         .height(24)
         .visibility(this.longpress ? Visibility.Visible : Visibility.None)
-      }.height(48)
+      }
+      .flexShrink(0)
+      .height(48)
       .width(this.longpress ? 80 : 48)
     }
     .width('100%')
