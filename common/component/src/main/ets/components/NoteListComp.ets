@@ -53,11 +53,14 @@ export struct NoteListComp {
 
       Flex({direction: FlexDirection.Column}) {
         NoteOverViewComp({ controllerShow: this.controllerShow })
+        Column() {}
+        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
+        .height(this.search ? 15 : 0)
         NoteItemListComp({ controllerShow: this.controllerShow })
       }
-      .padding({ top: this.search ? 15 : 0 })
+      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
       .width('100%')
-      .flexShrink(1)
+      .flexGrow(1)
 
       Column() {
         OperateNoteCompForPortrait()
@@ -354,60 +357,71 @@ export struct NoteItemListComp {
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
 
-      Flex({ justifyContent: FlexAlign.Center }) {
-        Text($r("app.string.permanently_delete_tips"))
-          .fontSize(12)
-          .fontColor($r("app.color.Recently_delete_prompt_font_color"))
-      }
-      .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
-      .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-      .width('100%')
-      .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
+      Stack() {
+        Flex({ justifyContent: FlexAlign.Center }) {
+          Text($r("app.string.permanently_delete_tips"))
+            .fontSize(12)
+            .fontColor($r("app.color.Recently_delete_prompt_font_color"))
+        }
+        .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
+        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+        .width('100%')
+        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
 
-      Column() {
-        List({ initialIndex: 0 }) {
-          ListItem() {
-            Column({ space: 8 }) {
-              Image($r('app.media.emptyPage'))
-                .width(120)
-                .height(120)
-              Text($r("app.string.Empty_page"))
-                .fontSize(12)
-                .fontColor($r("app.color.Empty_page_font_color"))
-            }
-          }
-          .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-          .width('100%')
-          .height('100%')
-          .padding({ bottom: 120 })
-          .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
-
-          ForEach(this.inputKeyword.length == 0 ?
-          NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) : this.searchResultList, (noteItem) => {
+        Column() {
+          List({ initialIndex: 0 }) {
             ListItem() {
-              Column() {
-                NoteItemComp({
-                  noteItem: noteItem,
-                  spans: SearchModel.splitToHighlightText(noteItem.title, this.inputKeyword),
-                  controllerShow: this.controllerShow
-                })
+              Column({ space: 8 }) {
+                Image($r('app.media.emptyPage'))
+                  .width(120)
+                  .height(120)
+                Text($r("app.string.Empty_page"))
+                  .fontSize(12)
+                  .fontColor($r("app.color.Empty_page_font_color"))
               }
-              .padding({ left: 24, right: 24, bottom: 12 })
             }
             .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-          }, noteItem => noteItem.uuid.toString())
+            .width('100%')
+            .height('100%')
+            .padding({ bottom: 120 })
+            .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
+
+            ForEach(this.inputKeyword.length == 0 ?
+            NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) : this.searchResultList, (noteItem) => {
+              ListItem() {
+                Column() {
+                  NoteItemComp({
+                    noteItem: noteItem,
+                    spans: SearchModel.splitToHighlightText(noteItem.title, this.inputKeyword),
+                    controllerShow: this.controllerShow
+                  })
+                }
+                .padding({ left: 24, right: 24, bottom: 12 })
+              }
+              .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+            }, noteItem => noteItem.uuid.toString())
+          }
+          .height("100%")
+          .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+          .listDirection(Axis.Vertical)
+          .edgeEffect(EdgeEffect.Spring)
+        }
+        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+        .flexGrow(1)
+
+        Column() {
         }
         .height("100%")
-        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-        .listDirection(Axis.Vertical)
-        .edgeEffect(EdgeEffect.Spring)
+        .width("100%")
+        .backgroundColor("#18181A")
+        .opacity(0.1)
+        .visibility(this.search ? Visibility.Visible : Visibility.Hidden)
       }
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .flexGrow(1)
     }
     .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
     .flexGrow(1)
-    .padding({ bottom: 1 })
     .onClick(() => {
       this.search = false
     })
@@ -649,8 +663,8 @@ export struct SearchComp {
             LogUtil.info(TAG, "Search value: " + value)
             this.inputKeyword = value
           })
-          .onClick(() => {
-            this.search = true
+          .onEditChange((isEditing: boolean) => {
+            this.search = isEditing
           })
       }
       .height(40)
@@ -660,6 +674,7 @@ export struct SearchComp {
       .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
       .margin({ right: this.search ? 40 : 0 })
     }
+    .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
   }
 }
 
