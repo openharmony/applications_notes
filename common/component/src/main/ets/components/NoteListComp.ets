@@ -16,15 +16,16 @@
 import DateUtil from '@ohos/utils/src/main/ets/default/baseUtil/DateUtil'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete, Top, NoteType} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
-import {NoteDataMoveDialog, DeleteDialog} from './CusDialogComp'
+import { TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete, Top, NoteType
+} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
+import { NoteDataMoveDialog, DeleteDialog } from './CusDialogComp'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import prompt from '@system.prompt'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/SearchModel'
-import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import router from '@system.router';
 
 const TAG = "NoteListComp"
@@ -49,13 +50,15 @@ export struct NoteListComp {
   controllerShow: WebController
 
   build() {
-    Flex({direction: FlexDirection.Column}) {
+    Flex({ direction: FlexDirection.Column }) {
 
-      Flex({direction: FlexDirection.Column}) {
+      Flex({ direction: FlexDirection.Column }) {
         NoteOverViewComp({ controllerShow: this.controllerShow })
-        Column() {}
+        Column() {
+        }
         .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
         .height(this.search ? 15 : 0)
+
         NoteItemListComp({ controllerShow: this.controllerShow })
       }
       .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
@@ -79,7 +82,6 @@ export struct NoteListComp {
   aboutToDisappear(): void{
     LogUtil.info(TAG, "aboutToDisappear")
   }
-
 }
 
 @Component
@@ -115,6 +117,7 @@ struct NoteOverViewComp {
               }
             })
         }.alignItems(HorizontalAlign.Center)
+
         Flex({
           direction: FlexDirection.Column,
           wrap: FlexWrap.Wrap,
@@ -163,7 +166,8 @@ struct NoteOverViewComp {
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
     }
     .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
-    .width('100%').height(82)
+    .width('100%')
+    .height(82)
     .padding({ left: this.sectionStatus == 2 ? 24 : 36, right: 24 }) // 两分栏时缩进图标与左侧不需要间距
     .visibility(this.search ? Visibility.None : Visibility.Visible)
   }
@@ -183,7 +187,7 @@ export struct NoteItemComp {
   @Consume('RefreshFlag') refreshFlag: number
   @Consume('Search') search: boolean
   @Consume('selectedAll') selectedAll: boolean
-  @Consume('PortraitModel') portraitModel:boolean
+  @Consume('PortraitModel') portraitModel: boolean
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -201,9 +205,15 @@ export struct NoteItemComp {
               }), item => {
 
                 if (item.data.type == 0) {
-                  Span(item.data.text).fontColor($r("app.color.note_title_font_color")).fontSize(16).fontWeight(FontWeight.Medium)
+                  Span(item.data.text)
+                    .fontColor($r("app.color.note_title_font_color"))
+                    .fontSize(16)
+                    .fontWeight(FontWeight.Medium)
                 } else if (item.data.type == 1) {
-                  Span(item.data.text).fontColor($r("app.color.note_title_font_color_blue")).fontSize(16).fontWeight(FontWeight.Medium)
+                  Span(item.data.text)
+                    .fontColor($r("app.color.note_title_font_color_blue"))
+                    .fontSize(16)
+                    .fontWeight(FontWeight.Medium)
                 }
               },
                 item => item.index)
@@ -238,6 +248,7 @@ export struct NoteItemComp {
             .border({ width: 0.5, color: '#19182431' })
             .visibility(this.noteItem.content_img ? Visibility.Visible : Visibility.None)
         }
+
         Stack({ alignContent: Alignment.Center }) {
           Image($r("app.media.unChecked"))
             .height(24)
@@ -284,10 +295,12 @@ export struct NoteItemComp {
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "NoteItemComp, set continue note success")
       }
-      if(this.portraitModel == false) {
-        this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+      if (this.portraitModel == false) {
+        this.controllerShow.runJavaScript({
+          script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+        })
       }
-      if(this.portraitModel == true) {
+      if (this.portraitModel == true) {
         AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
         AppStorage.SetOrCreate<FolderData>('NewFolder', this.selectedFolderData)
         routePage()
@@ -322,7 +335,7 @@ export struct NoteItemListComp {
   @Consume @Watch('doSearch') inputKeyword: string
   @Consume('SearchResultList') searchResultList: NoteData[]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
-  @Consume('PortraitModel') portraitModel:boolean
+  @Consume('PortraitModel') portraitModel: boolean
   controllerShow: WebController
 
   doSearch() {
@@ -335,8 +348,10 @@ export struct NoteItemListComp {
         } else {
           this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
         }
-        if(this.portraitModel == false) {
-          this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+        if (this.portraitModel == false) {
+          this.controllerShow.runJavaScript({
+            script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+          })
         }
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -347,7 +362,7 @@ export struct NoteItemListComp {
   }
 
   build() {
-    Flex({direction: FlexDirection.Column}) {
+    Flex({ direction: FlexDirection.Column }) {
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
       Flex() {
         SearchComp()
@@ -408,6 +423,7 @@ export struct NoteItemListComp {
         }
         .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
         .flexGrow(1)
+        .margin({ top: this.search ? 8 : 0 })
 
         Column() {
         }
@@ -459,8 +475,8 @@ export struct OperateNoteComp {
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "onMoveConfirm, set continue note success")
-    if(this.portraitModel == false) {
-      this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+    if (this.portraitModel == false) {
+      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
     }
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -497,8 +513,8 @@ export struct OperateNoteComp {
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    if(this.portraitModel == false) {
-      this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+    if (this.portraitModel == false) {
+      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
     }
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
