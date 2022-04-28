@@ -367,6 +367,8 @@ export struct ToolBarComp {
               // 退出全屏时存库
               LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
               this.controllerShow.runJavaScript({ script: "save_html_content()" })
+              //退出键盘
+              inputMethod.getInputMethodController().stopInput();
               // 清除定时器
               if (timeId != undefined) {
                 LogUtil.info(TAG, "zoom, clearInterval timeId : " + timeId)
