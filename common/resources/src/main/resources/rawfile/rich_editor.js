@@ -82,7 +82,7 @@ RICH_EDITOR.getListStyle = function () {
                 }
             }
         } catch (err) {
-
+            console.error(err)
         }
     }
 
@@ -112,7 +112,7 @@ RICH_EDITOR.setNumbers = function () {
                 }
             }
         } catch (err) {
-
+            console.error(err)
         }
     }
 }
@@ -141,7 +141,7 @@ RICH_EDITOR.setABC = function () {
                 }
             }
         } catch (err) {
-
+            console.error(err)
         }
     }
 }
@@ -170,7 +170,7 @@ RICH_EDITOR.setBullets = function () {
                 }
             }
         } catch (err) {
-
+            console.error(err)
         }
     }
 }
@@ -199,7 +199,7 @@ RICH_EDITOR.setSquare = function () {
                 }
             }
         } catch (err) {
-
+            console.error(err)
         }
     }
 }
