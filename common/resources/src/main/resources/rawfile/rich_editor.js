@@ -18,7 +18,7 @@ var RICH_EDITOR = {};
 RICH_EDITOR.editor = document.getElementById('editorjs');
 
 RICH_EDITOR.setHtml = function(contents) {
-    RICH_EDITOR.editor.innerHTML = contents.replace(/\+/g, '%20');
+    RICH_EDITOR.editor.innerHTML = contents.replace(/%20/g, '+');
 }
 
 RICH_EDITOR.getHtml = function() {
@@ -318,7 +318,7 @@ function get_html_content() {
 function save_html_content() {
     console.log('save_html_content');
     var htmlString =  RICH_EDITOR.getHtml()
-    var str = callBackToApp.callbackhtmlSave(htmlString)
+    var str = callBackToApp.callbackhtmlSave(htmlString.replace(/\+/g, '%20'))
     console.log('save_html_content end');
 }
 
