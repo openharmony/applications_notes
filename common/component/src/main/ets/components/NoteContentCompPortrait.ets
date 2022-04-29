@@ -169,7 +169,7 @@ export struct NoteContentOverViewComp {
       List() {
         ForEach(this.AllFolderArray, (item) => {
           ListItem() {
-            NoteDataMoveItemComp({ folderItem: item })
+            NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
           }
           .onClick(() => {
             this.selectedNoteData.folder_uuid = item.uuid
@@ -507,10 +507,11 @@ export struct EditNoteCompForPortrait {
 }
 
 @Component
-struct NoteDataMoveItemComp {
+struct NoteDataMoveItemCompMenu {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
-  private folderItem: FolderData
+  folderItem: FolderData
+  uuid: String
 
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
@@ -527,7 +528,7 @@ struct NoteDataMoveItemComp {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Text(FolderUtil.getFolderText(this.folderItem))
             .fontSize(16)
-            .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
+            .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid == this.uuid ? this.folderItem.uuid : '', false))
             .textAlign(TextAlign.Center)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
