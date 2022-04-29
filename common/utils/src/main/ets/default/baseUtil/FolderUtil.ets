@@ -68,11 +68,11 @@ export class FolderUtil {
     let folderData: FolderData = this.getFolderData(folderDataArray, selectFolderUuid)
     if (folderData == undefined) {
       LogUtil.info(TAG, "FolderIconColor is 182431")
-      return $r("app.color.folder_color_182431")
+      return $r("app.color.folder_color_99182431")
     }
     LogUtil.info(TAG, "folderData uuid " + folderData.uuid + " isSelected " + isSelected)
     if (folderData.folder_type == FolderType.SysDef || folderData.folder_type == FolderType.FeatureDef) {
-      return isSelected ? $r("app.color.folder_color_f86d05") : $r("app.color.folder_color_182431")
+      return isSelected ? $r("app.color.folder_color_f86d05") : $r("app.color.folder_color_99182431")
     }
     return folderData.color
   }

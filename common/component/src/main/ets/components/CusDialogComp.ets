@@ -299,7 +299,13 @@ struct NoteDataMoveItemComp {
 export struct NoteDataMoveDialog {
   noteDataMoveDialogCtl: CustomDialogController
   onConfirm: (folderUuid: string) => void
+  NoteDataMoveArray: FolderData[]
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
+
+  aboutToAppear() {
+    this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
+    this.NoteDataMoveArray.push(this.AllFolderArray[1]);
+  }
 
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
@@ -311,7 +317,7 @@ export struct NoteDataMoveDialog {
       .width(288)
 
       List() {
-        ForEach(this.AllFolderArray, (item) => {
+        ForEach(this.NoteDataMoveArray, (item) => {
           ListItem() {
             NoteDataMoveItemComp({ folderItem: item })
           }

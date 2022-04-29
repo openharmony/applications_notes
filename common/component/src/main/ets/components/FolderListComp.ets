@@ -327,7 +327,7 @@ struct FolderItemComp {
       Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
         Row() {
           Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
-            .objectFit(ImageFit.ScaleDown)
+            .objectFit(ImageFit.Fill)
             .width(24)
             .height(24)
             .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
