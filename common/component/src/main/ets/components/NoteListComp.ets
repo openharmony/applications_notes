@@ -16,15 +16,16 @@
 import DateUtil from '@ohos/utils/src/main/ets/default/baseUtil/DateUtil'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete, Top, NoteType} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
-import {NoteDataMoveDialog, DeleteDialog} from './CusDialogComp'
+import { TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete, Top, NoteType
+} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
+import { NoteDataMoveDialog, DeleteDialog } from './CusDialogComp'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import prompt from '@system.prompt'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/SearchModel'
-import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import router from '@system.router';
 
 const TAG = "NoteListComp"
@@ -49,15 +50,20 @@ export struct NoteListComp {
   controllerShow: WebController
 
   build() {
-    Flex({direction: FlexDirection.Column}) {
+    Flex({ direction: FlexDirection.Column }) {
 
-      Flex({direction: FlexDirection.Column}) {
+      Flex({ direction: FlexDirection.Column }) {
         NoteOverViewComp({ controllerShow: this.controllerShow })
+        Column() {
+        }
+        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
+        .height(this.search ? 15 : 0)
+
         NoteItemListComp({ controllerShow: this.controllerShow })
       }
-      .padding({ top: this.search ? 15 : 0 })
+      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
       .width('100%')
-      .flexShrink(1)
+      .flexGrow(1)
 
       Column() {
         OperateNoteCompForPortrait()
@@ -76,7 +82,6 @@ export struct NoteListComp {
   aboutToDisappear(): void{
     LogUtil.info(TAG, "aboutToDisappear")
   }
-
 }
 
 @Component
@@ -112,6 +117,7 @@ struct NoteOverViewComp {
               }
             })
         }.alignItems(HorizontalAlign.Center)
+
         Flex({
           direction: FlexDirection.Column,
           wrap: FlexWrap.Wrap,
@@ -160,7 +166,8 @@ struct NoteOverViewComp {
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
     }
     .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
-    .width('100%').height(82)
+    .width('100%')
+    .height(82)
     .padding({ left: this.sectionStatus == 2 ? 24 : 36, right: 24 }) // 两分栏时缩进图标与左侧不需要间距
     .visibility(this.search ? Visibility.None : Visibility.Visible)
   }
@@ -180,7 +187,7 @@ export struct NoteItemComp {
   @Consume('RefreshFlag') refreshFlag: number
   @Consume('Search') search: boolean
   @Consume('selectedAll') selectedAll: boolean
-  @Consume('PortraitModel') portraitModel:boolean
+  @Consume('PortraitModel') portraitModel: boolean
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -198,9 +205,15 @@ export struct NoteItemComp {
               }), item => {
 
                 if (item.data.type == 0) {
-                  Span(item.data.text).fontColor($r("app.color.note_title_font_color")).fontSize(16).fontWeight(FontWeight.Medium)
+                  Span(item.data.text)
+                    .fontColor($r("app.color.note_title_font_color"))
+                    .fontSize(16)
+                    .fontWeight(FontWeight.Medium)
                 } else if (item.data.type == 1) {
-                  Span(item.data.text).fontColor($r("app.color.note_title_font_color_blue")).fontSize(16).fontWeight(FontWeight.Medium)
+                  Span(item.data.text)
+                    .fontColor($r("app.color.note_title_font_color_blue"))
+                    .fontSize(16)
+                    .fontWeight(FontWeight.Medium)
                 }
               },
                 item => item.index)
@@ -224,17 +237,18 @@ export struct NoteItemComp {
           }
           .padding({ left: 12 })
         }.alignItems(HorizontalAlign.Start)
-      }.width(240)
+      }.flexShrink(1)
 
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Stack({ alignContent: Alignment.Center }) {
           Image(this.noteItem.content_img)
-            .height(48)
-            .width(48)
+            .height(47)
+            .width(47)
             .borderRadius(12)
             .border({ width: 0.5, color: '#19182431' })
             .visibility(this.noteItem.content_img ? Visibility.Visible : Visibility.None)
         }
+
         Stack({ alignContent: Alignment.Center }) {
           Image($r("app.media.unChecked"))
             .height(24)
@@ -246,7 +260,9 @@ export struct NoteItemComp {
         }.width(24)
         .height(24)
         .visibility(this.longpress ? Visibility.Visible : Visibility.None)
-      }.height(48)
+      }
+      .flexShrink(0)
+      .height(48)
       .width(this.longpress ? 80 : 48)
     }
     .width('100%')
@@ -279,10 +295,12 @@ export struct NoteItemComp {
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "NoteItemComp, set continue note success")
       }
-      if(this.portraitModel == false) {
-        this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+      if (this.portraitModel == false) {
+        this.controllerShow.runJavaScript({
+          script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+        })
       }
-      if(this.portraitModel == true) {
+      if (this.portraitModel == true) {
         AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
         AppStorage.SetOrCreate<FolderData>('NewFolder', this.selectedFolderData)
         routePage()
@@ -317,7 +335,7 @@ export struct NoteItemListComp {
   @Consume @Watch('doSearch') inputKeyword: string
   @Consume('SearchResultList') searchResultList: NoteData[]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
-  @Consume('PortraitModel') portraitModel:boolean
+  @Consume('PortraitModel') portraitModel: boolean
   controllerShow: WebController
 
   doSearch() {
@@ -330,8 +348,10 @@ export struct NoteItemListComp {
         } else {
           this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
         }
-        if(this.portraitModel == false) {
-          this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+        if (this.portraitModel == false) {
+          this.controllerShow.runJavaScript({
+            script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+          })
         }
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -342,7 +362,7 @@ export struct NoteItemListComp {
   }
 
   build() {
-    Flex({direction: FlexDirection.Column}) {
+    Flex({ direction: FlexDirection.Column }) {
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
       Flex() {
         SearchComp()
@@ -352,60 +372,72 @@ export struct NoteItemListComp {
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
 
-      Flex({ justifyContent: FlexAlign.Center }) {
-        Text($r("app.string.permanently_delete_tips"))
-          .fontSize(12)
-          .fontColor($r("app.color.Recently_delete_prompt_font_color"))
-      }
-      .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
-      .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-      .width('100%')
-      .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
+      Stack() {
+        Flex({ justifyContent: FlexAlign.Center }) {
+          Text($r("app.string.permanently_delete_tips"))
+            .fontSize(12)
+            .fontColor($r("app.color.Recently_delete_prompt_font_color"))
+        }
+        .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
+        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+        .width('100%')
+        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
 
-      Column() {
-        List({ initialIndex: 0 }) {
-          ListItem() {
-            Column({ space: 8 }) {
-              Image($r('app.media.emptyPage'))
-                .width(120)
-                .height(120)
-              Text($r("app.string.Empty_page"))
-                .fontSize(12)
-                .fontColor($r("app.color.Empty_page_font_color"))
-            }
-          }
-          .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-          .width('100%')
-          .height('100%')
-          .padding({ bottom: 120 })
-          .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
-
-          ForEach(this.inputKeyword.length == 0 ?
-          NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) : this.searchResultList, (noteItem) => {
+        Column() {
+          List({ initialIndex: 0 }) {
             ListItem() {
-              Column() {
-                NoteItemComp({
-                  noteItem: noteItem,
-                  spans: SearchModel.splitToHighlightText(noteItem.title, this.inputKeyword),
-                  controllerShow: this.controllerShow
-                })
+              Column({ space: 8 }) {
+                Image($r('app.media.emptyPage'))
+                  .width(120)
+                  .height(120)
+                Text($r("app.string.Empty_page"))
+                  .fontSize(12)
+                  .fontColor($r("app.color.Empty_page_font_color"))
               }
-              .padding({ left: 24, right: 24, bottom: 12 })
             }
             .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-          }, noteItem => noteItem.uuid.toString())
+            .width('100%')
+            .height('100%')
+            .padding({ bottom: 120 })
+            .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
+
+            ForEach(this.inputKeyword.length == 0 ?
+            NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) : this.searchResultList, (noteItem) => {
+              ListItem() {
+                Column() {
+                  NoteItemComp({
+                    noteItem: noteItem,
+                    spans: SearchModel.splitToHighlightText(noteItem.title, this.inputKeyword),
+                    controllerShow: this.controllerShow
+                  })
+                }
+                .padding({ left: 24, right: 24, bottom: 12 })
+              }
+              .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+            }, noteItem => noteItem.uuid.toString())
+          }
+          .height("100%")
+          .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+          .listDirection(Axis.Vertical)
+          .edgeEffect(EdgeEffect.Spring)
+        }
+        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+        .flexGrow(1)
+        .margin({ top: this.search ? 8 : 0 })
+
+        Column() {
         }
         .height("100%")
-        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-        .listDirection(Axis.Vertical)
-        .edgeEffect(EdgeEffect.Spring)
+        .width("100%")
+        .backgroundColor("#18181A")
+        .opacity(0.1)
+        .visibility(this.search ? Visibility.Visible : Visibility.Hidden)
       }
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .flexGrow(1)
     }
     .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
     .flexGrow(1)
-    .padding({ bottom: 1 })
     .onClick(() => {
       this.search = false
     })
@@ -443,8 +475,8 @@ export struct OperateNoteComp {
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "onMoveConfirm, set continue note success")
-    if(this.portraitModel == false) {
-      this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+    if (this.portraitModel == false) {
+      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
     }
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -481,8 +513,8 @@ export struct OperateNoteComp {
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    if(this.portraitModel == false) {
-      this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+    if (this.portraitModel == false) {
+      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
     }
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -647,8 +679,8 @@ export struct SearchComp {
             LogUtil.info(TAG, "Search value: " + value)
             this.inputKeyword = value
           })
-          .onClick(() => {
-            this.search = true
+          .onEditChange((isEditing: boolean) => {
+            this.search = isEditing
           })
       }
       .height(40)
@@ -658,6 +690,7 @@ export struct SearchComp {
       .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
       .margin({ right: this.search ? 40 : 0 })
     }
+    .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
   }
 }
 
