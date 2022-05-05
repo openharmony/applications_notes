@@ -144,7 +144,7 @@ RICH_EDITOR.setABC = function () {
                 }
             }
         } catch (err) {
-            LogUtil(TAG, err))
+            LogUtil(TAG, err)
         }
     }
 }
