@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {LogUtil} from '../../../../../utils/src/main/ets/default/baseUtil/LogUtil'
+import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 
 const TAG = "Rich_Editor"
 
