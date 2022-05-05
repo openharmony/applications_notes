@@ -694,6 +694,7 @@ export struct SearchComp {
             }
           })
       }
+      .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
       .height(40)
       .opacity(this.longpress ? 0.4 : 1)
       .padding({ left: 6, right: 12, top: 9, bottom: 9 })
