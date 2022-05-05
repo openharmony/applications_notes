@@ -254,6 +254,7 @@ struct NoteDataMoveItemComp {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
   private folderItem: FolderData
+  dividerShow: boolean = true
 
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
@@ -283,9 +284,12 @@ struct NoteDataMoveItemComp {
         .width(248)
         .height(55)
 
-        Divider()
-          .color($r("app.color.divider_color_e4e4e4"))
-          .strokeWidth(1)
+        if (this.dividerShow) {
+          Divider()
+            .color($r("app.color.divider_color_e4e4e4"))
+            .strokeWidth(1)
+        }
+
       }
       .padding({ left: 16 })
     }
@@ -317,7 +321,7 @@ export struct NoteDataMoveDialog {
       .width(288)
 
       List() {
-        ForEach(this.NoteDataMoveArray, (item) => {
+        ForEach(this.NoteDataMoveArray.slice(0, this.NoteDataMoveArray.length - 1), (item) => {
           ListItem() {
             NoteDataMoveItemComp({ folderItem: item })
           }
@@ -326,6 +330,13 @@ export struct NoteDataMoveDialog {
             this.onConfirm(item.uuid)
           })
         }, noteItem => noteItem.uuid)
+        ListItem() {
+          NoteDataMoveItemComp({ folderItem: this.NoteDataMoveArray[this.NoteDataMoveArray.length - 1], dividerShow: false })
+        }
+        .onClick(() => {
+          this.noteDataMoveDialogCtl.close()
+          this.onConfirm(this.NoteDataMoveArray[this.NoteDataMoveArray.length - 1].uuid)
+        })
       }.listDirection(Axis.Vertical)
       .edgeEffect(EdgeEffect.Spring)
       .height(this.AllFolderArray.length > 12 ? 504 : (this.AllFolderArray.length - 3) * 56)

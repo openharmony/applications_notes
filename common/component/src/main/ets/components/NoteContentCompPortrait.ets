@@ -17,15 +17,15 @@ import DateUtil from '@ohos/utils/src/main/ets/default/baseUtil/DateUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
+import { TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
-import {EditContentDialogPortrait, DeleteDialog, EditTitleDialog} from './CusDialogComp'
+import { EditContentDialogPortrait, DeleteDialog, EditTitleDialog } from './CusDialogComp'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import prompt from '@system.prompt'
 import featureAbility from '@ohos.ability.featureAbility';
-import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import router from '@system.router'
 import inputMethod from '@ohos.inputmethod';
@@ -145,12 +145,18 @@ export struct NoteContentOverViewComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
+  NoteDataMoveArray: FolderData[]
   editTitleDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditTitleDialog({ confirm: this.confirm.bind(this) }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
+
+  aboutToAppear() {
+    this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
+    this.NoteDataMoveArray.push(this.AllFolderArray[1]);
+  }
 
   confirm(newTitle: string) {
     this.selectedNoteData.title = newTitle
@@ -165,30 +171,37 @@ export struct NoteContentOverViewComp {
   }
 
   @Builder MenuBuilder() {
-    Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
-      List() {
-        ForEach(this.AllFolderArray, (item) => {
-          ListItem() {
-            NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
-          }
-          .onClick(() => {
-            this.selectedNoteData.folder_uuid = item.uuid
-            let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-            predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-            RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-            // save continue data
-            let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-            AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-            LogUtil.info(TAG, 'MenuBuilder, set continue note success')
-          })
-        }, noteItem => noteItem.uuid)
-      }.listDirection(Axis.Vertical)
-      .edgeEffect(EdgeEffect.Spring)
-      .height(this.AllFolderArray.length > 12 ? 504 : (this.AllFolderArray.length - 3) * 56)
+    Column() {
+      Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
+        List() {
+          ForEach(this.NoteDataMoveArray, (item) => {
+            ListItem() {
+              NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
+            }
+            .onClick(() => {
+              this.selectedNoteData.folder_uuid = item.uuid
+              let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+              predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+              // save continue data
+              let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+              AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+              LogUtil.info(TAG, 'MenuBuilder, set continue note success')
+            })
+          }, noteItem => noteItem.uuid)
+        }
+        .margin({ top: 4, bottom: 4 })
+        .listDirection(Axis.Vertical)
+        .edgeEffect(EdgeEffect.Spring)
+        .height(this.AllFolderArray.length > 12 ? 504 : (this.AllFolderArray.length - 3) * 56)
+      }
+      .margin({ top: 24, bottom: 24, left: 24, right: 24 })
+      .borderRadius(16)
+      .backgroundColor($r('app.color.folder_color_ffffff'))
+      .shadow({ color: "#0a000000", offsetX: 0, offsetY: 2, radius: 30 })
+      .width(148)
+      .padding({ left: 24, right: 24 })
     }
-    .width(148)
-    .backgroundColor($r("app.color.color_fffffB"))
-    .padding({ left: 24, right: 24 })
   }
 
   build() {
@@ -209,6 +222,7 @@ export struct NoteContentOverViewComp {
           .fontColor($r("app.color.modified_time_font_color"))
         Row() {
           Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+            .fontColor($r('app.color.folder_color_99182431'))
             .fontSize(12)
           Image($r('app.media.triangle'))
             .width(6)
@@ -520,7 +534,7 @@ struct NoteDataMoveItemCompMenu {
           .objectFit(ImageFit.ScaleDown)
           .width(24)
           .height(24)
-          .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
+          .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.folderItem.uuid == this.uuid))
       }
       .width(24)
 
@@ -528,7 +542,7 @@ struct NoteDataMoveItemCompMenu {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Text(FolderUtil.getFolderText(this.folderItem))
             .fontSize(16)
-            .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid == this.uuid ? this.folderItem.uuid : '', false))
+            .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid == this.uuid ? this.folderItem.uuid : '', this.folderItem.uuid == this.uuid))
             .textAlign(TextAlign.Center)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -537,9 +551,12 @@ struct NoteDataMoveItemCompMenu {
         .width('100%')
         .height(55)
 
-        Divider()
-          .color($r("app.color.divider_color_e4e4e4"))
-          .strokeWidth(1)
+        if (this.folderItem.uuid != SysDefFolderUuid.UnClassified) {
+          Divider()
+            .color($r("app.color.divider_color_e4e4e4"))
+            .strokeWidth(1)
+        }
+
       }
       .padding({ left: 16 })
     }
