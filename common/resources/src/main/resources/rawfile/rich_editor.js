@@ -85,7 +85,7 @@ RICH_EDITOR.getListStyle = function () {
                 }
             }
         } catch (err) {
-            LogUtil(TAG, err)
+            LogUtil.error(TAG, err)
         }
     }
 
@@ -115,7 +115,7 @@ RICH_EDITOR.setNumbers = function () {
                 }
             }
         } catch (err) {
-            LogUtil(TAG, err)
+            LogUtil.error(TAG, err)
         }
     }
 }
@@ -144,7 +144,7 @@ RICH_EDITOR.setABC = function () {
                 }
             }
         } catch (err) {
-            LogUtil(TAG, err)
+            LogUtil.error(TAG, err)
         }
     }
 }
@@ -173,7 +173,7 @@ RICH_EDITOR.setBullets = function () {
                 }
             }
         } catch (err) {
-            LogUtil(TAG, err)
+            LogUtil.error(TAG, err)
         }
     }
 }
@@ -202,7 +202,7 @@ RICH_EDITOR.setSquare = function () {
                 }
             }
         } catch (err) {
-            LogUtil(TAG, err)
+            LogUtil.error(TAG, err)
         }
     }
 }
