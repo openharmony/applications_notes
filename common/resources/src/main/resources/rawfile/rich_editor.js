@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {LogUtil} from '../../../../../utils/src/main/ets/default/baseUtil/LogUtil'
+
+const TAG = "Rich_Editor"
 
 var RICH_EDITOR = {};
 
@@ -82,7 +85,7 @@ RICH_EDITOR.getListStyle = function () {
                 }
             }
         } catch (err) {
-            console.error(err)
+            LogUtil(TAG, err)
         }
     }
 
@@ -112,7 +115,7 @@ RICH_EDITOR.setNumbers = function () {
                 }
             }
         } catch (err) {
-            console.error(err)
+            LogUtil(TAG, err)
         }
     }
 }
@@ -141,7 +144,7 @@ RICH_EDITOR.setABC = function () {
                 }
             }
         } catch (err) {
-            console.error(err)
+            LogUtil(TAG, err))
         }
     }
 }
@@ -170,7 +173,7 @@ RICH_EDITOR.setBullets = function () {
                 }
             }
         } catch (err) {
-            console.error(err)
+            LogUtil(TAG, err)
         }
     }
 }
@@ -199,7 +202,7 @@ RICH_EDITOR.setSquare = function () {
                 }
             }
         } catch (err) {
-            console.error(err)
+            LogUtil(TAG, err)
         }
     }
 }
