@@ -657,6 +657,7 @@ export struct AddNoteComp {
 export struct SearchComp {
   @Consume('Search') search: boolean
   @Consume('InputKeyword') inputKeyword: string
+  @Consume('Longpress') longpress: boolean
 
   build() {
     Row() {
@@ -673,20 +674,31 @@ export struct SearchComp {
       Flex({ justifyContent: FlexAlign.Start }) {
         Image($r('app.media.search')).width(18).height(18)
         TextInput({ placeholder: $r('app.string.searchNote') })
-          .backgroundColor($r("app.color.color_ffffff"))
+          .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
-          .onChange((value: string) => {
-            LogUtil.info(TAG, "Search value: " + value)
-            this.inputKeyword = value
-          })
+          .enabled(this.longpress ? false : true)
           .onEditChange((isEditing: boolean) => {
             this.search = isEditing
           })
+          .onChange((value: string) => {
+            if (!this.longpress) {
+              LogUtil.info(TAG, "Search value: " + value)
+              this.inputKeyword = value
+            }
+          })
+          .onClick(() => {
+            if (this.longpress) {
+              this.search = false
+            } else {
+              this.search = true
+            }
+          })
       }
+      .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
       .height(40)
+      .opacity(this.longpress ? 0.4 : 1)
       .padding({ left: 6, right: 12, top: 9, bottom: 9 })
       .borderRadius(20)
-      .backgroundColor($r("app.color.color_ffffff"))
       .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
       .margin({ right: this.search ? 40 : 0 })
     }
