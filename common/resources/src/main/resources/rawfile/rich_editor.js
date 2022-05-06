@@ -12,13 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+
+const TAG = "Rich_Editor"
 
 var RICH_EDITOR = {};
 
 RICH_EDITOR.editor = document.getElementById('editorjs');
 
 RICH_EDITOR.setHtml = function(contents) {
-    RICH_EDITOR.editor.innerHTML = contents.replace(/\+/g, '%20');
+    RICH_EDITOR.editor.innerHTML = contents.replace(/%20/g, '+');
 }
 
 RICH_EDITOR.getHtml = function() {
@@ -82,7 +85,7 @@ RICH_EDITOR.getListStyle = function () {
                 }
             }
         } catch (err) {
-
+            LogUtil.error(TAG, err)
         }
     }
 
@@ -112,7 +115,7 @@ RICH_EDITOR.setNumbers = function () {
                 }
             }
         } catch (err) {
-
+            LogUtil.error(TAG, err)
         }
     }
 }
@@ -141,7 +144,7 @@ RICH_EDITOR.setABC = function () {
                 }
             }
         } catch (err) {
-
+            LogUtil.error(TAG, err)
         }
     }
 }
@@ -170,7 +173,7 @@ RICH_EDITOR.setBullets = function () {
                 }
             }
         } catch (err) {
-
+            LogUtil.error(TAG, err)
         }
     }
 }
@@ -199,7 +202,7 @@ RICH_EDITOR.setSquare = function () {
                 }
             }
         } catch (err) {
-
+            LogUtil.error(TAG, err)
         }
     }
 }
@@ -318,7 +321,7 @@ function get_html_content() {
 function save_html_content() {
     console.log('save_html_content');
     var htmlString =  RICH_EDITOR.getHtml()
-    var str = callBackToApp.callbackhtmlSave(htmlString)
+    var str = callBackToApp.callbackhtmlSave(htmlString.replace(/\+/g, '%20'))
     console.log('save_html_content end');
 }
 
