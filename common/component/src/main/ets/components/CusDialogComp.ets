@@ -584,8 +584,8 @@ export struct EditContentDialog {
           Slider({
             value: this.inSetValue,
             min: 0,
-            max: 60,
-            step: 10,
+            max: 16,
+            step: 4,
             style: SliderStyle.InSet
           })
             .blockColor($r("app.color.color_ffffff"))
@@ -595,7 +595,7 @@ export struct EditContentDialog {
             .showTips(false)
             .onChange((value: number, mode: SliderChangeMode) => {
               this.inSetValue = value
-              this.fontSize = value + 20
+              this.fontSize = value + 12
               this.confirm("javascript:RICH_EDITOR.execFontSize('" + this.fontSize + "')")
               LogUtil.info(TAG, 'value:' + value + 'mode:' + mode.toString())
             })
@@ -889,8 +889,8 @@ export struct EditContentDialogPortrait {
         Slider({
           value: this.inSetValue,
           min: 0,
-          max: 60,
-          step: 10,
+          max: 16,
+          step: 4,
           style: SliderStyle.InSet
         })
           .blockColor($r("app.color.color_ffffff"))
@@ -900,7 +900,7 @@ export struct EditContentDialogPortrait {
           .showTips(false)
           .onChange((value: number, mode: SliderChangeMode) => {
             this.inSetValue = value
-            this.fontSize = value + 20
+            this.fontSize = value + 12
             this.confirm("javascript:RICH_EDITOR.execFontSize('" + this.fontSize + "')")
             LogUtil.info(TAG, 'value:' + value + 'mode:' + mode.toString())
           })
