@@ -75,6 +75,7 @@ export struct NoteContent {
       LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + this.selectedNoteData.uuid)
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+      LogUtil.info(TAG, 'continueNote content', continueNote)
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(TAG, 'callbackScheduledSave, set continue note success')
     }
@@ -414,9 +415,10 @@ struct NoteDataMoveItemComp {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
       Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
         Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
-          .objectFit(ImageFit.ScaleDown)
+          .objectFit(ImageFit.Fill)
           .width(24)
           .height(24)
+          .flexShrink(0)
           .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
       }
       .width(24)

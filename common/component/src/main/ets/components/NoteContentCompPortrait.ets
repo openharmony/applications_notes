@@ -531,9 +531,10 @@ struct NoteDataMoveItemCompMenu {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
       Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
         Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
-          .objectFit(ImageFit.ScaleDown)
+          .objectFit(ImageFit.Fill)
           .width(24)
           .height(24)
+          .flexShrink(0)
           .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.folderItem.uuid == this.uuid))
       }
       .width(24)

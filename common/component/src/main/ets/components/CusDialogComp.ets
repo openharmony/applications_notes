@@ -50,9 +50,10 @@ export struct NewOrEditFolderDialog {
       // folder name input
       Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
         Image($r("app.media.folder"))
+          .objectFit(ImageFit.Fill)
           .width(24)
           .height(24)
-          .objectFit(ImageFit.ScaleDown)
+          .flexShrink(0)
           .fillColor(this.selectedColor)
         TextInput({ text: this.inputName, placeholder: $r("app.string.input_placeholder") })
           .placeholderFont({ size: 18 })
@@ -260,9 +261,10 @@ struct NoteDataMoveItemComp {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
       Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
         Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
-          .objectFit(ImageFit.ScaleDown)
+          .objectFit(ImageFit.Fill)
           .width(24)
           .height(24)
+          .flexShrink(0)
           .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
       }
       .width(24)
@@ -277,9 +279,10 @@ struct NoteDataMoveItemComp {
             .flexShrink(1)
           Image((FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) == null
           || FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) != this.folderItem) ? $r("app.media.foldMove_unselect") : $r("app.media.foldMove_select"))
-            .objectFit(ImageFit.ScaleDown)
+            .objectFit(ImageFit.Fill)
             .width(24)
             .height(24)
+            .flexShrink(0)
         }
         .width(248)
         .height(55)

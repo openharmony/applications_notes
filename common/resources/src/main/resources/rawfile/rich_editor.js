@@ -12,9 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
-
-const TAG = "Rich_Editor"
 
 var RICH_EDITOR = {};
 
@@ -85,7 +82,7 @@ RICH_EDITOR.getListStyle = function () {
                 }
             }
         } catch (err) {
-            LogUtil.error(TAG, err)
+            console.error(err)
         }
     }
 
@@ -115,7 +112,7 @@ RICH_EDITOR.setNumbers = function () {
                 }
             }
         } catch (err) {
-            LogUtil.error(TAG, err)
+            console.error(err)
         }
     }
 }
@@ -144,7 +141,7 @@ RICH_EDITOR.setABC = function () {
                 }
             }
         } catch (err) {
-            LogUtil.error(TAG, err)
+            console.error(err)
         }
     }
 }
@@ -173,7 +170,7 @@ RICH_EDITOR.setBullets = function () {
                 }
             }
         } catch (err) {
-            LogUtil.error(TAG, err)
+            console.error(err)
         }
     }
 }
@@ -202,7 +199,7 @@ RICH_EDITOR.setSquare = function () {
                 }
             }
         } catch (err) {
-            LogUtil.error(TAG, err)
+            console.error(err)
         }
     }
 }
