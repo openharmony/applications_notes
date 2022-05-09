@@ -156,6 +156,7 @@ struct NoteOverViewComp {
             .fontColor($r("app.color.note_selected_font_color"))
             .margin({ left: 16 })
             .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .fontWeight(FontWeight.Medium)
         }.alignItems(VerticalAlign.Center)
         .visibility(this.longpress ? Visibility.Visible : Visibility.None)
       }.padding({ top: 8, bottom: 8 })
@@ -373,16 +374,6 @@ export struct NoteItemListComp {
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
 
       Stack() {
-        Flex({ justifyContent: FlexAlign.Center }) {
-          Text($r("app.string.permanently_delete_tips"))
-            .fontSize(12)
-            .fontColor($r("app.color.Recently_delete_prompt_font_color"))
-        }
-        .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
-        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-        .width('100%')
-        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
-
         Column() {
           List({ initialIndex: 0 }) {
             ListItem() {
@@ -400,6 +391,16 @@ export struct NoteItemListComp {
             .height('100%')
             .padding({ bottom: 120 })
             .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
+
+            ListItem() {
+              Text($r("app.string.permanently_delete_tips"))
+                .fontSize(12)
+                .fontColor($r("app.color.Recently_delete_prompt_font_color"))
+            }
+            .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
+            .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+            .width('100%')
+            .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes && this.search == false ? Visibility.Visible : Visibility.None)
 
             ForEach(this.inputKeyword.length == 0 ?
             NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) : this.searchResultList, (noteItem) => {
@@ -838,7 +839,7 @@ export struct OperateNoteCompForPortrait {
           .padding({ top: 5 })
       }
       .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
-      .width("25%")
+      .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? "33.3%" :"25%")
       .height("100%")
       .opacity(this.greyOpacity ? 0.4 : 1)
       .enabled(this.greyOpacity ? false : true)
@@ -897,7 +898,7 @@ export struct OperateNoteCompForPortrait {
             .padding({ top: 5 })
         }
         .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
-        .width("25%")
+        .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? "33.3%" :"25%")
         .height("100%")
         .opacity(this.greyOpacity ? 0.4 : 1)
         .enabled(this.greyOpacity ? false : true)
@@ -926,7 +927,7 @@ export struct OperateNoteCompForPortrait {
           .padding({ top: 5 })
       }
       .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
-      .width("25%")
+      .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? "33.3%" :"25%")
       .height("100%")
       .alignItems(HorizontalAlign.Center)
       .justifyContent(FlexAlign.Center)

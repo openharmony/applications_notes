@@ -277,6 +277,7 @@ struct NoteDataMoveItemComp {
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .flexShrink(1)
+            .fontWeight(FontWeight.Medium)
           Image((FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) == null
           || FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) != this.folderItem) ? $r("app.media.foldMove_unselect") : $r("app.media.foldMove_select"))
             .objectFit(ImageFit.Fill)
@@ -320,6 +321,7 @@ export struct NoteDataMoveDialog {
         Text($r("app.string.chooseFolder"))
           .fontSize(20)
           .fontWeight(600)
+          .fontWeight(FontWeight.Medium)
       }.height(56)
       .width(288)
 
@@ -703,7 +705,7 @@ export struct EditContentDialogPortrait {
         Text($r("app.string.style")).margin({ top: 8 })
           .fontSize(14).fontColor($r("app.color.font_stylecolor_AD182431"))
 
-        Image($r('app.media.cross')).height(16).width(16).margin({ top: 8 })
+        Image($r('app.media.cross')).height(16).width(16).margin({ top: 8 }).fillColor($r("app.color.font_stylecolor_AD182431"))
           .onClick(() => {
             this.editContentDialogCtl.close()
           })

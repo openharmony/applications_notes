@@ -208,7 +208,7 @@ export struct NoteContentOverViewComp {
     Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
       justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
       Row() {
-        Text(this.selectedNoteData.title).fontSize(30)
+        Text(this.selectedNoteData.title).fontSize(30).fontWeight(FontWeight.Medium)
           .onClick(() => {
             this.editTitleDialogCtl.open()
           })
@@ -381,6 +381,9 @@ export struct DeleteNoteComp {
           .fontColor($r('app.color.delete_font_color'))
           .padding({ top: 5 })
       }
+      .height("100%")
+      .width(180)
+      .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
 
       Column() {
@@ -403,6 +406,9 @@ export struct DeleteNoteComp {
           .fontColor($r('app.color.recover_font_color'))
           .padding({ top: 5 })
       }
+      .height("100%")
+      .width(180)
+      .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
     }
     .width(360)
