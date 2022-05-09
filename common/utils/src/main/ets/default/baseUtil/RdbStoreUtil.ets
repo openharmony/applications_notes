@@ -410,6 +410,9 @@ export default {
    * @param callback
    */
   update(valueBucket, predicates, callback) {
+    if (!rdbStore) {
+      return;
+    }
     rdbStore.update(valueBucket, predicates).then((affectedRowCount) => {
       LogUtil.info(TAG, "update success, affectedRowCount is " + affectedRowCount)
       if (callback != null) {
