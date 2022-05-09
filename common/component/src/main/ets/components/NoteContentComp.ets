@@ -364,6 +364,7 @@ export struct ToolBarComp {
             if (this.lastSectionStatus != undefined) {
               // 切换为小屏预览模式
               this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
+              this.sectionStatus = this.lastSectionStatus
               // 退出全屏时存库
               LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
               this.controllerShow.runJavaScript({ script: "save_html_content()" })
