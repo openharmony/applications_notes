@@ -16,6 +16,7 @@
 import {NoteContent} from '@ohos/component/src/main/ets/components/NoteContent'
 import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
+import inputMethod from '@ohos.inputmethod'
 
 @Entry
 @Component
@@ -40,6 +41,7 @@ struct NoteContentHome {
      LogUtil.info(this.TAG, "onBackPress")
      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
      this.controllerShow.runJavaScript({ script: "get_html_content()" })
+     inputMethod.getInputMethodController().stopInput()
   }
 
   aboutToAppear(): void{

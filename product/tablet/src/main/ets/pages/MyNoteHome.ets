@@ -93,7 +93,7 @@ export struct MyNoteHomeComp {
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
   }
 
-  onBackPress():void{
+  onBackPress() {
     LogUtil.info(this.TAG, "onBackPress")
     // 退出键盘
     inputMethod.getInputMethodController().stopInput();
