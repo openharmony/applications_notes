@@ -839,7 +839,7 @@ export struct OperateNoteCompForPortrait {
           .padding({ top: 5 })
       }
       .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
-      .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? "33.3%" :"25%")
+      .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? 120 :"25%")
       .height("100%")
       .opacity(this.greyOpacity ? 0.4 : 1)
       .enabled(this.greyOpacity ? false : true)
@@ -898,7 +898,7 @@ export struct OperateNoteCompForPortrait {
             .padding({ top: 5 })
         }
         .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
-        .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? "33.3%" :"25%")
+        .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? 120 :"25%")
         .height("100%")
         .opacity(this.greyOpacity ? 0.4 : 1)
         .enabled(this.greyOpacity ? false : true)
@@ -927,7 +927,7 @@ export struct OperateNoteCompForPortrait {
           .padding({ top: 5 })
       }
       .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
-      .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? "33.3%" :"25%")
+      .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? 120 :"25%")
       .height("100%")
       .alignItems(HorizontalAlign.Center)
       .justifyContent(FlexAlign.Center)
