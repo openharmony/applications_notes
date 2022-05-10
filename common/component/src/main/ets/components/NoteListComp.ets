@@ -373,59 +373,65 @@ export struct NoteItemListComp {
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
 
-      Column() {
-        Flex({ justifyContent: FlexAlign.Center }) {
-          Text($r("app.string.permanently_delete_tips"))
-            .fontSize(12)
-            .fontColor($r("app.color.Recently_delete_prompt_font_color"))
-        }
-        .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
-        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-        .width('100%')
-        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
+      Stack() {
+        Flex({direction: FlexDirection.Column}) {
+          Flex({ justifyContent: FlexAlign.Center }) {
+            Text($r("app.string.permanently_delete_tips"))
+              .fontSize(12)
+              .fontColor($r("app.color.Recently_delete_prompt_font_color"))
+          }
+          .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
+          .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+          .width('100%')
+          .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
 
-        Column() {
-          List({ initialIndex: 0 }) {
-            ListItem() {
-              Column({ space: 8 }) {
-                Image($r('app.media.emptyPage'))
-                  .width(120)
-                  .height(120)
-                Text($r("app.string.Empty_page"))
-                  .fontSize(12)
-                  .fontColor($r("app.color.Empty_page_font_color"))
-              }
-            }
-            .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-            .width('100%')
-            .height('100%')
-            .padding({ bottom: 120 })
-            .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
-
-            ForEach(this.inputKeyword.length == 0 ?
-            NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) : this.searchResultList, (noteItem) => {
+          Column() {
+            List({ initialIndex: 0 }) {
               ListItem() {
-                Column() {
-                  NoteItemComp({
-                    noteItem: noteItem,
-                    spans: SearchModel.splitToHighlightText(noteItem.title, this.inputKeyword),
-                    controllerShow: this.controllerShow
-                  })
+                Column({ space: 8 }) {
+                  Image($r('app.media.emptyPage'))
+                    .width(120)
+                    .height(120)
+                  Text($r("app.string.Empty_page"))
+                    .fontSize(12)
+                    .fontColor($r("app.color.Empty_page_font_color"))
                 }
-                .padding({ left: 24, right: 24, bottom: 12 })
               }
               .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-            }, noteItem => noteItem.uuid.toString())
+              .width('100%')
+              .height('100%')
+              .padding({ bottom: 120 })
+              .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
+
+              ForEach(this.inputKeyword.length == 0 ?
+              NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) : this.searchResultList, (noteItem) => {
+                ListItem() {
+                  Column() {
+                    NoteItemComp({
+                      noteItem: noteItem,
+                      spans: SearchModel.splitToHighlightText(noteItem.title, this.inputKeyword),
+                      controllerShow: this.controllerShow
+                    })
+                  }
+                  .padding({ left: 24, right: 24, bottom: 12 })
+                }
+                .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+              }, noteItem => noteItem.uuid.toString())
+            }
+            .layoutWeight(1)
+            .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
+            .listDirection(Axis.Vertical)
+            .edgeEffect(EdgeEffect.Spring)
           }
           .layoutWeight(1)
           .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-          .listDirection(Axis.Vertical)
-          .edgeEffect(EdgeEffect.Spring)
+          .height("100%")
+          .margin({ top: this.search ? 8 : 0 })
         }
-        .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-        .flexGrow(1)
-        .margin({ top: this.search ? 8 : 0 })
+        .height("100%")
+        .width("100%")
 
+        // search input mask
         Column() {
         }
         .height("100%")
