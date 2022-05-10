@@ -573,7 +573,7 @@ export struct OperateNoteComp {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_deleted = Delete.No
             noteItem.deleted_time = 0
-            prompt.showToast({ message: $r('app.string.restore').toString(), duration: 2000 })
+            prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
