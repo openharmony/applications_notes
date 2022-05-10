@@ -87,7 +87,7 @@ export struct NoteHomeComp {
           .opacity(StyleConstants.OPACITY_10)
         NoteListComp({ controllerShow: this.controllerShow })
       }
-      .flexShrink(0)
+      .flexShrink(1)
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .layoutWeight(2)
       .height(StyleConstants.PERCENTAGE_100)

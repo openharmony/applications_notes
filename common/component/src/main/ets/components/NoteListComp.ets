@@ -372,7 +372,7 @@ export struct NoteItemListComp {
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
 
-      Stack() {
+      Column() {
         Flex({ justifyContent: FlexAlign.Center }) {
           Text($r("app.string.permanently_delete_tips"))
             .fontSize(12)
@@ -416,7 +416,7 @@ export struct NoteItemListComp {
               .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
             }, noteItem => noteItem.uuid.toString())
           }
-          .height("100%")
+          .layoutWeight(1)
           .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
           .listDirection(Axis.Vertical)
           .edgeEffect(EdgeEffect.Spring)
@@ -434,10 +434,10 @@ export struct NoteItemListComp {
         .visibility(this.search ? Visibility.Visible : Visibility.Hidden)
       }
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-      .flexGrow(1)
+      .flexShrink(1)
     }
     .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
-    .flexGrow(1)
+    .flexShrink(1)
     .onClick(() => {
       this.search = false
     })
