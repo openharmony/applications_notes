@@ -63,11 +63,12 @@ export struct NoteListComp {
       }
       .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
       .width('100%')
-      .flexGrow(1)
+      .flexShrink(1)
 
       Column() {
         OperateNoteCompForPortrait()
       }
+      .flexShrink(0)
       .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
     }
     .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
