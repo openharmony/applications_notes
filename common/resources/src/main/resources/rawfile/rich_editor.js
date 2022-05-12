@@ -328,3 +328,10 @@ function scheduled_save_content() {
     var str = callBackToApp.callbackScheduledSave(htmlString)
     console.info('scheduled_save_content end')
 }
+
+RICH_EDITOR.getFontSizes = function(){
+    document.execCommand("fontSize", false, null);
+    var fontElements = window.getSelection().anchorNode.parentNode
+    var getSize = fontElements.style.fontSize
+    var str = callBackToApp.callbackGetSize(getSize)
+}

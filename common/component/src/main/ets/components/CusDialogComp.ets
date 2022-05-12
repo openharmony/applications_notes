@@ -365,15 +365,18 @@ export struct NoteDataMoveDialog {
   }
 }
 
+let inSetValue = AppStorage.Link('inSetValue')
 @CustomDialog
 export struct EditContentDialog {
   editContentDialogCtl: CustomDialogController
   confirm: (excuteJs: string) => void
   @State selectFontColor: string = fontColorArray[0]
-  @State inSetValue: number = 20
+  @StorageLink("inSetValue") inSetValue: number = 4
   private circleColor: string
   private fontSize: number
-
+  aboutToAppear(){
+    this.confirm("javascript:RICH_EDITOR.getFontSizes()")
+  }
   build() {
     Row() {
       Column() {
@@ -599,7 +602,7 @@ export struct EditContentDialog {
             .showSteps(false)
             .showTips(false)
             .onChange((value: number, mode: SliderChangeMode) => {
-              this.inSetValue = value
+              AppStorage.Set<number>('inSetValue', value)
               this.fontSize = value + 12
               this.confirm("javascript:RICH_EDITOR.execFontSize('" + this.fontSize + "')")
               LogUtil.info(TAG, 'value:' + value + 'mode:' + mode.toString())
