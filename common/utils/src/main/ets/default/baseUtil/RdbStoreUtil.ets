@@ -150,7 +150,9 @@ export default {
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
           let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
           AppStorage.SetOrCreate('Note', note)
-          AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
+          if (note) {
+            AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
+          }
           AppStorage.SetOrCreate('Section', 3)
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
@@ -275,14 +277,16 @@ export default {
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
           let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
           AppStorage.SetOrCreate('Note', note)
-          AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
+          if (note) {
+            AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
+          }
           AppStorage.SetOrCreate('Section', 3)
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
         LogUtil.info(TAG, "initAppStorage, set DBQueryFinished 1")
       })
       .catch((err) => {
-        LogUtil.warn(TAG, "initAppStorage, error : " + err)
+        LogUtil.error(TAG, "initAppStorage, error : " + err)
       })
   },
 

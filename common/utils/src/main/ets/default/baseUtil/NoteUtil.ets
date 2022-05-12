@@ -235,6 +235,10 @@ export class NoteUtil {
   getFirstNoteData(allNoteDataArray: NoteData[], folderUuid: string): NoteData {
     let noteDataArray: NoteData[] = this.getNoteDataArray(allNoteDataArray, folderUuid);
     LogUtil.info(TAG, "get noteDataArray size " + noteDataArray.length.toString())
+    if (noteDataArray.length == 0) {
+      LogUtil.info(TAG, "get noteDataArray empty")
+      return undefined;
+    }
     return noteDataArray == undefined ? null : noteDataArray[0]
   }
 
