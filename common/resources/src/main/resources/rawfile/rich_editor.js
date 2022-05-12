@@ -219,12 +219,23 @@ RICH_EDITOR.execFontSize = function (size, unit) {
     fontElements.style.fontSize = size + 'px'
 };
 
+var pad = 24
 RICH_EDITOR.setIndent = function() {
-    document.execCommand('indent', false, null);
+    var parents = document.getElementById('editorjs')
+    parents.removeAttribute('padding-left');
+    pad = pad + 24
+    parents.style.paddingLeft = pad + 'px'
 }
 
 RICH_EDITOR.setOutdent = function() {
-    document.execCommand('outdent', false, null);
+    var parents = document.getElementById('editorjs')
+    parents.removeAttribute('padding-left');
+    if (pad == 24) {
+        parents.style.paddingLeft = 24 + 'px'
+    } else {
+        pad = pad - 24
+        parents.style.paddingLeft = pad + 'px'
+    }
 }
 
 RICH_EDITOR.setJustifyLeft = function() {
