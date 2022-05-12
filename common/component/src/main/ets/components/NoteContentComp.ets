@@ -34,6 +34,7 @@ const TAG = "NoteContentComp"
 var timeId : number
 
 // Note content component
+let inSetValue = AppStorage.Link('inSetValue')
 @Component
 export struct NoteContentComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
@@ -100,8 +101,13 @@ export struct NoteContentComp {
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(TAG, 'callbackScheduledSave, set continue note success')
-    }
+    },
 
+    callbackGetSize: (size) => {
+      if(size) {
+        AppStorage.Set<number>('inSetValue', parseInt(size.slice(0,-2)) - 12)
+      }
+    }
   }
 
   build() {
@@ -125,7 +131,7 @@ export struct NoteContentComp {
                 this.controllerShow.registerJavaScriptProxy({
                   object: this.noteContent,
                   name: "callBackToApp", // html-->  name.method
-                  methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave"],
+                  methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave", "callbackGetSize"],
                 })
                 LogUtil.info(TAG, "finish register")
                 this.controllerShow.refresh()
@@ -268,11 +274,11 @@ export struct NoteContentOverViewComp {
           .fontSize(12)
           .padding({ top: 4, bottom: 4 })
           .fontColor($r("app.color.modified_time_font_color"))
-	  .margin({ left: 12 })
+          .margin({ left: 12 })
         Row() {
           Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
             .fontSize(12)
-	    .fontColor($r("app.color.list_modified_time_font_color"))
+            .fontColor($r("app.color.list_modified_time_font_color"))
           Image($r('app.media.triangle'))
             .width(6)
             .height(12)
