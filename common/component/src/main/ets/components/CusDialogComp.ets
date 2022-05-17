@@ -192,12 +192,6 @@ export struct DeleteDialog {
               .textAlign(TextAlign.Center)
               .maxLines(1)
               .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
-          } else if (this.CheckedNoteArray.length == 1) {
-            Text($r("app.string.deleteNote"))
-              .fontSize(14)
-              .textAlign(TextAlign.Center)
-              .maxLines(1)
-              .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
           } else if (this.CheckedNoteArray.length > 1){
             Text($r("app.string.deletePartNote", this.CheckedNoteArray.length))
               .fontSize(14)

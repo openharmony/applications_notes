@@ -266,7 +266,6 @@ export struct ToolBarComp {
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-      // 跳转
       routePage()
     } else {
       NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData.uuid)
@@ -274,14 +273,13 @@ export struct ToolBarComp {
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.delete(predicates_note, null)
-      // 跳转
       routePage()
     }
   }
 
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), multiSelect: true }),
-    alignment: DialogAlignment.Center,
+    alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
   })
