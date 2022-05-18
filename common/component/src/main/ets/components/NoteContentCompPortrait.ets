@@ -34,6 +34,14 @@ var time_id: number
 
 const TAG = "NoteContentCompPortrait"
 
+async function routePage() {
+  try {
+    await router.back()
+  } catch (err) {
+    LogUtil.info(TAG, "fail callback")
+  }
+}
+
 // Note content component
 @Component
 export struct NoteContentCompPortrait {
@@ -250,6 +258,32 @@ export struct ToolBarComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   controllerShow: WebController
 
+  onDeleteConfirm() {
+    if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
+      this.selectedNoteData.is_deleted = Delete.Yes
+      this.selectedNoteData.deleted_time = new Date().getTime()
+      // update note to db
+      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+      routePage()
+    } else {
+      NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData.uuid)
+      // delete note from db
+      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+      RdbStoreUtil.delete(predicates_note, null)
+      routePage()
+    }
+  }
+
+  noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
+    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), multiSelect: true }),
+    alignment: DialogAlignment.Bottom,
+    autoCancel: false,
+    customStyle: true,
+  })
+
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
       justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -286,7 +320,11 @@ export struct ToolBarComp {
               AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
               LogUtil.info(TAG, 'ToolBarComp, set continue note success')
             })
-        }.width(36)
+          Image($r('app.media.delete')).height(24).width(24)
+            .onClick(()=>{
+              this.noteDataDeleteDialogCtl.open()
+            })
+        }.width(72)
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       } else {
         Row({ space: StyleConstants.SPACE_6 }) {
