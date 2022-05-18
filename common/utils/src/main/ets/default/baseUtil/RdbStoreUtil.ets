@@ -15,15 +15,17 @@
 
 import ohosDataRdb from '@ohos.data.rdb'
 import fileio from '@ohos.fileio'
-import {LogUtil} from './LogUtil.ets'
-import FolderUtil from './FolderUtil.ets'
-import NoteUtil from './NoteUtil.ets'
-import SysDefData from '../model/databaseModel/SysDefData.ets'
-import FolderData from '../model/databaseModel/FolderData.ets'
-import NoteData from '../model/databaseModel/NoteData.ets'
-import {TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid} from '../model/databaseModel/EnumData.ets'
+import {LogUtil} from './LogUtil'
+import FolderUtil from './FolderUtil'
+import NoteUtil from './NoteUtil'
+import SysDefData from '../model/databaseModel/SysDefData'
+import FolderData from '../model/databaseModel/FolderData'
+import NoteData from '../model/databaseModel/NoteData'
+import {TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid} from '../model/databaseModel/EnumData'
 
 const TAG = "RdbStoreUtil"
+
+const FileMaxSize: number = 20 * 1024 * 1024
 
 /**
  * db instance
@@ -95,7 +97,6 @@ export default {
         if (isContinue) {
           let continueNote: string = AppStorage.Get('ContinueNote')
           let continueSection = AppStorage.Get('ContinueSection')
-
           let noteObj = JSON.parse(continueNote)
           let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
             noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
@@ -103,16 +104,10 @@ export default {
 
           // save img to FileDir
           LogUtil.info(TAG, "createRdbStore, save img to FileDir")
-          let srcArray = this.getSrcFromHtml(decodeURI(noteObj.content_text))
-          srcArray.forEach((src: string) => {
-            let lastIndex = src.lastIndexOf('/')
-            LogUtil.info(TAG, " createRdbStore, lastIndex : " + lastIndex)
-            if (lastIndex != -1) {
-              let imgName = src.substring(lastIndex + 1)
-              this.writeToFileDir(context, imgName)
-            }
+          let imgNameArray = this.getImgNameFromHtml(noteData)
+          imgNameArray.forEach((imgName: string) => {
+            this.writeToFileDir(imgName)
           })
-          LogUtil.info(TAG, "createRdbStore, save img to FileDir success")
 
           // if not exit this note
           let exist = false
@@ -147,13 +142,17 @@ export default {
             AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, folderUuid))
           }
           AppStorage.SetOrCreate('Note', noteData)
+          AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(noteData.toNoteObject()))
           AppStorage.SetOrCreate('Section', continueSection)
+          AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
         } else {
           LogUtil.info(TAG, "createRdbStore, IsContinue false")
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
           let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
           AppStorage.SetOrCreate('Note', note)
-          AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
+          if (note) {
+            AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
+          }
           AppStorage.SetOrCreate('Section', 3)
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
@@ -218,7 +217,7 @@ export default {
         AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
         LogUtil.info(TAG, "AppStorage[query] set AllFolderArray and AllNoteArray success")
 
-        // 迁移
+        // save continue data
         let isContinue = AppStorage.Get<boolean>('IsContinue');
         LogUtil.info(TAG, "initAppStorage, isContinue is " + isContinue)
         if (isContinue) {
@@ -232,16 +231,10 @@ export default {
 
           // save img to FileDir
           LogUtil.info(TAG, "initAppStorage, save img to FileDir")
-          let srcArray = this.getSrcFromHtml(decodeURI(noteObj.content_text))
-          srcArray.forEach((src: string) => {
-            let lastIndex = src.lastIndexOf('/')
-            LogUtil.info(TAG, " initAppStorage, lastIndex : " + lastIndex)
-            if (lastIndex != -1) {
-              let imgName = src.substring(lastIndex + 1)
-              this.writeToFileDir(context, imgName)
-            }
+          let imgNameArray = this.getImgNameFromHtml(noteData)
+          imgNameArray.forEach((imgName: string) => {
+              this.writeToFileDir(imgName)
           })
-          LogUtil.info(TAG, "initAppStorage, save img to FileDir success")
 
           // if not exit this note
           let exist = false
@@ -276,13 +269,17 @@ export default {
             AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, folderUuid))
           }
           AppStorage.SetOrCreate('Note', noteData)
+          AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(noteData.toNoteObject()))
           AppStorage.SetOrCreate('Section', continueSection)
+          AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
         } else {
-          LogUtil.info(TAG, "RdbStoreUtil initAppStorage, IsContinue false")
+          LogUtil.info(TAG, "initAppStorage, IsContinue false")
           AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
           let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
           AppStorage.SetOrCreate('Note', note)
-          AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
+          if (note) {
+            AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
+          }
           AppStorage.SetOrCreate('Section', 3)
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
@@ -293,45 +290,87 @@ export default {
       })
   },
 
-  getSrcFromHtml(html: string): any{
-    LogUtil.info(TAG, "getSrcFromHtml, html : " + html)
+  getImgNameFromHtml(noteData: NoteData): any{
+    let newModuleName = "file://" + globalThis.noteContext.filesDir
+    let imgNameArray = []
+    let html = noteData.content_text
+    if (html == undefined || html == null || html == "") {
+      return imgNameArray
+    }
     let imgReg = /<img[^>]+>/g
     let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
     let imgArray = html.match(imgReg)
-    let srcArray = []
     if (imgArray != null) {
+      let hasFirstImg: boolean = false
       for (let i = 0; i < imgArray.length; i++) {
         let src = imgArray[i].match(srcReg)
-        LogUtil.info(TAG, "getSrcFromHtml, src[1] : " + src[1])
-        srcArray.push(src[1])
+        if (src != null && src.length > 1) {
+          LogUtil.info(TAG, "getImgNameFromHtml, src[1] : " + src[1])
+          let lastIndex = src[1].lastIndexOf('/')
+          if (lastIndex != -1) {
+            let oldModuleName = src[1].substring(0, lastIndex)
+            let imgName = src[1].substring(lastIndex + 1)
+            noteData.content_text = noteData.content_text.replace(oldModuleName, newModuleName)
+            if (!hasFirstImg) {
+              noteData.content_img = newModuleName + "/" + imgName
+              hasFirstImg = true
+            }
+            imgNameArray.push(imgName)
+          }
+        }
       }
     }
-    LogUtil.info(TAG, "getSrcFromHtml, srcArray : " + srcArray)
-    return srcArray
+    return imgNameArray
   },
 
-  writeToFileDir(context, fileName: string) {
+  writeToFileDir(fileName: string) {
     LogUtil.info(TAG, "writeToFileDir fileName : " + fileName)
 
-    let distributedFilesDir = context.distributedFilesDir
-    let srcPath = distributedFilesDir + "/" + fileName
+    let desPath = globalThis.noteContext.filesDir + "/" + fileName
+    LogUtil.info(TAG, "desPath : " + desPath)
+    try {
+      fileio.accessSync(desPath)
+      LogUtil.info(TAG, "desPath has existed, return")
+      return
+    } catch (err) {
+      LogUtil.warn(TAG, "desPath has not existed, need to write")
+    }
+
+    let srcPath = globalThis.noteContext.distributedFilesDir + "/" + fileName
+    LogUtil.info(TAG, "srcPath : " + srcPath)
+    let size = fileio.statSync(srcPath).size
+    LogUtil.info(TAG, "srcPath size : " + size)
+    if (size > FileMaxSize) {
+      LogUtil.warn(TAG, "srcPath size more then FileMaxSize, return")
+      return
+    }
 
     let srcFd
     try {
-      srcFd = fileio.openSync(srcPath, 0o2, 0o666)
+      srcFd = fileio.openSync(srcPath, 0o0)
       LogUtil.info(TAG, "open srcPath success : " + srcFd)
     } catch (err) {
       LogUtil.warn(TAG, "open srcPath failed : " + err)
+      return
     }
 
-    let filesDir = context.filesDir
-    let desPath = filesDir + "/" + fileName
-
+    let desFd
     try {
-      fileio.copyFileSync(srcFd, desPath)
-      LogUtil.info(TAG, "writeToFileDir, copyFile successfully")
+      desFd = fileio.openSync(desPath, 0o2 | 0o100, 0o400 | 0o200 | 0o040 | 0o020)
+      LogUtil.info(TAG, "open desPath success : " + srcFd)
     } catch (err) {
-      LogUtil.warn(TAG, "writeToFileDir, copyFile failed : " + err)
+      LogUtil.warn(TAG, "open desPath failed : " + err)
+      return
+    }
+
+    let buf = new ArrayBuffer(size)
+    try {
+      let readNum = fileio.readSync(srcFd, buf)
+      LogUtil.info(TAG, "readNum : " + readNum)
+      let writeNum = fileio.writeSync(desFd, buf)
+      LogUtil.info(TAG, "writeNum : " + writeNum)
+    } catch (err) {
+      LogUtil.warn(TAG, "read or write error : " + err)
     }
   },
 
@@ -375,6 +414,9 @@ export default {
    * @param callback
    */
   update(valueBucket, predicates, callback) {
+    if (!rdbStore) {
+      return;
+    }
     rdbStore.update(valueBucket, predicates).then((affectedRowCount) => {
       LogUtil.info(TAG, "update success, affectedRowCount is " + affectedRowCount)
       if (callback != null) {
@@ -410,21 +452,18 @@ export default {
     return new ohosDataRdb.RdbPredicates(tableName)
   },
 
-  updataNoteImage(content):string {
-    let srcArray = this.getSrcFromHtml(decodeURI(content))
-    LogUtil.info(TAG, "getSrcFromHtml, srcArray : " + srcArray)
-    if(srcArray.length == 0) {
-      return ""
+  updataNoteImage(noteData: NoteData): string {
+    let content_img = ""
+    let imgNameArray = this.getImgNameFromHtml(noteData)
+    if (imgNameArray.length == 0) {
+      return content_img
     }
-    if(srcArray[0] == './shuxue.png' || srcArray[0] == './lvyou.png' || srcArray[0] == './cake.png') {
-      let lastIndex = srcArray[0].lastIndexOf('/')
-      LogUtil.info(TAG, "lastIndex : " + lastIndex)
-      let imgName = ""
-      if (lastIndex != -1) {
-        imgName = srcArray[0].substring(lastIndex + 1)
-      }
-      return "/res/" + imgName
+    if (imgNameArray[0] == 'shuxue.png' || imgNameArray[0] == 'cake.png') {
+      content_img = "/res/" + imgNameArray[0]
+    } else {
+      content_img = noteData.content_img
     }
-    return srcArray[0]
+    LogUtil.info(TAG, "updataNoteImage, content_img : " + content_img)
+    return content_img
   }
 }

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {FolderType, Delete} from './EnumData.ets'
+import {FolderType, Delete} from './EnumData'
 
 /**
  * 文件夹类

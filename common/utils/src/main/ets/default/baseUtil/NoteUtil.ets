@@ -14,16 +14,16 @@
  */
 
 import {WidthWeightMessage, unSelectedNoteBgColorMap, selectedNoteBgColorMap, folderTextMap, widthWeightMessageMap
-} from '../model/NoteBaseData.ets'
-import FolderData from '../model/databaseModel/FolderData.ets'
-import NoteData from '../model/databaseModel/NoteData.ets'
+} from '../model/NoteBaseData'
+import FolderData from '../model/databaseModel/FolderData'
+import NoteData from '../model/databaseModel/NoteData'
 import {SysDefFolderUuid, FolderType, Favorite, Delete, TableName, NoteTableColumn,
-} from '../model/databaseModel/EnumData.ets'
-import GlobalResourceManager from './GlobalResourceManager.ets'
-import StyleConstants from '../constants/StyleConstants.ets'
-import {LogUtil} from './LogUtil.ets'
-import FolderUtil from './FolderUtil.ets'
-import RdbStoreUtil from './RdbStoreUtil.ets'
+} from '../model/databaseModel/EnumData'
+import GlobalResourceManager from './GlobalResourceManager'
+import StyleConstants from '../constants/StyleConstants'
+import {LogUtil} from './LogUtil'
+import FolderUtil from './FolderUtil'
+import RdbStoreUtil from './RdbStoreUtil'
 import prompt from '@system.prompt'
 
 const TAG = "NoteUtil"
@@ -235,6 +235,10 @@ export class NoteUtil {
   getFirstNoteData(allNoteDataArray: NoteData[], folderUuid: string): NoteData {
     let noteDataArray: NoteData[] = this.getNoteDataArray(allNoteDataArray, folderUuid);
     LogUtil.info(TAG, "get noteDataArray size " + noteDataArray.length.toString())
+    if (noteDataArray.length == 0) {
+      LogUtil.info(TAG, "get noteDataArray empty")
+      return undefined;
+    }
     return noteDataArray == undefined ? null : noteDataArray[0]
   }
 

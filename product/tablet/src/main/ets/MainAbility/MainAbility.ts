@@ -14,32 +14,32 @@
  */
 
 import Ability from '@ohos.application.Ability'
-import {WebViewUtil} from './WebViewUtil.ets'
+import AbilityConstant from '@ohos.application.AbilityConstant'
 import fileio from '@ohos.fileio'
+import inputMethod from '@ohos.inputmethod';
 
 export default class MainAbility extends Ability {
-    private Tag = "Tablet_Note_MainAbility"
+    private Tag = "MainAbility_Tablet"
 
     onCreate(want, launchParam) {
         console.info(this.Tag + " onCreate, launchReason is " + launchParam.launchReason)
-        if (launchParam.launchReason == 3) {
+        if (launchParam.launchReason == AbilityConstant.LaunchReason.CONTINUATION) {
+            // 设置迁移标记
+            AppStorage.SetOrCreate<boolean>('IsContinue', true)
             // 获取对端的迁移数据
             let continueNote: string = want.parameters["ContinueNote"]
             let continueSection: number = want.parameters["ContinueSection"]
             console.info(this.Tag + " continueSection : " + continueSection)
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
             AppStorage.SetOrCreate<number>('ContinueSection', continueSection)
-            // 设置迁移标记
-            AppStorage.SetOrCreate<boolean>('IsContinue', true)
-
             // 来自手机的迁移
-            let isChoose: boolean = want.parameters["ContinueChoose"]
-            console.info(this.Tag + " from phone, isChoose : " + isChoose)
-            AppStorage.SetOrCreate<boolean>('IsChoose', isChoose)
+            let continueChoose: boolean = want.parameters["ContinueChoose"]
+            if (continueChoose) {
+                console.info(this.Tag + " continue from phone")
+                AppStorage.SetOrCreate<boolean>('ContinueFromPhone', true)
+            }
             this.context.restoreWindowStage(null)
         }
-        AppStorage.SetOrCreate<number>('openPhoto', 0)
-        AppStorage.SetOrCreate<number>('openPerm', 0)
         globalThis.noteContext = this.context
     }
 
@@ -62,14 +62,76 @@ export default class MainAbility extends Ability {
 
     onBackground() {
         console.info(this.Tag + " onBackground")
-        let controllerShow = WebViewUtil.getWebController()
-        if (controllerShow == undefined || controllerShow == null) {
-            console.info("MainAbility onBackground, controllerShow is error")
+        // 退出键盘
+        inputMethod.getInputMethodController().stopInput();
+    }
+
+    onContinue(wantParam: { [key: string]: any }) {
+        console.info(this.Tag + " onContinue")
+        // 获取本端的迁移数据
+        let continueNote = AppStorage.Get<string>('ContinueNote')
+        if (continueNote == undefined || continueNote == null) {
+            console.info(this.Tag + " onContinue, continueNote is error, default [0]")
+            continueNote = JSON.stringify(AppStorage.Get('AllNoteArray')[0].toNoteObject())
         }
-        console.info(this.Tag + " controllerShow : " + controllerShow)
-        controllerShow.runJavaScript({
-            script: "get_html_content()"
+
+        let continueSection = AppStorage.Get<number>('ContinueSection')
+        if (continueSection == undefined || continueSection == null) {
+            console.info(this.Tag + " onContinue, continueSection is error, default 3")
+            continueSection = 3
+        }
+        console.info(this.Tag + " onContinue, continueSection : " + continueSection)
+
+        // 保存本端的迁移数据
+        wantParam["ContinueNote"] = continueNote
+        wantParam["ContinueSection"] = continueSection
+
+        // save img to DisFileDir
+        console.info(this.Tag + " onContinue, save img to DisFileDir")
+        let continueNoteObj = JSON.parse(continueNote)
+        let srcArray = this.getSrcFromHtml(continueNoteObj.content_text)
+        srcArray.forEach((src: string) => {
+            let lastIndex = src.lastIndexOf('/')
+            if (lastIndex != -1) {
+                let imgName = src.substring(lastIndex + 1)
+                this.writeToDisFileDir(imgName)
+            }
         })
-        console.info(this.Tag + " controllerShow end")
+        console.info(this.Tag + " onContinue end")
+        return AbilityConstant.OnContinueResult.AGREE
+    }
+
+    getSrcFromHtml(html: string): any{
+        let srcArray = []
+        if (html == undefined || html == null || html == "") {
+            return srcArray
+        }
+        let imgReg = /<img[^>]+>/g
+        let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
+        let imgArray = html.match(imgReg)
+        if (imgArray != null) {
+            for (let i = 0; i < imgArray.length; i++) {
+                let src = imgArray[i].match(srcReg)
+                if (src != null && src.length > 1) {
+                    console.info(this.Tag + " getSrcFromHtml, src[1] : " + src[1])
+                    srcArray.push(src[1])
+                }
+            }
+        }
+        return srcArray
+    }
+
+    writeToDisFileDir(fileName: string) {
+        console.info(this.Tag + " writeToDisFileDir, fileName : " + fileName)
+        let filesDir = this.context.filesDir
+        let srcPath = filesDir + "/" + fileName
+        let distributedFilesDir = this.context.distributedFilesDir
+        let desPath = distributedFilesDir + "/" + fileName
+        try {
+            fileio.copyFileSync(srcPath, desPath)
+            console.info(this.Tag + " onContinue, writeToDisFileDir, copyFile successfully")
+        } catch (err) {
+            console.warn(this.Tag + " onContinue, writeToDisFileDir, copyFile failed : " + err)
+        }
     }
 }

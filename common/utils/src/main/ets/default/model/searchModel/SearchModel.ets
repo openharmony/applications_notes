@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-import {LogUtil} from '../../baseUtil/LogUtil.ets'
-import NoteData from '../../model/databaseModel/NoteData.ets'
+import {LogUtil} from '../../baseUtil/LogUtil'
+import NoteData from '../../model/databaseModel/NoteData'
 import ohosDataRdb from '@ohos.data.rdb';
-import {TableName, NoteTableColumn} from '../../model/databaseModel/EnumData.ets'
-import NoteUtil from '../../baseUtil/NoteUtil.ets'
-import RdbStoreUtil from '../../baseUtil/RdbStoreUtil.ets'
-import SysDefData from '../../model/databaseModel/SysDefData.ets'
+import {TableName, NoteTableColumn} from '../../model/databaseModel/EnumData'
+import NoteUtil from '../../baseUtil/NoteUtil'
+import RdbStoreUtil from '../../baseUtil/RdbStoreUtil'
+import SysDefData from '../../model/databaseModel/SysDefData'
 
 const TAG = "SearchModel"
 
@@ -42,7 +42,7 @@ export class SearchModel {
     }
     let searchData: NoteData[] = [];
     noteDataArray.forEach((noteData) => {
-      if (decodeURI(noteData.content_text).replace(/<[^>]+>/g,"").toLowerCase().indexOf(query.toLowerCase()) != -1
+      if (noteData.content_text.replace(/<[^>]+>/g,"").toLowerCase().indexOf(query.toLowerCase()) != -1
       || noteData.title.toLowerCase().indexOf(query.toLowerCase()) != -1) {
         LogUtil.info(TAG, "uuid " + noteData.uuid)
         searchData.push(noteData);
