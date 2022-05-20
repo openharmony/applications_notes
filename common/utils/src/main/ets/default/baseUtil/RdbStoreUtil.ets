@@ -30,7 +30,6 @@ const FileMaxSize: number = 20 * 1024 * 1024
 /**
  * db instance
  */
-var rdbStore = undefined
 
 export default {
   /**
@@ -40,27 +39,27 @@ export default {
     ohosDataRdb.getRdbStore(context, SysDefData.dbInfo.db_name, SysDefData.dbInfo.db_verison)
       .then(async (store) => {
         LogUtil.info(TAG, "createRdbStore, store is " + store)
-        rdbStore = store
+        globalThis.rdbStore = store
         // create table
-        await rdbStore.executeSql(TableSql.FolderTableSQL, null)
-        await rdbStore.executeSql(TableSql.NoteTableSQL, null)
-        await rdbStore.executeSql(TableSql.AttachmentTableSQL, null)
-        await rdbStore.executeSql(TableSql.FormTableSQL, null)
+        await globalThis.rdbStore.executeSql(TableSql.FolderTableSQL, null)
+        await globalThis.rdbStore.executeSql(TableSql.NoteTableSQL, null)
+        await globalThis.rdbStore.executeSql(TableSql.AttachmentTableSQL, null)
+        await globalThis.rdbStore.executeSql(TableSql.FormTableSQL, null)
         LogUtil.info(TAG, "create table success")
         // insert system defined folder
-        await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_allNotes)
-        await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_unClassified)
-        await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_myFavorites)
-        await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_recentDeletes)
-        await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_personal)
-        await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_life)
-        await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_work)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_allNotes)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_unClassified)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_myFavorites)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_recentDeletes)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_personal)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_life)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_work)
         LogUtil.info(TAG, "insert system defined folder success")
         // insert system defined note and attachment
-        await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note1)
-        await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note2)
-        await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note3)
-        await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note4)
+        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note1)
+        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note2)
+        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note3)
+        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note4)
         LogUtil.info(TAG, "insert system defined note and attachment success")
 
         // add sys-def folder and note to AppStorage
@@ -172,11 +171,11 @@ export default {
     ohosDataRdb.getRdbStore(context, SysDefData.dbInfo.db_name, SysDefData.dbInfo.db_verison)
       .then(async (store) => {
         LogUtil.info(TAG, "initAppStorage, store is " + store)
-        rdbStore = store
+        globalThis.rdbStore = store
         // query folder
         let columns_folder = []
         let predicates_folder = new ohosDataRdb.RdbPredicates(TableName.FolderTable)
-        let resultSet_folder = await rdbStore.query(predicates_folder, columns_folder)
+        let resultSet_folder = await globalThis.rdbStore.query(predicates_folder, columns_folder)
         while (resultSet_folder.goToNextRow()) {
           let id = resultSet_folder.getLong(resultSet_folder.getColumnIndex(FolderTableColumn.Id))
           let name = resultSet_folder.getString(resultSet_folder.getColumnIndex(FolderTableColumn.Name))
@@ -193,7 +192,7 @@ export default {
         // query note
         let columns_note = []
         let predicates_note = new ohosDataRdb.RdbPredicates(TableName.NoteTable)
-        let resultSet_note = await rdbStore.query(predicates_note, columns_note)
+        let resultSet_note = await globalThis.rdbStore.query(predicates_note, columns_note)
         while (resultSet_note.goToNextRow()) {
           let id = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.Id))
           let title = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.Title))
@@ -381,7 +380,7 @@ export default {
    * @param callback
    */
   insert(tableName, valueBucket, callback) {
-    rdbStore.insert(tableName, valueBucket).then((rowId) => {
+    globalThis.rdbStore.insert(tableName, valueBucket).then((rowId) => {
       LogUtil.info(TAG, "insert success, rowId is " + rowId)
       if (callback != null) {
         callback(rowId)
@@ -397,7 +396,7 @@ export default {
    * @param callback
    */
   delete(predicates, callback) {
-    rdbStore.delete(predicates).then((affectedRowCount) => {
+    globalThis.rdbStore.delete(predicates).then((affectedRowCount) => {
       LogUtil.info(TAG, "delete success, affectedRowCount is " + affectedRowCount)
       if (callback != null) {
         callback(affectedRowCount)
@@ -414,10 +413,10 @@ export default {
    * @param callback
    */
   update(valueBucket, predicates, callback) {
-    if (!rdbStore) {
+    if (!globalThis.rdbStore) {
       return;
     }
-    rdbStore.update(valueBucket, predicates).then((affectedRowCount) => {
+    globalThis.rdbStore.update(valueBucket, predicates).then((affectedRowCount) => {
       LogUtil.info(TAG, "update success, affectedRowCount is " + affectedRowCount)
       if (callback != null) {
         callback(affectedRowCount)
@@ -434,7 +433,7 @@ export default {
    * @param callback
    */
   query(columns, predicates, callback) {
-    rdbStore.query(predicates, columns).then((resultSet) => {
+    globalThis.rdbStore.query(predicates, columns).then((resultSet) => {
       LogUtil.info(TAG, "query success, row count : " + resultSet.rowCount)
       if (callback != null) {
         callback(resultSet)

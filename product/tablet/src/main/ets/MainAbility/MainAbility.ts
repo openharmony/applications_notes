@@ -17,7 +17,7 @@ import Ability from '@ohos.application.Ability'
 import AbilityConstant from '@ohos.application.AbilityConstant'
 import fileio from '@ohos.fileio'
 import inputMethod from '@ohos.inputmethod';
-
+globalThis.rdbStore = undefined
 export default class MainAbility extends Ability {
     private Tag = "MainAbility_Tablet"
 
