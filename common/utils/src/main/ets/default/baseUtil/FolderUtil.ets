@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-import {folderIconMap, folderTextMap} from '../model/NoteBaseData.ets'
-import FolderData from '../model/databaseModel/FolderData.ets'
-import NoteData from '../model/databaseModel/NoteData.ets'
-import {SysDefFolderUuid, FolderType, Favorite, Delete} from '../model/databaseModel/EnumData.ets'
-import GlobalResourceManager from './GlobalResourceManager.ets'
-import StyleConstants from '../constants/StyleConstants.ets'
-import {LogUtil} from './LogUtil.ets'
+import {folderIconMap, folderTextMap} from '../model/NoteBaseData'
+import FolderData from '../model/databaseModel/FolderData'
+import NoteData from '../model/databaseModel/NoteData'
+import {SysDefFolderUuid, FolderType, Favorite, Delete} from '../model/databaseModel/EnumData'
+import GlobalResourceManager from './GlobalResourceManager'
+import StyleConstants from '../constants/StyleConstants'
+import {LogUtil} from './LogUtil'
 
 const TAG = "FolderUtil"
 
@@ -72,7 +72,7 @@ export class FolderUtil {
     }
     LogUtil.info(TAG, "folderData uuid " + folderData.uuid + " isSelected " + isSelected)
     if (folderData.folder_type == FolderType.SysDef || folderData.folder_type == FolderType.FeatureDef) {
-      return isSelected ? $r("app.color.folder_color_f86d05") : $r("app.color.folder_color_182431")
+      return isSelected ? $r("app.color.folder_color_f86d05") : $r("app.color.folder_color_99182431")
     }
     return folderData.color
   }

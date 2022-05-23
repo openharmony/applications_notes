@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {SysDefFolder, SysDefFolderUuid, FolderType, NoteType, Favorite, Top, Delete} from './EnumData.ets'
+import {SysDefFolder, SysDefFolderUuid, FolderType, NoteType, Favorite, Top, Delete} from './EnumData'
 
 export default {
   /**
@@ -114,8 +114,8 @@ export default {
     "title": "数学公式",
     "uuid": "note1_uuid",
     "folder_uuid": SysDefFolderUuid.UnClassified,
-    "content_text": '<p>好好学习，天天向上</p><div style="text-align:center;"><img src="./shuxue.png"  height="700" style="border-radius:10px"/></div><br><br>',
-    "content_img": "/res/shuxue.png",
+    "content_text": '<text>好好学习，天天向上</text>',
+    "content_img": "",
     "note_type": NoteType.SysDef,
     "is_top": Top.Yes,
     "is_favorite": Favorite.Yes,
@@ -130,7 +130,7 @@ export default {
     "title": "UX会议纪要",
     "uuid": "note2_uuid",
     "folder_uuid": SysDefFolderUuid.Work,
-    "content_text": "UX会议纪要",
+    "content_text": "",
     "content_img": "",
     "note_type": NoteType.SysDef,
     "is_top": Top.Yes,
@@ -146,8 +146,8 @@ export default {
     "title": "旅游心得",
     "uuid": "note3_uuid",
     "folder_uuid": SysDefFolderUuid.Work,
-    "content_text": '<p>旅游心得</p><div style="text-align:center;"><img src="./lvyou.png"  height="700" style="border-radius:10px"/></div><br><br>',
-    "content_img": "/res/lvyou.png",
+    "content_text": '<div style="line-height:1.4;"><text>要想整个旅程无遗憾，关键是心态,首先要对即将到的目的地有一个正确的认识和恰当的期望。</text></div>',
+    "content_img": "",
     "note_type": NoteType.SysDef,
     "is_top": Top.No,
     "is_favorite": Favorite.No,
@@ -162,8 +162,15 @@ export default {
     "title": "蛋糕做法",
     "uuid": "note4_uuid",
     "folder_uuid": SysDefFolderUuid.Life,
-    "content_text": '<p>蛋糕做法</p><div style="text-align:center;"><img src="./cake.png"  height="600" style="border-radius:10px"/></div><br><br>',
-    "content_img": "/res/cake.png",
+    "content_text": '<div style="line-height:1.4;">' +
+                    '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox" checked="checked">' +
+                    '<span class="note-checkbox-txt">&nbsp;&nbsp;糖60g</span><br>' +
+                    '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox">' +
+                    '<span class="note-checkbox-txt">&nbsp;&nbsp;玉米油40g</span><br><div>' +
+                    '<div style="margin-top:14px; margin-top:14px;"><text>&nbsp;&nbsp;&nbsp;&nbsp;1. 添加鸡蛋、盐、糖、蛋糕粉<br>' +
+                    '&nbsp;&nbsp;&nbsp;&nbsp;2. 加入玉米油、牛奶，烤箱预热15分钟<br>' +
+                    '&nbsp;&nbsp;&nbsp;&nbsp;3. 加入葡萄干、核桃仁，烤箱定时40分钟<br><br></text><div>',
+    "content_img": "",
     "note_type": NoteType.CusDef,
     "is_top": Top.No,
     "is_favorite": Favorite.Yes,

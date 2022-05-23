@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {LogUtil} from '../baseUtil/LogUtil.ets'
+import {LogUtil} from '../baseUtil/LogUtil'
 import MediaLib from '@ohos.multimedia.mediaLibrary';
 
 const TAG = "MediaLibraryAccess"
