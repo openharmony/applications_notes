@@ -62,13 +62,6 @@ export struct NoteHomeComp {
     }
   }
 
-  narrowWinListener = mediaquery.matchMediaSync('(width < 2000)')
-  onWinSizeChange(mediaQueryResult) {
-    if (this.sectionStatus != 1) {
-      this.sectionStatus = (mediaQueryResult.matches) ? 2 : 3
-    }
-  }
-
   build() {
     Flex({ justifyContent: FlexAlign.Start }) {
       // Folder list display area
