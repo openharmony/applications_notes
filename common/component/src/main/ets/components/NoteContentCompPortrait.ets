@@ -29,6 +29,7 @@ import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import router from '@system.router'
 import inputMethod from '@ohos.inputmethod';
+import {folderTextMap} from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 
 var time_id: number
 
@@ -229,7 +230,9 @@ export struct NoteContentOverViewComp {
           .padding({ top: 4, bottom: 4 })
           .fontColor($r("app.color.modified_time_font_color"))
         Row() {
-          Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+          Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
+               folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
+               FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
             .fontColor($r('app.color.folder_color_99182431'))
             .fontSize(12)
           Image($r('app.media.triangle'))
@@ -432,7 +435,7 @@ export struct DeleteNoteComp {
           .onClick(() => {
             this.selectedNoteData.is_deleted = Delete.No
             this.selectedNoteData.deleted_time = 0
-            prompt.showToast({ message: $r('app.string.restore').toString(), duration: 2000 })
+            prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)

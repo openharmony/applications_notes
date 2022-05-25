@@ -30,6 +30,7 @@ import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationU
 import mediaquery from '@ohos.mediaquery'
 import router from '@system.router';
 import inputMethod from '@ohos.inputmethod';
+import {folderTextMap} from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 
 const TAG = "NoteContent"
 
@@ -384,7 +385,9 @@ export struct NoteContentOverViewComp {
           .fontColor($r("app.color.modified_time_font_color"))
           .margin({ left: 12 })
         Row() {
-          Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+          Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
+               folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
+               FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
             .fontSize(12)
             .fontColor($r("app.color.list_modified_time_font_color"))
           Image($r('app.media.triangle'))
