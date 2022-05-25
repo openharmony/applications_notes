@@ -18,8 +18,7 @@ var RICH_EDITOR = {};
 RICH_EDITOR.editor = document.getElementById('editorjs');
 
 RICH_EDITOR.setHtml = function(contents) {
-    RICH_EDITOR.editor.innerHTML = contents.replace(/%20/g, '+');
-    RICH_EDITOR.editor.innerHTML = contents.replace(/\&#39;/g, "'");
+    RICH_EDITOR.editor.innerHTML = contents.replace(/&#39;/g, "'");
 }
 
 RICH_EDITOR.getHtml = function() {
@@ -323,8 +322,7 @@ RICH_EDITOR.getSelectedAnchorNode=function(){
 function get_html_content() {
     console.log('get_html_content');
     var htmlString =  RICH_EDITOR.getHtml()
-    htmlString = htmlString.replace(/\+/g, '%20')
-    htmlString = htmlString.replace(/\'/g, '\&#39;')
+    htmlString = htmlString.replace(/'/g, '&#39;')
     var str = callBackToApp.callbackhtml(htmlString)
     console.log('get_html_content end');
 }
@@ -332,8 +330,7 @@ function get_html_content() {
 function save_html_content() {
     console.log('save_html_content');
     var htmlString =  RICH_EDITOR.getHtml()
-    htmlString = htmlString.replace(/\+/g, '%20')
-    htmlString = htmlString.replace(/\'/g, '\&#39;')
+    htmlString = htmlString.replace(/'/g, '&#39;')
     var str = callBackToApp.callbackhtmlSave(htmlString)
     console.log('save_html_content end');
 }
