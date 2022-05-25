@@ -55,7 +55,7 @@ export struct FolderListComp {
         .margin({ top: 28 })
         .padding({ left: 24 })
 
-      NoteAndCreateComp()
+        NoteAndCreateComp()
         // center
         List() {
           ForEach(this.AllFolderArray, (folderItem: FolderData) => {

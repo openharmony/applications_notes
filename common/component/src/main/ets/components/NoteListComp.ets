@@ -292,7 +292,6 @@ export struct NoteItemComp {
       } else {
         this.selectedNoteData = this.noteItem
         this.chooseNote = true
-        AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -652,7 +651,6 @@ export struct AddNoteComp {
           this.editModel = true
         }
         this.chooseNote = true
-        AppStorage.SetOrCreate('ContinueChoose', this.chooseNote)
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -892,7 +890,7 @@ export struct OperateNoteCompForPortrait {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_deleted = Delete.No
                 noteItem.deleted_time = 0
-                prompt.showToast({ message: $r('app.string.restore').toString(), duration: 2000 })
+                prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
                 predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
