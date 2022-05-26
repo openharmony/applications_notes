@@ -630,7 +630,7 @@ export struct AddNoteComp {
       .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
       .onClick(() => {
         let noteData
-        if (this.selectedFolderData.uuid == SysDefFolderUuid.AllNotes) {
+        if (this.selectedFolderData.uuid == SysDefFolderUuid.AllNotes || this.selectedFolderData.uuid == SysDefFolderUuid.MyFavorites) {
           noteData = new NoteData(0, "标题", new Date().getTime() + "", SysDefFolderUuid.UnClassified, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0)
         } else {
           noteData = new NoteData(0, "标题", new Date().getTime() + "", this.selectedFolderData.uuid, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0)
