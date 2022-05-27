@@ -18,7 +18,12 @@ var RICH_EDITOR = {};
 RICH_EDITOR.editor = document.getElementById('editorjs');
 
 RICH_EDITOR.setHtml = function(contents) {
-    RICH_EDITOR.editor.innerHTML = contents.replace(/&#39;/g, "'");
+    var base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    if (base64regex.test(contents)) {
+        RICH_EDITOR.editor.innerHTML = decodeURIComponent(escape(atob(contents)))
+    } else {
+        RICH_EDITOR.editor.innerHTML = contents;
+    }
 }
 
 RICH_EDITOR.getHtml = function() {
@@ -322,7 +327,7 @@ RICH_EDITOR.getSelectedAnchorNode=function(){
 function get_html_content() {
     console.log('get_html_content');
     var htmlString =  RICH_EDITOR.getHtml()
-    htmlString = htmlString.replace(/'/g, '&#39;')
+      htmlString = window.btoa(unescape(encodeURIComponent( htmlString )))
     var str = callBackToApp.callbackhtml(htmlString)
     console.log('get_html_content end');
 }
@@ -330,7 +335,7 @@ function get_html_content() {
 function save_html_content() {
     console.log('save_html_content');
     var htmlString =  RICH_EDITOR.getHtml()
-    htmlString = htmlString.replace(/'/g, '&#39;')
+      htmlString = window.btoa(unescape(encodeURIComponent( htmlString )))
     var str = callBackToApp.callbackhtmlSave(htmlString)
     console.log('save_html_content end');
 }
