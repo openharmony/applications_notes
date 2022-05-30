@@ -733,7 +733,7 @@ export struct OperateNoteCompForPortrait {
   })
 
   opacityChange() {
-    if (this.CheckedNoteArray.length == 0) {
+    if (this.CheckedNoteArray.length == 0 && this.longpress == true) {
       this.greyOpacity = true
       LogUtil.info(TAG, "none checked array")
     } else {
@@ -787,8 +787,8 @@ export struct OperateNoteCompForPortrait {
       })
     }
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
-    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
+    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
