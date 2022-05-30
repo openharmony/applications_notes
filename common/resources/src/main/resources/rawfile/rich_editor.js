@@ -111,7 +111,7 @@ RICH_EDITOR.setNumbers = function () {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
                 if (child.nodeName == 'OL') {
-                    child.style["list-style"] = 'decimal';
+                    child.style['list-style'] = 'decimal';
                     break;
                 }
                 if (child.parentNode) {
@@ -141,7 +141,7 @@ RICH_EDITOR.setABC = function () {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
                 if (child.nodeName == 'OL') {
-                    child.style["list-style"] = 'lower-alpha';
+                    child.style['list-style'] = 'lower-alpha';
                     break;
                 }
                 if (child.parentNode) {
@@ -223,7 +223,7 @@ RICH_EDITOR.setFontSize = function (fontSize) {
 };
 
 RICH_EDITOR.execFontSize = function (size, unit) {
-    document.execCommand('fontSize', false, "7");
+    document.execCommand('fontSize', false, '7');
     var fontElements = window.getSelection().anchorNode.parentNode;
     fontElements.removeAttribute('size');
     fontElements.style.fontSize = size + 'px';
@@ -261,8 +261,8 @@ RICH_EDITOR.setJustifyRight = function () {
 };
 
 RICH_EDITOR.insertImage = function (url) {
-    var html = '<br></br><img src="' + url +
-    '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
+    var html = '<br></br><img src="' + url
+    + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
     RICH_EDITOR.insertHTML(html);
     RICH_EDITOR.editor.scrollIntoView(false);
 };
@@ -280,7 +280,7 @@ RICH_EDITOR.addTodo = function (e) {
     KEY_ENTER = 13;
     if (e.which == KEY_ENTER) {
         var node = RICH_EDITOR.getSelectedAnchorNode();
-        if (node && node.nodeName == "#text") {
+        if (node && node.nodeName == '#text') {
             node = node.parentElement;
         }
         if (node && node.nodeName == 'SPAN' && node.previousElementSibling && node.previousElementSibling.className == 'note-checkbox') {
@@ -293,8 +293,8 @@ RICH_EDITOR.addTodo = function (e) {
 RICH_EDITOR.setTodo = function () {
     var parent = document.getElementById('editorjs');
     var isContentEmpty = parent.innerHTML.trim().length == 0 || parent.innerHTML == '<br>';
-    var html = (isContentEmpty ? '' : '<br/>') +
-    '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox"><span class="note-checkbox-txt">&nbsp;</span>';
+    var html = (isContentEmpty ? '' : '<br/>')
+    + '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox"><span class="note-checkbox-txt">&nbsp;</span>';
     document.execCommand('insertHTML', false, html);
 };
 
@@ -316,6 +316,7 @@ RICH_EDITOR.restorerange = function () {
 };
 
 //获取光标开始位置归属节点
+
 RICH_EDITOR.getSelectedAnchorNode = function () {
     var node;
     var selection;
