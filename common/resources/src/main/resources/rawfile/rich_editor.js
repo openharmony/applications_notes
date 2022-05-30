@@ -297,7 +297,7 @@ function onCheckChange (checkbox) {
     } else {
         checkbox.removeAttribute("checked");
     }
-};
+}
 
 RICH_EDITOR.restorerange = function (){
     var selection = window.getSelection();
@@ -330,7 +330,7 @@ function get_html_content () {
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
     var str = callBackToApp.callbackhtml(htmlString);
     console.log('get_html_content end');
-};
+}
 
 function save_html_content () {
     console.log('save_html_content');
@@ -338,14 +338,14 @@ function save_html_content () {
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
     var str = callBackToApp.callbackhtmlSave(htmlString);
     console.log('save_html_content end');
-};
+}
 
 function scheduled_save_content () {
     console.info('scheduled_save_content');
     var htmlString = RICH_EDITOR.getHtml();
     var str = callBackToApp.callbackScheduledSave(htmlString);
     console.info('scheduled_save_content end');
-};
+}
 
 RICH_EDITOR.getFontSizes = function (){
     document.execCommand("fontSize", false, null);
