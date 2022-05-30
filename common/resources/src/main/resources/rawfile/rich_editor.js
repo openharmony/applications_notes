@@ -30,7 +30,7 @@ RICH_EDITOR.getHtml = function () {
     return RICH_EDITOR.editor.innerHTML;
 };
 
-RICH_EDITOR.undo = function() {
+RICH_EDITOR.undo = function () {
     document.execCommand('undo', false, null);
 };
 
@@ -63,7 +63,8 @@ RICH_EDITOR.setUnderline = function () {
 };
 
 RICH_EDITOR.getListStyle = function () {
-    var selection, type;
+    var selection;
+    var type;
     if (window.getSelection) {
         selection = getSelection();
     }
@@ -72,15 +73,15 @@ RICH_EDITOR.getListStyle = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == "OL") {
+                if (child.nodeName == 'OL') {
                     console.info('insertOrderedList');
                     document.execCommand('insertOrderedList', false, null);
-                    return child.style["list-style"];
+                    return child.style['list-style'];
                 }
-                if (child.nodeName == "UL") {
+                if (child.nodeName == 'UL') {
                     console.info('insertUnorderedList');
                     document.execCommand('insertUnorderedList', false, null);
-                    return child.style["list-style"];
+                    return child.style['list-style'];
                 }
                 if (child.parentNode) {
                     child = child.parentNode;
@@ -95,11 +96,12 @@ RICH_EDITOR.getListStyle = function () {
 
 RICH_EDITOR.setNumbers = function () {
     let listStyle = RICH_EDITOR.getListStyle();
-    if(listStyle == "decimal") {
+    if (listStyle == 'decimal') {
         return;
     }
     document.execCommand('insertOrderedList', false, null);
-    var selection, type;
+    var selection;
+    var type;
     if (window.getSelection) {
         selection = getSelection();
     }
@@ -108,8 +110,8 @@ RICH_EDITOR.setNumbers = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == "OL") {
-                    child.style["list-style"] = "decimal";
+                if (child.nodeName == 'OL') {
+                    child.style["list-style"] = 'decimal';
                     break;
                 }
                 if (child.parentNode) {
@@ -124,11 +126,12 @@ RICH_EDITOR.setNumbers = function () {
 
 RICH_EDITOR.setABC = function () {
     let listStyle = RICH_EDITOR.getListStyle();
-    if(listStyle == "lower-alpha") {
-        return
+    if (listStyle == 'lower-alpha') {
+        return;
     }
     document.execCommand('insertOrderedList', false, null);
-    var selection, type;
+    var selection;
+    var type;
     if (window.getSelection) {
         selection = getSelection();
     }
@@ -137,8 +140,8 @@ RICH_EDITOR.setABC = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == "OL") {
-                    child.style["list-style"] = "lower-alpha";
+                if (child.nodeName == 'OL') {
+                    child.style["list-style"] = 'lower-alpha';
                     break;
                 }
                 if (child.parentNode) {
@@ -152,12 +155,13 @@ RICH_EDITOR.setABC = function () {
 };
 
 RICH_EDITOR.setBullets = function () {
-    let listStyle = RICH_EDITOR.getListStyle()
-    if(listStyle == "disc") {
+    let listStyle = RICH_EDITOR.getListStyle();
+    if (listStyle == 'disc') {
         return;
     }
     document.execCommand('insertUnorderedList', false, null);
-    var selection, type;
+    var selection;
+    var type;
     if (window.getSelection) {
         selection = getSelection();
     }
@@ -166,8 +170,8 @@ RICH_EDITOR.setBullets = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == "UL") {
-                    child.style["list-style"] = "disc";
+                if (child.nodeName == 'UL') {
+                    child.style['list-style'] = 'disc';
                     break;
                 }
                 if (child.parentNode) {
@@ -182,11 +186,12 @@ RICH_EDITOR.setBullets = function () {
 
 RICH_EDITOR.setSquare = function () {
     let listStyle = RICH_EDITOR.getListStyle();
-    if(listStyle == "square") {
+    if (listStyle == 'square') {
         return;
     }
     document.execCommand('insertUnorderedList', false, null);
-    var selection, type;
+    var selection;
+    var type;
     if (window.getSelection) {
         selection = getSelection();
     }
@@ -195,8 +200,8 @@ RICH_EDITOR.setSquare = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == "UL") {
-                    child.style["list-style"] = "square";
+                if (child.nodeName == 'UL') {
+                    child.style['list-style'] = 'square';
                     break;
                 }
                 if (child.parentNode) {
@@ -213,18 +218,18 @@ RICH_EDITOR.setTextColor = function (color) {
     document.execCommand('foreColor', false, color);
 };
 
-RICH_EDITOR.setFontSize = function (fontSize){
-    document.execCommand("fontSize", false, fontSize);
+RICH_EDITOR.setFontSize = function (fontSize) {
+    document.execCommand('fontSize', false, fontSize);
 };
 
 RICH_EDITOR.execFontSize = function (size, unit) {
-    document.execCommand("fontSize", false, "7");
+    document.execCommand('fontSize', false, "7");
     var fontElements = window.getSelection().anchorNode.parentNode;
-    fontElements.removeAttribute("size");
+    fontElements.removeAttribute('size');
     fontElements.style.fontSize = size + 'px';
 };
 
-var pad = 24
+var pad = 24;
 RICH_EDITOR.setIndent = function () {
     var parents = document.getElementById('editorjs');
     parents.removeAttribute('padding-left');
@@ -232,7 +237,7 @@ RICH_EDITOR.setIndent = function () {
     parents.style.paddingLeft = pad + 'px';
 };
 
-RICH_EDITOR.setOutdent = function() {
+RICH_EDITOR.setOutdent = function () {
     var parents = document.getElementById('editorjs');
     parents.removeAttribute('padding-left');
     if (pad == 24) {
@@ -256,7 +261,8 @@ RICH_EDITOR.setJustifyRight = function () {
 };
 
 RICH_EDITOR.insertImage = function (url) {
-    var html = '<br></br><img src="' + url + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
+    var html = '<br></br><img src="' + url +
+    '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
     RICH_EDITOR.insertHTML(html);
     RICH_EDITOR.editor.scrollIntoView(false);
 };
@@ -270,14 +276,14 @@ RICH_EDITOR.setDone = function () {
     document.execCommand('insertHTML', false, html);
 };
 
-RICH_EDITOR.addTodo = function (e){
-    KEY_ENTER=13;
-    if(e.which == KEY_ENTER){
-        var node=RICH_EDITOR.getSelectedAnchorNode();
-        if(node&&node.nodeName=="#text"){
-            node=node.parentElement;
+RICH_EDITOR.addTodo = function (e) {
+    KEY_ENTER = 13;
+    if (e.which == KEY_ENTER) {
+        var node = RICH_EDITOR.getSelectedAnchorNode();
+        if (node && node.nodeName == "#text") {
+            node = node.parentElement;
         }
-        if(node&&node.nodeName=="SPAN"&&node.previousElementSibling&&node.previousElementSibling.className=='note-checkbox'){
+        if (node && node.nodeName == 'SPAN' && node.previousElementSibling && node.previousElementSibling.className == 'note-checkbox') {
             RICH_EDITOR.setTodo();
             e.preventDefault();
         }
@@ -287,19 +293,20 @@ RICH_EDITOR.addTodo = function (e){
 RICH_EDITOR.setTodo = function () {
     var parent = document.getElementById('editorjs');
     var isContentEmpty = parent.innerHTML.trim().length == 0 || parent.innerHTML == '<br>';
-    var html = (isContentEmpty ? '' : '<br/>') + '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox"><span class="note-checkbox-txt">&nbsp;</span>';
+    var html = (isContentEmpty ? '' : '<br/>') +
+    '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox"><span class="note-checkbox-txt">&nbsp;</span>';
     document.execCommand('insertHTML', false, html);
 };
 
-function onCheckChange (checkbox) {
+function onCheckChange(checkbox) {
     if (checkbox.checked == true) {
-        checkbox.setAttribute("checked", "checked");
+        checkbox.setAttribute('checked', 'checked');
     } else {
-        checkbox.removeAttribute("checked");
+        checkbox.removeAttribute('checked');
     }
 }
 
-RICH_EDITOR.restorerange = function (){
+RICH_EDITOR.restorerange = function () {
     var selection = window.getSelection();
     selection.removeAllRanges();
     var range = document.createRange();
@@ -309,22 +316,22 @@ RICH_EDITOR.restorerange = function (){
 };
 
 //获取光标开始位置归属节点
-RICH_EDITOR.getSelectedAnchorNode = function (){
-    var node,selection;
+RICH_EDITOR.getSelectedAnchorNode = function () {
+    var node;
+    var selection;
     if (window.getSelection) {
         selection = getSelection();
         node = selection.anchorNode;
     }
     if (!node && document.selection) {
-        selection = document.selection
+        selection = document.selection;
         var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-        node = range.commonAncestorContainer ? range.commonAncestorContainer :
-                range.parentElement ? range.parentElement() : range.item(0);
+        node = range.commonAncestorContainer ? range.commonAncestorContainer : range.parentElement ? range.parentElement() : range.item(0);
     }
     return node;
 };
 
-function get_html_content () {
+function get_html_content() {
     console.log('get_html_content');
     var htmlString =  RICH_EDITOR.getHtml();
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
@@ -332,7 +339,7 @@ function get_html_content () {
     console.log('get_html_content end');
 }
 
-function save_html_content () {
+function save_html_content() {
     console.log('save_html_content');
     var htmlString =  RICH_EDITOR.getHtml();
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
@@ -340,15 +347,15 @@ function save_html_content () {
     console.log('save_html_content end');
 }
 
-function scheduled_save_content () {
+function scheduled_save_content() {
     console.info('scheduled_save_content');
     var htmlString = RICH_EDITOR.getHtml();
     var str = callBackToApp.callbackScheduledSave(htmlString);
     console.info('scheduled_save_content end');
 }
 
-RICH_EDITOR.getFontSizes = function (){
-    document.execCommand("fontSize", false, null);
+RICH_EDITOR.getFontSizes = function () {
+    document.execCommand('fontSize', false, null);
     var fontElements = window.getSelection().anchorNode.parentNode;
     var getSize = fontElements.style.fontSize;
     var str = callBackToApp.callbackGetSize(getSize);
