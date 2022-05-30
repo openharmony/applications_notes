@@ -17,7 +17,7 @@ var RICH_EDITOR = {};
 
 RICH_EDITOR.editor = document.getElementById('editorjs');
 
-RICH_EDITOR.setHtml = function(contents) {
+RICH_EDITOR.setHtml = function (contents) {
     var base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
     if (base64regex.test(contents)) {
         RICH_EDITOR.editor.innerHTML = decodeURIComponent(escape(atob(contents)));
@@ -26,7 +26,7 @@ RICH_EDITOR.setHtml = function(contents) {
     }
 }
 
-RICH_EDITOR.getHtml = function() {
+RICH_EDITOR.getHtml = function () {
     return RICH_EDITOR.editor.innerHTML;
 }
 
