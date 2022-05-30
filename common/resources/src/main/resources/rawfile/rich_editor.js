@@ -24,43 +24,43 @@ RICH_EDITOR.setHtml = function (contents) {
     } else {
         RICH_EDITOR.editor.innerHTML = contents;
     }
-}
+};
 
 RICH_EDITOR.getHtml = function () {
     return RICH_EDITOR.editor.innerHTML;
-}
+};
 
 RICH_EDITOR.undo = function() {
     document.execCommand('undo', false, null);
-}
+};
 
-RICH_EDITOR.redo = function() {
+RICH_EDITOR.redo = function () {
     document.execCommand('redo', false, null);
-}
+};
 
-RICH_EDITOR.setBold = function() {
+RICH_EDITOR.setBold = function () {
     document.execCommand('bold');
-}
+};
 
-RICH_EDITOR.setItalic = function() {
+RICH_EDITOR.setItalic = function () {
     document.execCommand('italic', false, null);
-}
+};
 
-RICH_EDITOR.setSubscript = function() {
+RICH_EDITOR.setSubscript = function () {
     document.execCommand('subscript', false, null);
-}
+};
 
-RICH_EDITOR.setSuperscript = function() {
+RICH_EDITOR.setSuperscript = function () {
     document.execCommand('superscript', false, null);
-}
+};
 
-RICH_EDITOR.setStrikeThrough = function() {
+RICH_EDITOR.setStrikeThrough = function () {
     document.execCommand('strikeThrough', false, null);
-}
+};
 
-RICH_EDITOR.setUnderline = function() {
+RICH_EDITOR.setUnderline = function () {
     document.execCommand('underline', false, null);
-}
+};
 
 RICH_EDITOR.getListStyle = function () {
     var selection, type;
@@ -73,30 +73,30 @@ RICH_EDITOR.getListStyle = function () {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
                 if (child.nodeName == "OL") {
-                    console.info('insertOrderedList')
+                    console.info('insertOrderedList');
                     document.execCommand('insertOrderedList', false, null);
-                    return child.style["list-style"]
+                    return child.style["list-style"];
                 }
                 if (child.nodeName == "UL") {
-                    console.info('insertUnorderedList')
+                    console.info('insertUnorderedList');
                     document.execCommand('insertUnorderedList', false, null);
-                    return child.style["list-style"]
+                    return child.style["list-style"];
                 }
                 if (child.parentNode) {
-                    child = child.parentNode
+                    child = child.parentNode;
                 }
             }
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
     }
 
-}
+};
 
 RICH_EDITOR.setNumbers = function () {
-    let listStyle = RICH_EDITOR.getListStyle()
+    let listStyle = RICH_EDITOR.getListStyle();
     if(listStyle == "decimal") {
-        return
+        return;
     }
     document.execCommand('insertOrderedList', false, null);
     var selection, type;
@@ -113,17 +113,17 @@ RICH_EDITOR.setNumbers = function () {
                     break;
                 }
                 if (child.parentNode) {
-                    child = child.parentNode
+                    child = child.parentNode;
                 }
             }
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
     }
-}
+};
 
 RICH_EDITOR.setABC = function () {
-    let listStyle = RICH_EDITOR.getListStyle()
+    let listStyle = RICH_EDITOR.getListStyle();
     if(listStyle == "lower-alpha") {
         return
     }
@@ -142,19 +142,19 @@ RICH_EDITOR.setABC = function () {
                     break;
                 }
                 if (child.parentNode) {
-                    child = child.parentNode
+                    child = child.parentNode;
                 }
             }
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
     }
-}
+};
 
 RICH_EDITOR.setBullets = function () {
     let listStyle = RICH_EDITOR.getListStyle()
     if(listStyle == "disc") {
-        return
+        return;
     }
     document.execCommand('insertUnorderedList', false, null);
     var selection, type;
@@ -171,19 +171,19 @@ RICH_EDITOR.setBullets = function () {
                     break;
                 }
                 if (child.parentNode) {
-                    child = child.parentNode
+                    child = child.parentNode;
                 }
             }
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
     }
-}
+};
 
 RICH_EDITOR.setSquare = function () {
-    let listStyle = RICH_EDITOR.getListStyle()
+    let listStyle = RICH_EDITOR.getListStyle();
     if(listStyle == "square") {
-        return
+        return;
     }
     document.execCommand('insertUnorderedList', false, null);
     var selection, type;
@@ -200,77 +200,77 @@ RICH_EDITOR.setSquare = function () {
                     break;
                 }
                 if (child.parentNode) {
-                    child = child.parentNode
+                    child = child.parentNode;
                 }
             }
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
     }
-}
+};
 
 RICH_EDITOR.setTextColor = function (color) {
     document.execCommand('foreColor', false, color);
-}
+};
 
-RICH_EDITOR.setFontSize = function(fontSize){
+RICH_EDITOR.setFontSize = function (fontSize){
     document.execCommand("fontSize", false, fontSize);
-}
+};
 
 RICH_EDITOR.execFontSize = function (size, unit) {
     document.execCommand("fontSize", false, "7");
-    var fontElements = window.getSelection().anchorNode.parentNode
+    var fontElements = window.getSelection().anchorNode.parentNode;
     fontElements.removeAttribute("size");
-    fontElements.style.fontSize = size + 'px'
+    fontElements.style.fontSize = size + 'px';
 };
 
 var pad = 24
-RICH_EDITOR.setIndent = function() {
-    var parents = document.getElementById('editorjs')
+RICH_EDITOR.setIndent = function () {
+    var parents = document.getElementById('editorjs');
     parents.removeAttribute('padding-left');
-    pad = pad + 24
-    parents.style.paddingLeft = pad + 'px'
-}
+    pad = pad + 24;
+    parents.style.paddingLeft = pad + 'px';
+};
 
 RICH_EDITOR.setOutdent = function() {
-    var parents = document.getElementById('editorjs')
+    var parents = document.getElementById('editorjs');
     parents.removeAttribute('padding-left');
     if (pad == 24) {
-        parents.style.paddingLeft = 24 + 'px'
+        parents.style.paddingLeft = 24 + 'px';
     } else {
-        pad = pad - 24
-        parents.style.paddingLeft = pad + 'px'
+        pad = pad - 24;
+        parents.style.paddingLeft = pad + 'px';
     }
-}
+};
 
-RICH_EDITOR.setJustifyLeft = function() {
+RICH_EDITOR.setJustifyLeft = function () {
     document.execCommand('justifyLeft', false, null);
-}
+};
 
-RICH_EDITOR.setJustifyCenter = function() {
+RICH_EDITOR.setJustifyCenter = function () {
     document.execCommand('justifyCenter', false, null);
-}
+};
 
-RICH_EDITOR.setJustifyRight = function() {
+RICH_EDITOR.setJustifyRight = function () {
     document.execCommand('justifyRight', false, null);
-}
+};
 
-RICH_EDITOR.insertImage = function(url) {
+RICH_EDITOR.insertImage = function (url) {
     var html = '<br></br><img src="' + url + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
     RICH_EDITOR.insertHTML(html);
-    RICH_EDITOR.editor.scrollIntoView(false)
-}
+    RICH_EDITOR.editor.scrollIntoView(false);
+};
 
-RICH_EDITOR.insertHTML = function(html) {
+RICH_EDITOR.insertHTML = function (html) {
     document.execCommand('insertHTML', false, html);
-}
+};
 
-RICH_EDITOR.setDone = function() {
+RICH_EDITOR.setDone = function () {
     var html = '<input type="checkbox" checked="checked"/> &nbsp;';
     document.execCommand('insertHTML', false, html);
-}
+};
 
-RICH_EDITOR.addTodo=function(e){
+RICH_EDITOR.addTodo = function (e){
     KEY_ENTER=13;
     if(e.which == KEY_ENTER){
         var node=RICH_EDITOR.getSelectedAnchorNode();
@@ -282,34 +282,34 @@ RICH_EDITOR.addTodo=function(e){
             e.preventDefault();
         }
     }
-}
+};
 
 RICH_EDITOR.setTodo = function () {
-    var parent = document.getElementById('editorjs')
+    var parent = document.getElementById('editorjs');
     var isContentEmpty = parent.innerHTML.trim().length == 0 || parent.innerHTML == '<br>';
     var html = (isContentEmpty ? '' : '<br/>') + '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox"><span class="note-checkbox-txt">&nbsp;</span>';
     document.execCommand('insertHTML', false, html);
-}
+};
 
-function onCheckChange(checkbox) {
+function onCheckChange (checkbox) {
     if (checkbox.checked == true) {
         checkbox.setAttribute("checked", "checked");
     } else {
         checkbox.removeAttribute("checked");
     }
-}
+};
 
-RICH_EDITOR.restorerange = function(){
+RICH_EDITOR.restorerange = function (){
     var selection = window.getSelection();
     selection.removeAllRanges();
     var range = document.createRange();
     range.setStart(RICH_EDITOR.currentSelection.startContainer, RICH_EDITOR.currentSelection.startOffset);
     range.setEnd(RICH_EDITOR.currentSelection.endContainer, RICH_EDITOR.currentSelection.endOffset);
     selection.addRange(range);
-}
+};
 
 //获取光标开始位置归属节点
-RICH_EDITOR.getSelectedAnchorNode=function(){
+RICH_EDITOR.getSelectedAnchorNode = function (){
     var node,selection;
     if (window.getSelection) {
         selection = getSelection();
@@ -322,34 +322,34 @@ RICH_EDITOR.getSelectedAnchorNode=function(){
                 range.parentElement ? range.parentElement() : range.item(0);
     }
     return node;
-}
+};
 
-function get_html_content() {
+function get_html_content () {
     console.log('get_html_content');
     var htmlString =  RICH_EDITOR.getHtml();
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
     var str = callBackToApp.callbackhtml(htmlString);
     console.log('get_html_content end');
-}
+};
 
-function save_html_content() {
+function save_html_content () {
     console.log('save_html_content');
     var htmlString =  RICH_EDITOR.getHtml();
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
     var str = callBackToApp.callbackhtmlSave(htmlString);
     console.log('save_html_content end');
-}
+};
 
-function scheduled_save_content() {
-    console.info('scheduled_save_content')
-    var htmlString = RICH_EDITOR.getHtml()
-    var str = callBackToApp.callbackScheduledSave(htmlString)
-    console.info('scheduled_save_content end')
-}
+function scheduled_save_content () {
+    console.info('scheduled_save_content');
+    var htmlString = RICH_EDITOR.getHtml();
+    var str = callBackToApp.callbackScheduledSave(htmlString);
+    console.info('scheduled_save_content end');
+};
 
-RICH_EDITOR.getFontSizes = function(){
+RICH_EDITOR.getFontSizes = function (){
     document.execCommand("fontSize", false, null);
-    var fontElements = window.getSelection().anchorNode.parentNode
-    var getSize = fontElements.style.fontSize
-    var str = callBackToApp.callbackGetSize(getSize)
-}
+    var fontElements = window.getSelection().anchorNode.parentNode;
+    var getSize = fontElements.style.fontSize;
+    var str = callBackToApp.callbackGetSize(getSize);
+};
