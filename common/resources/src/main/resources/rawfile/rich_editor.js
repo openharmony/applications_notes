@@ -1,4 +1,4 @@
-/*
+/* @file
  * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,12 +73,12 @@ RICH_EDITOR.getListStyle = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == 'OL') {
+                if (child.nodeName === 'OL') {
                     console.info('insertOrderedList');
                     document.execCommand('insertOrderedList', false, null);
                     return child.style['list-style'];
                 }
-                if (child.nodeName == 'UL') {
+                if (child.nodeName === 'UL') {
                     console.info('insertUnorderedList');
                     document.execCommand('insertUnorderedList', false, null);
                     return child.style['list-style'];
@@ -96,7 +96,7 @@ RICH_EDITOR.getListStyle = function () {
 
 RICH_EDITOR.setNumbers = function () {
     let listStyle = RICH_EDITOR.getListStyle();
-    if (listStyle == 'decimal') {
+    if (listStyle === 'decimal') {
         return;
     }
     document.execCommand('insertOrderedList', false, null);
@@ -110,7 +110,7 @@ RICH_EDITOR.setNumbers = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == 'OL') {
+                if (child.nodeName === 'OL') {
                     child.style['list-style'] = 'decimal';
                     break;
                 }
@@ -126,7 +126,7 @@ RICH_EDITOR.setNumbers = function () {
 
 RICH_EDITOR.setABC = function () {
     let listStyle = RICH_EDITOR.getListStyle();
-    if (listStyle == 'lower-alpha') {
+    if (listStyle === 'lower-alpha') {
         return;
     }
     document.execCommand('insertOrderedList', false, null);
@@ -140,7 +140,7 @@ RICH_EDITOR.setABC = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == 'OL') {
+                if (child.nodeName === 'OL') {
                     child.style['list-style'] = 'lower-alpha';
                     break;
                 }
@@ -156,7 +156,7 @@ RICH_EDITOR.setABC = function () {
 
 RICH_EDITOR.setBullets = function () {
     let listStyle = RICH_EDITOR.getListStyle();
-    if (listStyle == 'disc') {
+    if (listStyle === 'disc') {
         return;
     }
     document.execCommand('insertUnorderedList', false, null);
@@ -170,7 +170,7 @@ RICH_EDITOR.setBullets = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == 'UL') {
+                if (child.nodeName === 'UL') {
                     child.style['list-style'] = 'disc';
                     break;
                 }
@@ -186,7 +186,7 @@ RICH_EDITOR.setBullets = function () {
 
 RICH_EDITOR.setSquare = function () {
     let listStyle = RICH_EDITOR.getListStyle();
-    if (listStyle == 'square') {
+    if (listStyle === 'square') {
         return;
     }
     document.execCommand('insertUnorderedList', false, null);
@@ -200,7 +200,7 @@ RICH_EDITOR.setSquare = function () {
         try {
             var child = range.commonAncestorContainer.parentNode;
             for (var i = 0; i < 10; i++) {
-                if (child.nodeName == 'UL') {
+                if (child.nodeName === 'UL') {
                     child.style['list-style'] = 'square';
                     break;
                 }
@@ -240,7 +240,7 @@ RICH_EDITOR.setIndent = function () {
 RICH_EDITOR.setOutdent = function () {
     var parents = document.getElementById('editorjs');
     parents.removeAttribute('padding-left');
-    if (pad == 24) {
+    if (pad === 24) {
         parents.style.paddingLeft = 24 + 'px';
     } else {
         pad = pad - 24;
@@ -262,7 +262,8 @@ RICH_EDITOR.setJustifyRight = function () {
 
 RICH_EDITOR.insertImage = function (url) {
     var html = '<br></br><img src="' + url
-    + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
+    + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;'
+    + 'vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
     RICH_EDITOR.insertHTML(html);
     RICH_EDITOR.editor.scrollIntoView(false);
 };
@@ -277,13 +278,15 @@ RICH_EDITOR.setDone = function () {
 };
 
 RICH_EDITOR.addTodo = function (e) {
+    var KEY_ENTER;
     KEY_ENTER = 13;
-    if (e.which == KEY_ENTER) {
+    if (e.which === KEY_ENTER) {
         var node = RICH_EDITOR.getSelectedAnchorNode();
-        if (node && node.nodeName == '#text') {
+        if (node && node.nodeName === '#text') {
             node = node.parentElement;
         }
-        if (node && node.nodeName == 'SPAN' && node.previousElementSibling && node.previousElementSibling.className == 'note-checkbox') {
+        if (node && node.nodeName === 'SPAN' && node.previousElementSibling
+        && node.previousElementSibling.className === 'note-checkbox') {
             RICH_EDITOR.setTodo();
             e.preventDefault();
         }
@@ -292,14 +295,15 @@ RICH_EDITOR.addTodo = function (e) {
 
 RICH_EDITOR.setTodo = function () {
     var parent = document.getElementById('editorjs');
-    var isContentEmpty = parent.innerHTML.trim().length == 0 || parent.innerHTML == '<br>';
+    var isContentEmpty = parent.innerHTML.trim().length === 0 || parent.innerHTML === '<br>';
     var html = (isContentEmpty ? '' : '<br/>')
-    + '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox"><span class="note-checkbox-txt">&nbsp;</span>';
+    + '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox">'
+    + '<span class="note-checkbox-txt">&nbsp;</span>';
     document.execCommand('insertHTML', false, html);
 };
 
 function onCheckChange(checkbox) {
-    if (checkbox.checked == true) {
+    if (checkbox.checked === true) {
         checkbox.setAttribute('checked', 'checked');
     } else {
         checkbox.removeAttribute('checked');
@@ -315,7 +319,7 @@ RICH_EDITOR.restorerange = function () {
     selection.addRange(range);
 };
 
-//获取光标开始位置归属节点
+// 获取光标开始位置归属节点
 
 RICH_EDITOR.getSelectedAnchorNode = function () {
     var node;
@@ -327,7 +331,8 @@ RICH_EDITOR.getSelectedAnchorNode = function () {
     if (!node && document.selection) {
         selection = document.selection;
         var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-        node = range.commonAncestorContainer ? range.commonAncestorContainer : range.parentElement ? range.parentElement() : range.item(0);
+        node = range.commonAncestorContainer ? range.commonAncestorContainer : range.parentElement
+        ? range.parentElement() : range.item(0);
     }
     return node;
 };
