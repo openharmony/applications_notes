@@ -40,7 +40,7 @@ struct NoteContentHome {
   onBackPress():void{
      LogUtil.info(this.TAG, "onBackPress")
      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
-     this.controllerShow.runJavaScript({ script: "get_html_content()" })
+     this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
   }
 
   aboutToAppear(): void{

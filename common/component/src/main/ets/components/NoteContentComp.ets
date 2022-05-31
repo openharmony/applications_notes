@@ -164,7 +164,7 @@ export struct NoteContentComp {
             this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
             // 添加定时器：3s自动保存
             timeId = setInterval(() => {
-              this.controllerShow.runJavaScript({ script: "scheduled_save_content()" })
+              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
             }, 3000)
             LogUtil.info(TAG, "setInterval timeId : " + timeId)
             // save continue data
@@ -376,7 +376,7 @@ export struct ToolBarComp {
               this.sectionStatus = this.lastSectionStatus
               // 退出全屏时存库
               LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
-              this.controllerShow.runJavaScript({ script: "save_html_content()" })
+              this.controllerShow.runJavaScript({ script: "saveHtmlContent()" })
               //退出键盘
               inputMethod.getInputMethodController().stopInput();
               // 清除定时器
@@ -532,7 +532,7 @@ export struct ToolBarComp {
                 .fillColor(this.issave == 0 ? Color.Black : Color.Grey)
                 .onClick(() => {
                   // 保存笔记信息到数据库
-                  this.controllerShow.runJavaScript({ script: "get_html_content()" })
+                  this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
                   if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
                     LogUtil.info(TAG, "note is empty,save note failed")
                   }
