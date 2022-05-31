@@ -336,28 +336,28 @@ RICH_EDITOR.getSelectedAnchorNode = function () {
     }
     return node;
 };
-
-function get_html_content() {
-    console.log('get_html_content');
+var callBackToApp;
+function getHtmlContent() {
+    console.log('getHtmlContent');
     var htmlString =  RICH_EDITOR.getHtml();
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
     var str = callBackToApp.callbackhtml(htmlString);
-    console.log('get_html_content end');
+    console.log('getHtmlContent end');
 }
 
-function save_html_content() {
-    console.log('save_html_content');
+function saveHtmlContent() {
+    console.log('saveHtmlContent');
     var htmlString =  RICH_EDITOR.getHtml();
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
     var str = callBackToApp.callbackhtmlSave(htmlString);
-    console.log('save_html_content end');
+    console.log('saveHtmlContent end');
 }
 
-function scheduled_save_content() {
-    console.info('scheduled_save_content');
+function scheduledSaveContent() {
+    console.info('scheduledSaveContent');
     var htmlString = RICH_EDITOR.getHtml();
     var str = callBackToApp.callbackScheduledSave(htmlString);
-    console.info('scheduled_save_content end');
+    console.info('scheduledSaveContent end');
 }
 
 RICH_EDITOR.getFontSizes = function () {
