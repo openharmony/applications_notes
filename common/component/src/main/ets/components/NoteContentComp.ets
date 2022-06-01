@@ -149,7 +149,7 @@ export struct NoteContentComp {
             .height('70%')
             .width('100%')
         }
-        .margin({ left: 12, right: 24, top: 16 })
+        .margin({ left: 12, right: 24 })
         .width(StyleConstants.PERCENTAGE_100)
         .enabled(this.selectedNoteData && this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .onClick(() => {
@@ -195,13 +195,14 @@ export struct NoteContentComp {
 @Component
 export struct NoteContentOverViewComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
+  @StorageLink('AllFolderArray') @Watch('getArray') AllFolderArray: FolderData[]  = []
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('EditModel') editModel: boolean
   @Consume('SectionStatus') sectionStatus: number
   @Consume('RefreshFlag') refreshFlag: number
+  NoteDataMoveArray: FolderData[]
   controllerShow: WebController
   editTitleDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditTitleDialog({ confirm: this.confirm.bind(this) }),
@@ -209,6 +210,15 @@ export struct NoteContentOverViewComp {
     autoCancel: false,
     customStyle: true,
   })
+
+  getArray() {
+    this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
+    this.NoteDataMoveArray.push(this.AllFolderArray[1]);
+  }
+  aboutToAppear() {
+    this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
+    this.NoteDataMoveArray.push(this.AllFolderArray[1]);
+  }
 
   confirm(newTitle: string) {
     this.selectedNoteData.title = newTitle
@@ -221,9 +231,9 @@ export struct NoteContentOverViewComp {
   @Builder MenuBuilder() {
     Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
       List() {
-        ForEach(this.AllFolderArray, (item) => {
+        ForEach(this.NoteDataMoveArray, (item) => {
           ListItem() {
-            NoteDataMoveItemComp({ folderItem: item })
+            NoteDataMoveItemCompTablet({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
           }
           .onClick(() => {
             this.selectedNoteData.folder_uuid = item.uuid
@@ -580,10 +590,11 @@ export struct ToolBarComp {
 }
 
 @Component
-struct NoteDataMoveItemComp {
+struct NoteDataMoveItemCompTablet {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
-  private folderItem: FolderData
+  folderItem: FolderData
+  uuid: String
 
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
@@ -593,7 +604,7 @@ struct NoteDataMoveItemComp {
           .width(24)
           .height(24)
           .flexShrink(0)
-          .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
+          .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.folderItem.uuid == this.uuid))
       }
       .width(24)
 
@@ -601,7 +612,7 @@ struct NoteDataMoveItemComp {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Text(FolderUtil.getFolderText(this.folderItem))
             .fontSize(16)
-            .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
+            .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid == this.uuid ? this.folderItem.uuid : '', this.folderItem.uuid == this.uuid))
             .textAlign(TextAlign.Center)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -610,9 +621,11 @@ struct NoteDataMoveItemComp {
         .width('100%')
         .height(55)
 
-        Divider()
-          .color($r("app.color.divider_color_e4e4e4"))
-          .strokeWidth(1)
+        if (this.folderItem.uuid != SysDefFolderUuid.UnClassified) {
+          Divider()
+            .color($r("app.color.divider_color_e4e4e4"))
+            .strokeWidth(1)
+        }
       }
       .padding({ left: 16 })
     }
