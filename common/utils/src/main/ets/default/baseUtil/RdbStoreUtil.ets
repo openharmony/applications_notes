@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import {atob} from 'js-base64'
 import ohosDataRdb from '@ohos.data.rdb'
 import fileio from '@ohos.fileio'
 import {LogUtil} from './LogUtil'
@@ -292,7 +293,7 @@ export default {
   getImgNameFromHtml(noteData: NoteData): any{
     let newModuleName = "file://" + globalThis.noteContext.filesDir
     let imgNameArray = []
-    let html = noteData.content_text
+    let html =  atob(noteData.content_text)
     if (html == undefined || html == null || html == "") {
       return imgNameArray
     }

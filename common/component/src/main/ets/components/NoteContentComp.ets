@@ -149,7 +149,7 @@ export struct NoteContentComp {
             .height('70%')
             .width('100%')
         }
-        .margin({ left: 12, right: 24 })
+        .margin({ left: 24, right: 24 })
         .width(StyleConstants.PERCENTAGE_100)
         .enabled(this.selectedNoteData && this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .onClick(() => {

@@ -356,6 +356,7 @@ function saveHtmlContent() {
 function scheduledSaveContent() {
     console.info('scheduledSaveContent');
     var htmlString = RICH_EDITOR.getHtml();
+    htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
     var str = callBackToApp.callbackScheduledSave(htmlString);
     console.info('scheduledSaveContent end');
 }

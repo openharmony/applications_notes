@@ -115,7 +115,7 @@ export struct NoteContentCompPortrait {
               })
             })
             .zoomAccess(false)
-            .height('70%')
+            .height('100%')
             .width('100%')
         }
         .flexShrink(1)
@@ -127,7 +127,7 @@ export struct NoteContentCompPortrait {
           LogUtil.info(TAG, "setInterval time_id : " + time_id)
           this.editModel = true
         })
-        .margin({ top: 16 })
+        .margin({ top: 0 })
         .width(StyleConstants.PERCENTAGE_100)
       }
       .flexShrink(1)
