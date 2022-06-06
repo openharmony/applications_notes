@@ -297,7 +297,7 @@ RICH_EDITOR.setTodo = function () {
     var parent = document.getElementById('editorjs');
     var isContentEmpty = parent.innerHTML.trim().length === 0 || parent.innerHTML === '<br>';
     var html = (isContentEmpty ? '' : '<br/>')
-    + '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox">'
+    + '<input name="checkbox" type="checkbox" style="width:36px;height:36px" onclick="onCheckChange(this)" class="note-checkbox">'
     + '<span class="note-checkbox-txt">&nbsp;</span>';
     document.execCommand('insertHTML', false, html);
 };

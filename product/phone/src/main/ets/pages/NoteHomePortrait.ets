@@ -62,6 +62,7 @@ export struct NoteHomePortraitComp {
       .width(StyleConstants.PERCENTAGE_100)
       .height(StyleConstants.PERCENTAGE_100)
       .enabled(this.expandStatus ? false : true)
+      .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
 
       //Folder list display area
       Stack() {

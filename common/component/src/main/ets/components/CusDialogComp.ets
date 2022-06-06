@@ -555,6 +555,8 @@ export struct EditContentDialog {
             .height(16)
             .width(16)
             .margin({ top: 8 })
+            .opacity(0.6)
+            .fillColor('#99182431')
             .onClick(() => {
               this.editContentDialogCtl.close()
             })

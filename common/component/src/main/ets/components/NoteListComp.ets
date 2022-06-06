@@ -56,12 +56,10 @@ export struct NoteListComp {
         NoteOverViewComp({ controllerShow: this.controllerShow })
         Column() {
         }
-        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
         .height(this.search ? 15 : 0)
 
         NoteItemListComp({ controllerShow: this.controllerShow })
       }
-      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
       .width('100%')
       .flexShrink(1)
 
@@ -69,9 +67,7 @@ export struct NoteListComp {
         OperateNoteCompForPortrait()
       }
       .flexShrink(0)
-      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
     }
-    .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
     .height('100%')
     .width('100%')
   }
@@ -139,6 +135,7 @@ struct NoteOverViewComp {
               .fontColor($r("app.color.num_of_notes_font_color"))
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
+          .margin({ top: 5 })
           .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
         }.visibility(this.longpress ? Visibility.None : Visibility.Visible)
 
@@ -167,7 +164,6 @@ struct NoteOverViewComp {
       OperateNoteComp({ controllerShow: this.controllerShow })
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
     }
-    .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
     .width('100%')
     .height(82)
     .padding({ left: this.sectionStatus == 2 ? 24 : 36, right: 24 }) // 两分栏时缩进图标与左侧不需要间距
@@ -371,7 +367,6 @@ export struct NoteItemListComp {
       }
       .width("100%")
       .padding({ left: 24, right: 24, bottom: 12 })
-      .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
 
       Stack() {
@@ -382,7 +377,6 @@ export struct NoteItemListComp {
               .fontColor($r("app.color.Recently_delete_prompt_font_color"))
           }
           .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
-          .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
           .width('100%')
           .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
 
@@ -398,7 +392,6 @@ export struct NoteItemListComp {
                     .fontColor($r("app.color.Empty_page_font_color"))
                 }
               }
-              .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
               .width('100%')
               .height('100%')
               .padding({ bottom: 120 })
@@ -416,16 +409,13 @@ export struct NoteItemListComp {
                   }
                   .padding({ left: 24, right: 24, bottom: 12 })
                 }
-                .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
               }, noteItem => noteItem.uuid.toString())
             }
             .layoutWeight(1)
-            .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
             .listDirection(Axis.Vertical)
             .edgeEffect(EdgeEffect.Spring)
           }
           .layoutWeight(1)
-          .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
           .height("100%")
           .margin({ top: this.search ? 8 : 0 })
         }
@@ -441,10 +431,8 @@ export struct NoteItemListComp {
         .opacity(0.1)
         .visibility(this.search ? Visibility.Visible : Visibility.Hidden)
       }
-      .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
       .flexShrink(1)
     }
-    .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
     .flexShrink(1)
     .onClick(() => {
       this.search = false
@@ -711,7 +699,6 @@ export struct SearchComp {
       .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
       .margin({ right: this.search ? 40 : 0 })
     }
-    .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
   }
 }
 
@@ -822,7 +809,6 @@ export struct OperateNoteCompForPortrait {
             .fontColor($r("app.color.set_top_font_color"))
             .padding({ top: 5 })
         }
-        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
         .width("25%")
         .height("100%")
         .opacity(this.greyOpacity ? 0.4 : 1)
@@ -846,7 +832,6 @@ export struct OperateNoteCompForPortrait {
           .fontColor($r("app.color.delete_font_color"))
           .padding({ top: 5 })
       }
-      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
       .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? 120 :"25%")
       .height("100%")
       .opacity(this.greyOpacity ? 0.4 : 1)
@@ -870,7 +855,6 @@ export struct OperateNoteCompForPortrait {
             .fontColor($r("app.color.move_font_color"))
             .padding({ top: 5 })
         }
-        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
         .width("25%")
         .height("100%")
         .opacity(this.greyOpacity ? 0.4 : 1)
@@ -905,7 +889,6 @@ export struct OperateNoteCompForPortrait {
             .fontColor($r("app.color.recover_font_color"))
             .padding({ top: 5 })
         }
-        .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
         .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? 120 :"25%")
         .height("100%")
         .opacity(this.greyOpacity ? 0.4 : 1)
@@ -934,7 +917,6 @@ export struct OperateNoteCompForPortrait {
           .fontColor($r("app.color.check_all_font_color"))
           .padding({ top: 5 })
       }
-      .backgroundColor($r('app.color.notelist_bgcolor_f1f3f5'))
       .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes? 120 :"25%")
       .height("100%")
       .alignItems(HorizontalAlign.Center)
