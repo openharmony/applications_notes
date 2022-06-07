@@ -127,7 +127,7 @@ export struct NoteContentCompPortrait {
           LogUtil.info(TAG, "setInterval time_id : " + time_id)
           this.editModel = true
         })
-        .margin({ top: 0 })
+        .margin({ top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
       }
       .flexShrink(1)
