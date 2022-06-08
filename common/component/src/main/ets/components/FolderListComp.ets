@@ -408,7 +408,6 @@ export struct FolderListBackGround {
     .width("100%")
     .height("100%")
     .backgroundColor($r('app.color.folder_color_d6d6d6'))
-    .opacity(0.4)
     .blur(60)
   }
 }

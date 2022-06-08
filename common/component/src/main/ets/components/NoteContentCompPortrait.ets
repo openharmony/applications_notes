@@ -115,7 +115,7 @@ export struct NoteContentCompPortrait {
               })
             })
             .zoomAccess(false)
-            .height('70%')
+            .height('100%')
             .width('100%')
         }
         .flexShrink(1)
