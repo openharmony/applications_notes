@@ -268,7 +268,7 @@ export struct NoteContentOverViewComp {
       Row() {
         Text(this.selectedNoteData.title)
           .fontSize(30)
-          .margin({ left: 12, right: 24 })
+          .margin({ left: 0, right: 24 })
           .onClick(() => {
             this.editModel = true
             this.sectionStatus = 1
@@ -285,7 +285,7 @@ export struct NoteContentOverViewComp {
           .fontSize(12)
           .padding({ top: 4, bottom: 4 })
           .fontColor($r("app.color.modified_time_font_color"))
-          .margin({ left: 12 })
+          .margin({ left: 0 })
         Row() {
           Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
                folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :

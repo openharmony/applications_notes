@@ -378,7 +378,8 @@ export struct NoteItemListComp {
           }
           .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
           .width('100%')
-          .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
+          .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes
+                      && FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) > 0 ? Visibility.Visible : Visibility.None)
 
           Column() {
             List({ initialIndex: 0 }) {

@@ -51,7 +51,7 @@ body {
 
 .note-checkbox:checked {
   background: #F88805;
-  border: 2px solid #F88805;
+  border: 1px solid #F88805;
   outline: none;
   margin-left: 0px;
   margin-right: 0px;
@@ -59,10 +59,12 @@ body {
 }
 
 .note-checkbox {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+  line-height: 22.4px;
   background-color: #ffffff;
-  border: 2px solid #555555;
+  border: 2px solid #182431;
+  opacity: 0.6;
   -webkit-border-radius: 50%;
   -webkit-appearance: none;
   -webkit-user-select: none;
@@ -70,8 +72,8 @@ body {
   font-size: 0.8rem;
   margin-left: 0px;
   margin-top: 0px;
-  margin-right: 4px;
-  margin-bottom: 9px;
+  margin-right: 10px;
+  margin-bottom: 6px;
   outline: none;
   padding: 0;
   position: relative;
@@ -85,7 +87,7 @@ body {
 
 .note-checkbox:checked+span {
   text-decoration: line-through;
-  margin-left: 12px;
+  margin-left: 10px;
   color: #F88805;
   opacity: 0.4;
 }

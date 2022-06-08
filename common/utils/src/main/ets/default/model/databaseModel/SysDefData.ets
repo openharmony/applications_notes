@@ -162,14 +162,14 @@ export default {
     "title": "蛋糕做法",
     "uuid": "note4_uuid",
     "folder_uuid": SysDefFolderUuid.Life,
-    "content_text": '<div style="line-height:1.4;">' +
+    "content_text": '<div>' +
                     '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox" checked="checked">' +
-                    '<span class="note-checkbox-txt">&nbsp;&nbsp;糖60g</span><br>' +
+                    '<span style="line-height:22.4px;" class="note-checkbox-txt">糖60g</span><br>' +
                     '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox">' +
-                    '<span class="note-checkbox-txt">&nbsp;&nbsp;玉米油40g</span><br><div>' +
-                    '<div style="margin-top:14px; margin-top:14px;"><text>&nbsp;&nbsp;&nbsp;&nbsp;1. 添加鸡蛋、盐、糖、蛋糕粉<br>' +
-                    '&nbsp;&nbsp;&nbsp;&nbsp;2. 加入玉米油、牛奶，烤箱预热15分钟<br>' +
-                    '&nbsp;&nbsp;&nbsp;&nbsp;3. 加入葡萄干、核桃仁，烤箱定时40分钟<br><br></text><div>',
+                    '<span style="line-height:22.4px;" class="note-checkbox-txt">玉米油40g</span><br><div>' +
+                    '<div><text style="line-height:22.4px;">&nbsp;1.&nbsp;&nbsp;&nbsp;添加鸡蛋、盐、糖、蛋糕粉<br>' +
+                    '&nbsp;2.&nbsp;&nbsp;&nbsp;加入玉米油、牛奶，烤箱预热15分钟<br>' +
+                    '&nbsp;3.&nbsp;&nbsp;&nbsp;加入葡萄干、核桃仁，烤箱定时40分钟<br><br></text><div>',
     "content_img": "",
     "note_type": NoteType.CusDef,
     "is_top": Top.No,
