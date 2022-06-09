@@ -124,7 +124,7 @@ struct NoteOverViewComp {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
             .fontSize(30)
             .fontColor($r("app.color.all_notes_font_color"))
-            .fontWeight(FontWeight.Bold)
+            .fontWeight(FontWeight.Medium)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
@@ -378,7 +378,8 @@ export struct NoteItemListComp {
           }
           .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
           .width('100%')
-          .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
+          .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes
+                      && FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) > 0 ? Visibility.Visible : Visibility.None)
 
           Column() {
             List({ initialIndex: 0 }) {
@@ -673,6 +674,7 @@ export struct SearchComp {
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
           .enabled(this.longpress ? false : true)
+          .padding({ left:6, top:1 })
           .padding({left:6})
           .onEditChange((isEditing: boolean) => {
             this.search = isEditing

@@ -54,6 +54,7 @@ export struct FolderListComp {
         .width("100%")
         .margin({ top: 28 })
         .padding({ left: 24 })
+        .flexGrow(1)
 
         NoteAndCreateComp()
         // center
@@ -65,8 +66,9 @@ export struct FolderListComp {
               }
             }
           }, folderItem => folderItem.name.toString())
-        }.width('100%')
+        }.width('100%').height(450)
         .padding({ left: 12, right: 12 })
+        .flexGrow(1)
       }
 
 
@@ -80,6 +82,7 @@ export struct FolderListComp {
           controllerShow: this.controllerShow
         })
       }
+      .flexGrow(0)
       .width("100%")
       .padding({ left: 12, right: 12 })
     }

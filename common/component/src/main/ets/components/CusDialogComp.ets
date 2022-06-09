@@ -41,12 +41,13 @@ export struct NewOrEditFolderDialog {
         .fontSize(20)
         .height(56)
         .margin({ left: 24 })
+        .fontWeight(FontWeight.Medium)
       // folder color choose
       Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
         ForEach(circleColorArray, (colorStr: string) => {
           ColorCircleComp({ circleColor: colorStr })
         }, colorStr => colorStr)
-      }.margin({ bottom: 24, left: 24, right: 24 })
+      }.margin({ bottom: 12, left: 24, right: 24 })
       // folder name input
       Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
         Image($r("app.media.folder"))
@@ -61,6 +62,7 @@ export struct NewOrEditFolderDialog {
           .borderRadius(15)
           .backgroundColor($r("app.color.New_folder_input_box_color"))
           .width('100%')
+          .padding({left: 12, bottom: -12})
           .onChange((value: string) => {
             this.inputName = value
             FolderUtil.duplicateDetection(this.inputName, this.AllFolderArray).then(result => {
@@ -73,12 +75,17 @@ export struct NewOrEditFolderDialog {
         .height(1)
         .margin({ left: 64, right: 24 })
         .color((this.isExisted && this.inputName != this.oriInputName) ? $r("app.color.category_already_exist_divider_color") : $r("app.color.divider_color_182431"))
-
-      Text($r("app.string.category_already_exist"))
-        .fontSize(10)
-        .margin({ left: 64, top: 4 })
-        .fontColor($r("app.color.category_already_exist_font_color"))
-        .visibility((this.isExisted && this.inputName != this.oriInputName) ? Visibility.Visible : Visibility.None)
+      if(this.isExisted && this.inputName != this.oriInputName){
+        Text($r("app.string.category_already_exist"))
+          .fontSize(10)
+          .margin({ left: 64, top: 4 })
+          .fontColor($r("app.color.category_already_exist_font_color"))
+          .visibility((this.isExisted && this.inputName != this.oriInputName) ? Visibility.Visible : Visibility.None)
+      }else{
+        Column(){}
+        .height(16)
+        .width("100%")
+      }
 
       // button group
       Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {

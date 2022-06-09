@@ -46,6 +46,7 @@ export struct NoteContentComp {
   @Consume('SectionStatus') sectionStatus: number
   @Consume('LastSectionStatus') lastSectionStatus: number
   @Consume('Issave') issave: number
+  @Consume('Search') search: boolean
   controllerShow: WebController
   private editContentFlag = false
   @State uri1: string = ""
@@ -177,6 +178,13 @@ export struct NoteContentComp {
       }
       .height(StyleConstants.PERCENTAGE_100)
       .visibility(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0 ? Visibility.Hidden : Visibility.Visible)
+      Column() {
+      }
+      .height("100%")
+      .width("100%")
+      .backgroundColor("#18181A")
+      .opacity(0.1)
+      .visibility(this.search ? Visibility.Visible : Visibility.Hidden)
     }
     .height(StyleConstants.PERCENTAGE_100)
     .width(StyleConstants.PERCENTAGE_100)
@@ -268,7 +276,7 @@ export struct NoteContentOverViewComp {
       Row() {
         Text(this.selectedNoteData.title)
           .fontSize(30)
-          .margin({ left: 12, right: 24 })
+          .margin({ left: 0, right: 24 })
           .onClick(() => {
             this.editModel = true
             this.sectionStatus = 1
@@ -285,13 +293,14 @@ export struct NoteContentOverViewComp {
           .fontSize(12)
           .padding({ top: 4, bottom: 4 })
           .fontColor($r("app.color.modified_time_font_color"))
-          .margin({ left: 12 })
+          .margin({ left: 0 })
         Row() {
           Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
                folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
                FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
             .fontSize(12)
             .fontColor($r("app.color.list_modified_time_font_color"))
+            .padding({ top: 1 })
           Image($r('app.media.triangle'))
             .width(6)
             .height(12)
@@ -451,7 +460,7 @@ export struct ToolBarComp {
             }.width(42)
             .height(42)
             .borderRadius(8)
-            .backgroundColor($r('app.color.color_ffffff'))
+            .backgroundColor($r('app.color.color_fffffB'))
 
             Button({ type: ButtonType.Normal, stateEffect: true }) {
               Image($r('app.media.styles'))
@@ -465,7 +474,7 @@ export struct ToolBarComp {
             }.width(42)
             .height(42)
             .borderRadius(8)
-            .backgroundColor($r('app.color.color_ffffff'))
+            .backgroundColor($r('app.color.color_fffffB'))
 
             Button({ type: ButtonType.Normal, stateEffect: true }) {
               Image($r('app.media.picture_white'))
@@ -503,7 +512,7 @@ export struct ToolBarComp {
             }.width(42)
             .height(42)
             .borderRadius(8)
-            .backgroundColor($r('app.color.color_ffffff'))
+            .backgroundColor($r('app.color.color_fffffB'))
 
 
             Button({ type: ButtonType.Normal, stateEffect: true }) {
@@ -518,7 +527,7 @@ export struct ToolBarComp {
             }.width(42)
             .height(42)
             .borderRadius(8)
-            .backgroundColor($r('app.color.color_ffffff'))
+            .backgroundColor($r('app.color.color_fffffB'))
 
             Button({ type: ButtonType.Normal, stateEffect: true }) {
               Image($r('app.media.todo'))
@@ -532,11 +541,11 @@ export struct ToolBarComp {
             }.width(42)
             .height(42)
             .borderRadius(8)
-            .backgroundColor($r('app.color.color_ffffff'))
+            .backgroundColor($r('app.color.color_fffffB'))
 
 
             Button({ type: ButtonType.Normal, stateEffect: true }) {
-              Image($r('app.media.tick_thick'))
+              Image($r('app.media.tick_thin'))
                 .height(24)
                 .width(24)
                 .fillColor(this.issave == 0 ? Color.Black : Color.Grey)
@@ -551,7 +560,7 @@ export struct ToolBarComp {
             }.width(42)
             .height(42)
             .borderRadius(8)
-            .backgroundColor($r('app.color.color_ffffff'))
+            .backgroundColor($r('app.color.color_fffffB'))
           }.width(274)
         } else {
           Row({ space: StyleConstants.SPACE_24 }) {
@@ -611,6 +620,7 @@ struct NoteDataMoveItemCompTablet {
       Column() {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Text(FolderUtil.getFolderText(this.folderItem))
+            .padding({ top: 3 })
             .fontSize(16)
             .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid == this.uuid ? this.folderItem.uuid : '', this.folderItem.uuid == this.uuid))
             .textAlign(TextAlign.Center)
