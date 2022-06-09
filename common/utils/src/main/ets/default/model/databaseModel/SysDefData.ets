@@ -99,7 +99,7 @@ export default {
     "id": 7,
     "name": "工作",
     "uuid": SysDefFolderUuid.Work,
-    "color": "#e84026",
+    "color": "#f86d05",
     "folder_type": FolderType.CusDef,
     "is_deleted": Delete.No,
     "created_time": 1641636508000,

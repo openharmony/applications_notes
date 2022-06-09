@@ -124,7 +124,7 @@ struct NoteOverViewComp {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
             .fontSize(30)
             .fontColor($r("app.color.all_notes_font_color"))
-            .fontWeight(FontWeight.Bold)
+            .fontWeight(FontWeight.Medium)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
@@ -674,6 +674,7 @@ export struct SearchComp {
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
           .enabled(this.longpress ? false : true)
+          .padding({ left:6, top:1 })
           .padding({left:6})
           .onEditChange((isEditing: boolean) => {
             this.search = isEditing
