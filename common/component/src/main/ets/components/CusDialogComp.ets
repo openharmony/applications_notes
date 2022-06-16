@@ -62,7 +62,7 @@ export struct NewOrEditFolderDialog {
           .borderRadius(15)
           .backgroundColor($r("app.color.New_folder_input_box_color"))
           .width('100%')
-          .padding({left: 12, bottom: -12})
+          .padding({ left: 12, bottom: -12 })
           .onChange((value: string) => {
             this.inputName = value
             FolderUtil.duplicateDetection(this.inputName, this.AllFolderArray).then(result => {
@@ -75,14 +75,15 @@ export struct NewOrEditFolderDialog {
         .height(1)
         .margin({ left: 64, right: 24 })
         .color((this.isExisted && this.inputName != this.oriInputName) ? $r("app.color.category_already_exist_divider_color") : $r("app.color.divider_color_182431"))
-      if(this.isExisted && this.inputName != this.oriInputName){
+      if (this.isExisted && this.inputName != this.oriInputName) {
         Text($r("app.string.category_already_exist"))
           .fontSize(10)
           .margin({ left: 64, top: 4 })
           .fontColor($r("app.color.category_already_exist_font_color"))
           .visibility((this.isExisted && this.inputName != this.oriInputName) ? Visibility.Visible : Visibility.None)
-      }else{
-        Column(){}
+      } else {
+        Column() {
+        }
         .height(16)
         .width("100%")
       }
@@ -199,7 +200,7 @@ export struct DeleteDialog {
               .textAlign(TextAlign.Center)
               .maxLines(1)
               .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
-          } else if (this.CheckedNoteArray.length > 1){
+          } else if (this.CheckedNoteArray.length > 1) {
             Text($r("app.string.deletePartNote", this.CheckedNoteArray.length))
               .fontSize(14)
               .textAlign(TextAlign.Center)
@@ -343,7 +344,10 @@ export struct NoteDataMoveDialog {
           })
         }, noteItem => noteItem.uuid)
         ListItem() {
-          NoteDataMoveItemComp({ folderItem: this.NoteDataMoveArray[this.NoteDataMoveArray.length - 1], dividerShow: false })
+          NoteDataMoveItemComp({
+            folderItem: this.NoteDataMoveArray[this.NoteDataMoveArray.length - 1],
+            dividerShow: false
+          })
         }
         .onClick(() => {
           this.noteDataMoveDialogCtl.close()
@@ -373,6 +377,7 @@ export struct NoteDataMoveDialog {
 }
 
 let inSetValue = AppStorage.Link('inSetValue')
+
 @CustomDialog
 export struct EditContentDialog {
   editContentDialogCtl: CustomDialogController
@@ -381,9 +386,11 @@ export struct EditContentDialog {
   @StorageLink("inSetValue") inSetValue: number = 4
   private circleColor: string
   private fontSize: number
-  aboutToAppear(){
+
+  aboutToAppear() {
     this.confirm("javascript:RICH_EDITOR.getFontSizes()")
   }
+
   build() {
     Row() {
       Column() {
@@ -642,6 +649,7 @@ export struct EditTitleDialog {
   editTitleDialog: CustomDialogController
   confirm: (newTitle: string) => void
   @State inputName: string = ""
+  private isChange: boolean= true
 
   build() {
     Column() {
@@ -659,6 +667,12 @@ export struct EditTitleDialog {
           .backgroundColor($r("app.color.title_input_bg_color"))
           .width('90%')
           .onChange((value: string) => {
+            if (this.inputName == value) {
+              this.isChange = true
+            }
+            else {
+              this.isChange = false
+            }
             this.inputName = value
           })
       }.margin({ bottom: 4, left: 24, right: 24 })
@@ -680,8 +694,8 @@ export struct EditTitleDialog {
           .strokeWidth(1)
           .color($r("app.color.divider_color_e4e4e4"))
         Text($r("app.string.save"))
-          .opacity((this.inputName == "") ? 0.4 : 1)
-          .enabled((this.inputName == "") ? false : true)
+          .opacity(this.isChange ? 0.4 : 1)
+          .enabled(this.isChange ? false : true)
           .fontSize(18)
           .textAlign(TextAlign.Center)
           .fontColor($r("app.color.button_color_419fff"))
@@ -717,7 +731,11 @@ export struct EditContentDialogPortrait {
         Text($r("app.string.style")).margin({ top: 8 })
           .fontSize(14).fontColor($r("app.color.font_stylecolor_AD182431"))
 
-        Image($r('app.media.cross')).height(16).width(16).margin({ top: 8 }).fillColor($r("app.color.font_stylecolor_AD182431"))
+        Image($r('app.media.cross'))
+          .height(16)
+          .width(16)
+          .margin({ top: 8 })
+          .fillColor($r("app.color.font_stylecolor_AD182431"))
           .onClick(() => {
             this.editContentDialogCtl.close()
           })
