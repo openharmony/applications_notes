@@ -649,7 +649,8 @@ export struct EditTitleDialog {
   editTitleDialog: CustomDialogController
   confirm: (newTitle: string) => void
   @State inputName: string = ""
-  private isChange: boolean= true
+  private isEquivalentVal: boolean= true
+
 
   build() {
     Column() {
@@ -668,10 +669,10 @@ export struct EditTitleDialog {
           .width('90%')
           .onChange((value: string) => {
             if (this.inputName == value) {
-              this.isChange = true
+              this.isEquivalentVal = true
             }
             else {
-              this.isChange = false
+              this.isEquivalentVal = false
             }
             this.inputName = value
           })
@@ -694,8 +695,8 @@ export struct EditTitleDialog {
           .strokeWidth(1)
           .color($r("app.color.divider_color_e4e4e4"))
         Text($r("app.string.save"))
-          .opacity(this.isChange ? 0.4 : 1)
-          .enabled(this.isChange ? false : true)
+          .opacity(this.isEquivalentVal ? 0.4 : 1)
+          .enabled(this.isEquivalentVal ? false : true)
           .fontSize(18)
           .textAlign(TextAlign.Center)
           .fontColor($r("app.color.button_color_419fff"))
