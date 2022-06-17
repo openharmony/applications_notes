@@ -82,11 +82,11 @@ export struct FolderListComp {
           controllerShow: this.controllerShow
         })
       }
+      .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
       .flexGrow(0)
       .width("100%")
-      .padding({ left: 12, right: 12 })
+      .padding({ left: 12, right: 12,bottom: 24 })
     }
-    .padding({ bottom: 24 })
     .height("100%")
   }
 

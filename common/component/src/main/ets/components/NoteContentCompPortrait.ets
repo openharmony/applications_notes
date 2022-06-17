@@ -145,6 +145,7 @@ export struct NoteContentCompPortrait {
   }
 
   aboutToDisappear(): void{
+    clearInterval(time_id)
     LogUtil.info(TAG, "aboutToDisappear")
   }
 }

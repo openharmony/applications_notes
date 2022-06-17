@@ -138,6 +138,7 @@ export struct NoteContent {
   }
 
   aboutToDisappear(): void{
+    clearInterval(timeID)
     LogUtil.info(TAG, "aboutToDisappear")
   }
 }

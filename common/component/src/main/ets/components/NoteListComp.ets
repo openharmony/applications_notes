@@ -803,6 +803,7 @@ export struct OperateNoteCompForPortrait {
                 RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
               })
               this.longpress = false
+              this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             })
           Text($r("app.string.set_top"))
