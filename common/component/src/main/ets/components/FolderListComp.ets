@@ -15,13 +15,14 @@
 
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import {SysDefFolderUuid, TableName, FolderType, FolderTableColumn, NoteTableColumn, Delete, DeleteFileType} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
-import {NewOrEditFolderDialog, DeleteDialog} from './CusDialogComp'
+import { SysDefFolderUuid, TableName, FolderType, FolderTableColumn, NoteTableColumn, Delete, DeleteFileType
+} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
+import { NewOrEditFolderDialog, DeleteDialog } from './CusDialogComp'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
-import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 
 // Folder list component
 @Component
@@ -33,7 +34,7 @@ export struct FolderListComp {
   TAG = "FolderListComp"
 
   build() {
-    Flex({direction: FlexDirection.Column, justifyContent: FlexAlign.SpaceBetween}) {
+    Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.SpaceBetween }) {
       Column() {
         Column() {
           Image($r("app.media.suojin"))
@@ -50,7 +51,8 @@ export struct FolderListComp {
                 LogUtil.info(this.TAG, "FolderListComp, set continue section success")
               }
             })
-        }.alignItems(HorizontalAlign.Start)
+        }
+        .alignItems(HorizontalAlign.Start)
         .width("100%")
         .margin({ top: 28 })
         .padding({ left: 24 })
@@ -85,7 +87,7 @@ export struct FolderListComp {
       .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
       .flexGrow(0)
       .width("100%")
-      .padding({ left: 12, right: 12,bottom: 24 })
+      .padding({ left: 12, right: 12, bottom: 24 })
     }
     .height("100%")
   }
@@ -117,7 +119,7 @@ export struct NoteAndCreateComp {
     customStyle: true,
   })
 
-  onCreateConfirm(color:string, name:string) {
+  onCreateConfirm(color: string, name: string) {
     let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
     // insert folder to db
@@ -190,7 +192,7 @@ struct FolderItemComp {
     customStyle: true,
   })
   // Folder Edit Callback
-  onEditConfirm(color:string, name:string) {
+  onEditConfirm(color: string, name: string) {
     this.folderItem.color = color
     this.folderItem.name = name
     this.folderItem.folder_type = FolderType.CusDef
@@ -257,7 +259,7 @@ struct FolderItemComp {
     customStyle: true,
   })
   // Folder Create Callback
-  onCreateConfirm(color:string, name:string) {
+  onCreateConfirm(color: string, name: string) {
     let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
     // insert folder to db
@@ -322,64 +324,117 @@ struct FolderItemComp {
     .padding({ top: 4, bottom: 4, left: 16, right: 16 })
     .borderRadius(16)
     .backgroundColor($r("app.color.press_folder_bg_color"))
-    .visibility(this.folderItem.folder_type == FolderType.CusDef ? Visibility.Visible : Visibility.None)
   }
 
   build() {
     Flex() {
-      Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
-        Row() {
-          Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
-            .objectFit(ImageFit.Fill)
-            .width(24)
-            .height(24)
-            .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
-            .margin({ right: 16 })
-          Text(FolderUtil.getFolderText(this.folderItem))
-            .fontWeight(FontWeight.Medium)
-            .fontSize(16)
-            .textAlign(TextAlign.Center)
-            .maxLines(1)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-            .flexShrink(1)
-            .fontColor(FolderUtil.getFolderTextColor(this.selectedFolderData.uuid == this.folderItem.uuid))
-          Text(this.refreshFlag.toString())
-            .visibility(Visibility.None) // 用于强制刷新使用
-        }.width(118)
+      if (this.folderItem.folder_type == FolderType.CusDef) {
+        Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
+          Row() {
+            Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+              .objectFit(ImageFit.Fill)
+              .width(24)
+              .height(24)
+              .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
+              .margin({ right: 16 })
+            Text(FolderUtil.getFolderText(this.folderItem))
+              .fontWeight(FontWeight.Medium)
+              .fontSize(16)
+              .textAlign(TextAlign.Center)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .flexShrink(1)
+              .fontColor(FolderUtil.getFolderTextColor(this.selectedFolderData.uuid == this.folderItem.uuid))
+            Text(this.refreshFlag.toString())
+              .visibility(Visibility.None) // 用于强制刷新使用
+          }.width(118)
 
-        Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
-          .fontWeight(FontWeight.Regular)
-          .fontSize(14)
-          .textAlign(TextAlign.Center)
-      }
-      .width('100%')
-      .borderRadius(12)
-      .height(56)
-      .padding({ left: 12, right: 12 })
-      .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
-                                                                                    ? $r("app.color.folder_color_ffffff") : "")
-      .bindContextMenu(this.menuBuilder, ResponseType.LongPress)
-      .bindContextMenu(this.menuBuilder, ResponseType.RightClick)
-      .onClick(() => {
-        if (this.longpress) {
-          this.longpress = false
-          NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
-        } else {
-          this.selectedFolderData = this.folderItem
-          this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
-          // 刷新web界面
-          if (this.portraitModel == false) {
-            this.controllerShow.runJavaScript({
-              script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-            })
-          }
-          // save continue data
-          let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-          AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-          AppStorage.SetOrCreate('ContinueSection', 3)
-          LogUtil.info(this.TAG, "FolderItemComp, set continue note success")
+          Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+            .fontWeight(FontWeight.Regular)
+            .fontSize(14)
+            .textAlign(TextAlign.Center)
         }
-      })
+        .width('100%')
+        .borderRadius(12)
+        .height(56)
+        .padding({ left: 12, right: 12 })
+        .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
+                                                                                      ? $r("app.color.folder_color_ffffff") : "")
+        .bindContextMenu(this.menuBuilder, ResponseType.LongPress)
+        .bindContextMenu(this.menuBuilder, ResponseType.RightClick)
+        .onClick(() => {
+          if (this.longpress) {
+            this.longpress = false
+            NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
+          } else {
+            this.selectedFolderData = this.folderItem
+            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
+            // 刷新web界面
+            if (this.portraitModel == false) {
+              this.controllerShow.runJavaScript({
+                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              })
+            }
+            // save continue data
+            let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+            AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+            AppStorage.SetOrCreate('ContinueSection', 3)
+            LogUtil.info(this.TAG, "FolderItemComp, set continue note success")
+          }
+        })
+      } else {
+        Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
+          Row() {
+            Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+              .objectFit(ImageFit.Fill)
+              .width(24)
+              .height(24)
+              .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
+              .margin({ right: 16 })
+            Text(FolderUtil.getFolderText(this.folderItem))
+              .fontWeight(FontWeight.Medium)
+              .fontSize(16)
+              .textAlign(TextAlign.Center)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .flexShrink(1)
+              .fontColor(FolderUtil.getFolderTextColor(this.selectedFolderData.uuid == this.folderItem.uuid))
+            Text(this.refreshFlag.toString())
+              .visibility(Visibility.None) // 用于强制刷新使用
+          }.width(118)
+
+          Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+            .fontWeight(FontWeight.Regular)
+            .fontSize(14)
+            .textAlign(TextAlign.Center)
+        }
+        .width('100%')
+        .borderRadius(12)
+        .height(56)
+        .padding({ left: 12, right: 12 })
+        .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
+                                                                                      ? $r("app.color.folder_color_ffffff") : "")
+        .onClick(() => {
+          if (this.longpress) {
+            this.longpress = false
+            NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
+          } else {
+            this.selectedFolderData = this.folderItem
+            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
+            // 刷新web界面
+            if (this.portraitModel == false) {
+              this.controllerShow.runJavaScript({
+                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              })
+            }
+            // save continue data
+            let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+            AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+            AppStorage.SetOrCreate('ContinueSection', 3)
+            LogUtil.info(this.TAG, "FolderItemComp, set continue note success")
+          }
+        })
+      }
     }
     .width('100%')
     .height(56)
@@ -403,7 +458,8 @@ struct FolderItemComp {
 @Component
 export struct FolderListBackGround {
   build() {
-    Column() { }
+    Column() {
+    }
     .shadow({
       radius: 54,
       offsetY: 24
