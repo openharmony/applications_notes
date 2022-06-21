@@ -13,25 +13,21 @@
  * limitations under the License.
  */
 
-import {FolderListComp, FolderListBackGround} from '@ohos/component/src/main/ets/components/FolderListComp'
-import {NoteListComp} from '@ohos/component/src/main/ets/components/NoteListComp'
-import {NoteContentCompPortrait} from '@ohos/component/src/main/ets/components/NoteContentCompPortrait'
+import { FolderListComp, FolderListBackGround } from '@ohos/component/src/main/ets/components/FolderListComp'
+import { NoteListComp } from '@ohos/component/src/main/ets/components/NoteListComp'
+import { NoteContentCompPortrait } from '@ohos/component/src/main/ets/components/NoteContentCompPortrait'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
-import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
-import {circleColorArray} from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
+import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import { circleColorArray } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import {SysDefFolderUuid} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
+import { SysDefFolderUuid } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import LayoutUtil from '@ohos/utils/src/main/ets/default/baseUtil/LayoutUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 
 @Entry
 @Component
 export struct NoteHomePortraitComp {
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
-  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
-
   // 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
@@ -47,9 +43,8 @@ export struct NoteHomePortraitComp {
   @Provide('Search') search: boolean = false // 是否处于搜索状态
   @Provide('SearchResultList') searchResultList: NoteData[] = [] // 搜索得到的笔记列表
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串
-  @Provide('SelectedAll') selectedAll:boolean = false;
+  @Provide('SelectedAll') selectedAll: boolean = false;
   @Provide('EditModel') editModel: boolean = false
-
   TAG = "NoteHomePortraitComp_Phone"
 
   build() {
