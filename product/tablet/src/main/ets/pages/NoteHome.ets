@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-import {FolderListComp} from '@ohos/component/src/main/ets/components/FolderListComp'
-import {NoteListComp} from '@ohos/component/src/main/ets/components/NoteListComp'
-import {NoteContentComp} from '@ohos/component/src/main/ets/components/NoteContentComp'
+import { FolderListComp } from '@ohos/component/src/main/ets/components/FolderListComp'
+import { NoteListComp } from '@ohos/component/src/main/ets/components/NoteListComp'
+import { NoteContentComp } from '@ohos/component/src/main/ets/components/NoteContentComp'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
-import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
-import {circleColorArray} from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
+import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import { circleColorArray } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import {SysDefFolderUuid} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
+import { SysDefFolderUuid } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import LayoutUtil from '@ohos/utils/src/main/ets/default/baseUtil/LayoutUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import mediaquery from '@ohos.mediaquery'
@@ -29,10 +29,6 @@ import mediaquery from '@ohos.mediaquery'
 @Entry
 @Component
 export struct NoteHomeComp {
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
-  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
-
   // 当前文件夹、笔记、分栏
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
@@ -49,10 +45,9 @@ export struct NoteHomeComp {
   @Provide('EditModel') editModel: boolean = false //编辑模式：临时方案
   @Provide('Issave') issave: number = 0
   controllerShow: WebController
-
   TAG = "NoteHomeComp_Tablet"
-
   narrowWinListener = mediaquery.matchMediaSync('(width < 2000)')
+
   onWinSizeChange(mediaQueryResult) {
     if (this.sectionStatus != 1) {
       this.sectionStatus = (mediaQueryResult.matches) ? 2 : 3
