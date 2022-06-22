@@ -13,16 +13,17 @@
  * limitations under the License.
  */
 
-import {atob} from 'js-base64'
+import { atob } from 'js-base64'
 import ohosDataRdb from '@ohos.data.rdb'
 import fileio from '@ohos.fileio'
-import {LogUtil} from './LogUtil'
+import { LogUtil } from './LogUtil'
 import FolderUtil from './FolderUtil'
 import NoteUtil from './NoteUtil'
 import SysDefData from '../model/databaseModel/SysDefData'
 import FolderData from '../model/databaseModel/FolderData'
 import NoteData from '../model/databaseModel/NoteData'
-import {TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid} from '../model/databaseModel/EnumData'
+import { TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid
+} from '../model/databaseModel/EnumData'
 
 const TAG = "RdbStoreUtil"
 
@@ -233,7 +234,7 @@ export default {
           LogUtil.info(TAG, "initAppStorage, save img to FileDir")
           let imgNameArray = this.getImgNameFromHtml(noteData)
           imgNameArray.forEach((imgName: string) => {
-              this.writeToFileDir(imgName)
+            this.writeToFileDir(imgName)
           })
 
           // if not exit this note
@@ -293,7 +294,11 @@ export default {
   getImgNameFromHtml(noteData: NoteData): any{
     let newModuleName = "file://" + globalThis.noteContext.filesDir
     let imgNameArray = []
-    let html =  atob(noteData.content_text)
+    if (noteData.content_text == undefined || noteData.content_text == null || noteData.content_text == "") {
+      LogUtil.info(TAG, "noteData.content_text is null or undefined")
+      return imgNameArray
+    }
+    let html = atob(noteData.content_text)
     if (html == undefined || html == null || html == "") {
       return imgNameArray
     }
