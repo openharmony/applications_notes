@@ -642,6 +642,7 @@ export struct AddNoteComp {
         this.chooseNote = true
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+        AppStorage.SetOrCreate<FolderData>('NewFolder', this.selectedFolderData)
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "addNote, set continue note success")
         routePage()
