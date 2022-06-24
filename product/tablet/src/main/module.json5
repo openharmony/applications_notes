@@ -25,16 +25,16 @@
     ],
     "requestPermissions": [
       {
-        "name": "ohos.permission.READ_MEDIA"
+        "name": "ohos.permission.READ_MEDIA",
+        "reason": "$string:read_media_permission"
       },
       {
-        "name": "ohos.permission.WRITE_MEDIA"
+        "name": "ohos.permission.MEDIA_LOCATION",
+        "reason": "$string:media_location_permission"
       },
       {
-        "name": "ohos.permission.MEDIA_LOCATION"
-      },
-      {
-        "name": "ohos.permission.DISTRIBUTED_DATASYNC"
+        "name": "ohos.permission.DISTRIBUTED_DATASYNC",
+        "reason": "$string:distributed_dataSync_permission"
       },
     ],
     "deliveryWithInstall": true,
