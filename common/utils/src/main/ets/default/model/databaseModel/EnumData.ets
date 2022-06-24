@@ -107,7 +107,8 @@ export enum TableSql {
   + NoteTableColumn.IsDeleted + " INTEGER DEFAULT 0,"
   + NoteTableColumn.CreatedTime + " INTEGER,"
   + NoteTableColumn.ModifiedTime + " INTEGER,"
-  + NoteTableColumn.DeletedTime + " INTEGER"
+  + NoteTableColumn.DeletedTime + " INTEGER,"
+  + NoteTableColumn.SliderValue + " INTEGER "
   + ")",
 
   AttachmentTableSQL = "CREATE TABLE IF NOT EXISTS " + TableName.AttachmentTable + " ("
