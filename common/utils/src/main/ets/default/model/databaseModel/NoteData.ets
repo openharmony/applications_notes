@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {NoteType, Favorite, Delete, Top} from './EnumData'
+import { NoteType, Favorite, Delete, Top } from './EnumData'
 
 /**
  * 笔记类
@@ -32,10 +32,11 @@ export default class NoteData {
   created_time: number // 创建时间
   modified_time: number // 修改时间
   deleted_time: number // 删除时间
+  slider_value: number //字体进度条大小
 
   constructor(id: number, title: string, uuid: string, folder_uuid: string, content_text: string, content_img: string,
               note_type: NoteType, is_top: Top, is_favorite: Favorite, is_deleted: Delete, created_time: number,
-              modified_time: number, deleted_time: number) {
+              modified_time: number, deleted_time: number, slider_value: number) {
     this.id = id
     this.title = title
     this.uuid = uuid
@@ -49,6 +50,7 @@ export default class NoteData {
     this.created_time = created_time
     this.modified_time = modified_time
     this.deleted_time = deleted_time
+    this.slider_value = slider_value
   }
 
   /**
@@ -67,7 +69,8 @@ export default class NoteData {
       "is_deleted": this.is_deleted,
       "created_time": this.created_time,
       "modified_time": this.modified_time,
-      "deleted_time": this.deleted_time
+      "deleted_time": this.deleted_time,
+      "slider_value":this.slider_value
     }
   }
 }

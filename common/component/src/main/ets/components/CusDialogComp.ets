@@ -721,7 +721,7 @@ export struct EditContentDialogPortrait {
   editContentDialogCtl: CustomDialogController;
   confirm: (excuteJs: string) => void
   @State selectFontColor: string = fontColorArray[0]
-  @State inSetValue: number = 20
+  @Consume('SelectedNoteData') selectedNoteData: NoteData
   private circleColor: string
   private fontSize: number
 
@@ -923,7 +923,7 @@ export struct EditContentDialogPortrait {
       Row({ space: 10 }) {
         Image($r('app.media.font_small')).height(24).width(24).margin({ top: 8 })
         Slider({
-          value: this.inSetValue,
+          value: this.selectedNoteData.slider_value,
           min: 0,
           max: 16,
           step: 4,
@@ -935,7 +935,7 @@ export struct EditContentDialogPortrait {
           .showSteps(false)
           .showTips(false)
           .onChange((value: number, mode: SliderChangeMode) => {
-            this.inSetValue = value
+            this.selectedNoteData.slider_value = value
             this.fontSize = value + 12
             this.confirm("javascript:RICH_EDITOR.execFontSize('" + this.fontSize + "')")
             LogUtil.info(TAG, 'value:' + value + 'mode:' + mode.toString())
