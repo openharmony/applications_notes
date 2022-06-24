@@ -83,7 +83,7 @@ export default {
         sysDefNoteArray.forEach((sysDefNote) => {
           let noteData = new NoteData(sysDefNote.id, sysDefNote.title, sysDefNote.uuid, sysDefNote.folder_uuid, sysDefNote.content_text,
             sysDefNote.content_img, sysDefNote.note_type, sysDefNote.is_top, sysDefNote.is_favorite,
-            sysDefNote.is_deleted, sysDefNote.created_time, sysDefNote.modified_time, sysDefNote.deleted_time)
+            sysDefNote.is_deleted, sysDefNote.created_time, sysDefNote.modified_time, sysDefNote.deleted_time, sysDefNote.slider_value)
           noteDataArray.push(noteData)
         })
         LogUtil.info(TAG, "noteDataArray[sysdef] : " + noteDataArray.length)
@@ -101,7 +101,7 @@ export default {
           let noteObj = JSON.parse(continueNote)
           let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
             noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
-            noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time)
+            noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value)
 
           // save img to FileDir
           LogUtil.info(TAG, "createRdbStore, save img to FileDir")
@@ -209,7 +209,8 @@ export default {
           let created_time = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.CreatedTime))
           let modified_time = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.ModifiedTime))
           let deleted_time = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.DeletedTime))
-          let noteData = new NoteData(id, title, uuid, folder_uuid, content_text, content_img, noteType, is_top, is_favorite, is_deleted, created_time, modified_time, deleted_time)
+          let slider_value = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.SliderValue))
+          let noteData = new NoteData(id, title, uuid, folder_uuid, content_text, content_img, noteType, is_top, is_favorite, is_deleted, created_time, modified_time, deleted_time, slider_value)
           noteDataArray.push(noteData)
         }
         LogUtil.info(TAG, "noteDataArray[query] : " + noteDataArray.length)
@@ -228,7 +229,7 @@ export default {
           let noteObj = JSON.parse(continueNote)
           let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
             noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
-            noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time)
+            noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value)
 
           // save img to FileDir
           LogUtil.info(TAG, "initAppStorage, save img to FileDir")

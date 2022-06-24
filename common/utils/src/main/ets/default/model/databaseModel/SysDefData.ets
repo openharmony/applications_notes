@@ -122,7 +122,8 @@ export default {
     "is_deleted": Delete.No,
     "created_time": 1641869573000,
     "modified_time": 1641869573000,
-    "deleted_time": 0
+    "deleted_time": 0,
+    "slider_value":0
   },
 
   sys_def_note2: {
@@ -138,7 +139,8 @@ export default {
     "is_deleted": Delete.No,
     "created_time": 1640999288000,
     "modified_time": 1640999288000,
-    "deleted_time": 0
+    "deleted_time": 0,
+    "slider_value":0
   },
 
   sys_def_note3: {
@@ -154,7 +156,8 @@ export default {
     "is_deleted": Delete.No,
     "created_time": 1641385708000,
     "modified_time": 1641385708000,
-    "deleted_time": 0
+    "deleted_time": 0,
+    "slider_value":0
   },
 
   sys_def_note4: {
@@ -177,6 +180,7 @@ export default {
     "is_deleted": Delete.No,
     "created_time": 1640909288000,
     "modified_time": 1640909288000,
-    "deleted_time": 0
+    "deleted_time": 0,
+    "slider_value":0
   }
 }

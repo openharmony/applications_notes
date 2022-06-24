@@ -53,7 +53,8 @@ export enum NoteTableColumn {
   IsDeleted = "is_deleted", // 是否被删除
   CreatedTime = "created_time", // 创建时间
   ModifiedTime = "modified_time", // 修改时间
-  DeletedTime = "deleted_time" // 删除时间
+  DeletedTime = "deleted_time", // 删除时间
+  SliderValue = "slider_value"
 }
 
 /**
@@ -106,7 +107,8 @@ export enum TableSql {
   + NoteTableColumn.IsDeleted + " INTEGER DEFAULT 0,"
   + NoteTableColumn.CreatedTime + " INTEGER,"
   + NoteTableColumn.ModifiedTime + " INTEGER,"
-  + NoteTableColumn.DeletedTime + " INTEGER"
+  + NoteTableColumn.DeletedTime + " INTEGER,"
+  + NoteTableColumn.SliderValue + " INTEGER "
   + ")",
 
   AttachmentTableSQL = "CREATE TABLE IF NOT EXISTS " + TableName.AttachmentTable + " ("
