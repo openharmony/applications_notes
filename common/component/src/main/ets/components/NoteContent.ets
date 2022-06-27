@@ -376,6 +376,7 @@ export struct NoteContentOverViewComp {
           .fontSize(30)
           .margin({ left: 12, right: 24 })
           .onClick(() => {
+            clearInterval(timeID)
             this.editTitleDialogCtl.open()
           })
       }.height(40)

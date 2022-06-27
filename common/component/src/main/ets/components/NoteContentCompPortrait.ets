@@ -220,6 +220,7 @@ export struct NoteContentOverViewComp {
       Row() {
         Text(this.selectedNoteData.title).fontSize(30).fontWeight(FontWeight.Medium)
           .onClick(() => {
+            clearInterval(time_id)
             this.editTitleDialogCtl.open()
           })
       }.height(40)

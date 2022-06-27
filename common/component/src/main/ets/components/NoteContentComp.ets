@@ -281,6 +281,7 @@ export struct NoteContentOverViewComp {
           .onClick(() => {
             this.editModel = true
             this.sectionStatus = 1
+            clearInterval(timeId)
             this.editTitleDialogCtl.open()
             // save continue data
             AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
