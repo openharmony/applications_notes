@@ -220,17 +220,32 @@ struct FolderItemComp {
     let currentFolder = FolderUtil.getFolderData(this.AllFolderArray, this.folderItem.uuid)
     let index = this.AllFolderArray.indexOf(currentFolder)
     let currentNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
+    let deleteNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), 'sys_def_recentDeletes_uuid')
     if (index > -1) {
       this.AllFolderArray.splice(index, 1)
-      currentNoteDataArray.forEach((noteItem: NoteData) => {
-        noteItem.is_deleted = Delete.Yes
-        noteItem.folder_uuid = SysDefFolderUuid.UnClassified
-        noteItem.deleted_time = new Date().getTime()
-        // update note to db
-        let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-        predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
-      })
+      if (deleteNoteDataArray.length != 0) {
+        deleteNoteDataArray.forEach((noteItem: NoteData) => {
+          let folderData: FolderData = FolderUtil.getFolderData(this.AllFolderArray, noteItem.folder_uuid)
+          if (folderData == undefined) {
+            noteItem.folder_uuid = SysDefFolderUuid.UnClassified
+            // update note to db
+            let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+            predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
+            RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+          }
+        })
+      }
+      if (currentNoteDataArray.length != 0) {
+        currentNoteDataArray.forEach((noteItem: NoteData) => {
+          noteItem.is_deleted = Delete.Yes
+          noteItem.folder_uuid = SysDefFolderUuid.UnClassified
+          noteItem.deleted_time = new Date().getTime()
+          // update note to db
+          let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+          predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
+          RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+        })
+      }
       // delete folder from db
       let predicates_folder = RdbStoreUtil.getRdbPredicates(TableName.FolderTable)
       predicates_folder.equalTo(FolderTableColumn.Uuid, this.folderItem.uuid)
