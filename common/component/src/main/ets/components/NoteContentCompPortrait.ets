@@ -205,10 +205,7 @@ export struct NoteContentOverViewComp {
         .edgeEffect(EdgeEffect.Spring)
         .height(this.AllFolderArray.length > 12 ? 504 : (this.AllFolderArray.length - 3) * 56)
       }
-      .margin({ top: 24, bottom: 24, left: 24, right: 24 })
-      .borderRadius(16)
       .backgroundColor($r('app.color.folder_color_ffffff'))
-      .shadow({ color: "#0a000000", offsetX: 0, offsetY: 2, radius: 30 })
       .width(148)
       .padding({ left: 24, right: 24 })
     }
