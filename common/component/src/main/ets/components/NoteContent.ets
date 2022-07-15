@@ -116,9 +116,11 @@ export struct NoteContent {
         .width(StyleConstants.PERCENTAGE_100)
         .onClick(() => {
           // 添加定时器：3s自动保存
-          timeID = setInterval(() => {
-            this.controllerShow.runJavaScript({ script: "scheduled_save_content()" })
-          }, 3000)
+          if (timeID == undefined) {
+            timeID = setInterval(() => {
+              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+            }, 3000)
+          }
           LogUtil.info(TAG, "setInterval timeID : " + timeID)
           this.issave = 0
           this.editModel = true
@@ -135,6 +137,7 @@ export struct NoteContent {
   }
 
   aboutToDisappear(): void{
+    clearInterval(timeID)
     LogUtil.info(TAG, "aboutToDisappear")
   }
 }
@@ -166,7 +169,7 @@ export struct ToolBarComp {
         .width(24)
         .onClick(() => {
           this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
-          this.controllerShow.runJavaScript({ script: "get_html_content()" })
+          this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
           // 清除定时器
           if (timeID != undefined) {
             LogUtil.info(TAG, "zoom, clearInterval timeID : " + timeID)
@@ -299,7 +302,7 @@ export struct ToolBarComp {
               .onClick(() => {
                 this.issave = 1
                 // 保存笔记信息到数据库
-                this.controllerShow.runJavaScript({ script: "get_html_content()" })
+                this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
               })
           }.width(42)
           .height(42)

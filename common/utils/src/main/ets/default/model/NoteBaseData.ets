@@ -16,7 +16,7 @@
 import NoteData from '../model/databaseModel/NoteData'
 
 export const circleColorArray: string[] = [
-  "#e84026", // 深红
+  "#f86d05", // 深红
   "#ff7500", // 浅红
   "#ffbf00", // 黄色
   "#41ba41", // 绿色
@@ -27,7 +27,7 @@ export const circleColorArray: string[] = [
 ]
 
 export const fontColorArray: string[] = [
-  "#e84026", // 深红
+  "#f86d05", // 深红
   "#ffbf00", // 黄色
   "#41ba41", // 绿色
   "#00aaee", // 中蓝
@@ -37,7 +37,7 @@ export const fontColorArray: string[] = [
 ]
 
 export const unSelectedNoteBgColorMap = {
-  "#e84026": "#eecfcc",
+  "#f86d05": "#fff8eceb",
   "#ff7500": "#f3d9c4",
   "#ffbf00": "#f3e8c4",
   "#41ba41": "#cde7d1",
@@ -49,7 +49,7 @@ export const unSelectedNoteBgColorMap = {
 }
 
 export const selectedNoteBgColorMap = {
-  "#e84026": "#eec4b8",
+  "#f86d05": "#eec4b8",
   "#ff7500": "#f1d8c7",
   "#ffbf00": "#f3cdb1",
   "#41ba41": "#d1dabc",
