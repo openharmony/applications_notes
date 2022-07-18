@@ -681,7 +681,7 @@ export struct SearchComp {
         })
 
       Flex({ justifyContent: FlexAlign.Start }) {
-        Image($r('app.media.search')).width(18).height(18)
+        Image($r('app.media.search')).width(20).height(20)
         TextInput({ placeholder: $r('app.string.searchNote') })
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
