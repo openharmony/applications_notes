@@ -30,6 +30,7 @@ import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationU
 import router from '@system.router'
 import inputMethod from '@ohos.inputmethod';
 import {folderTextMap} from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
+import rs from '@ohos.resourceManager'
 
 var time_id: number
 
@@ -434,7 +435,12 @@ export struct DeleteNoteComp {
           .onClick(() => {
             this.selectedNoteData.is_deleted = Delete.No
             this.selectedNoteData.deleted_time = 0
-            prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
+            rs.getResourceManager().then((manager) => {
+              manager.getString($r('app.string.restore').id)
+                .then((strVal)=>{
+                  prompt.showToast({ message: strVal, duration: 2000 });
+                });
+            });
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
