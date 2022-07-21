@@ -54,6 +54,7 @@ export struct FolderListComp {
         .width("100%")
         .margin({ top: 28 })
         .padding({ left: 24 })
+        .flexGrow(1)
 
         NoteAndCreateComp()
         // center
@@ -65,8 +66,9 @@ export struct FolderListComp {
               }
             }
           }, folderItem => folderItem.name.toString())
-        }.width('100%')
+        }.width('100%').height(450)
         .padding({ left: 12, right: 12 })
+        .flexGrow(1)
       }
 
 
@@ -80,8 +82,10 @@ export struct FolderListComp {
           controllerShow: this.controllerShow
         })
       }
+      .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
+      .flexGrow(0)
       .width("100%")
-      .padding({ left: 12, right: 12 })
+      .padding({ left: 12, right: 12,bottom: 24 })
     }
     .padding({ bottom: 24 })
     .height("100%")
@@ -408,7 +412,6 @@ export struct FolderListBackGround {
     .width("100%")
     .height("100%")
     .backgroundColor($r('app.color.folder_color_d6d6d6'))
-    .opacity(0.4)
     .blur(60)
   }
 }

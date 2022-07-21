@@ -128,7 +128,7 @@ struct NoteOverViewComp {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
             .fontSize(30)
             .fontColor($r("app.color.all_notes_font_color"))
-            .fontWeight(FontWeight.Bold)
+            .fontWeight(FontWeight.Medium)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
@@ -384,7 +384,8 @@ export struct NoteItemListComp {
           .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
           .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
           .width('100%')
-          .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
+          .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes
+                      && FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) > 0 ? Visibility.Visible : Visibility.None)
 
           Column() {
             List({ initialIndex: 0 }) {
@@ -680,11 +681,12 @@ export struct SearchComp {
         })
 
       Flex({ justifyContent: FlexAlign.Start }) {
-        Image($r('app.media.search')).width(18).height(18)
+        Image($r('app.media.search')).width(20).height(20)
         TextInput({ placeholder: $r('app.string.searchNote') })
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
           .enabled(this.longpress ? false : true)
+          .padding({ left:6, top:1 })
           .padding({left:6})
           .onEditChange((isEditing: boolean) => {
             this.search = isEditing
@@ -733,7 +735,7 @@ export struct OperateNoteCompForPortrait {
   })
 
   opacityChange() {
-    if (this.CheckedNoteArray.length == 0) {
+    if (this.CheckedNoteArray.length == 0 && this.longpress == true) {
       this.greyOpacity = true
       LogUtil.info(TAG, "none checked array")
     } else {
@@ -787,8 +789,8 @@ export struct OperateNoteCompForPortrait {
       })
     }
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
-    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
+    this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -814,6 +816,7 @@ export struct OperateNoteCompForPortrait {
                 RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
               })
               this.longpress = false
+              this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             })
           Text($r("app.string.set_top"))

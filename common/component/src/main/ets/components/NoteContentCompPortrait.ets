@@ -121,7 +121,7 @@ export struct NoteContentCompPortrait {
         .onClick(() => {
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
-            this.controllerShow.runJavaScript({ script: "scheduled_save_content()" })
+            this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
           }, 3000)
           LogUtil.info(TAG, "setInterval time_id : " + time_id)
           this.editModel = true
@@ -144,6 +144,7 @@ export struct NoteContentCompPortrait {
   }
 
   aboutToDisappear(): void{
+    clearInterval(time_id)
     LogUtil.info(TAG, "aboutToDisappear")
   }
 }
@@ -293,7 +294,7 @@ export struct ToolBarComp {
         .width(24)
         .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
         .onClick(() => {
-          this.controllerShow.runJavaScript({ script: "get_html_content()" })
+          this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
           // 清除定时器
           if (time_id != undefined) {
             LogUtil.info(TAG, "back, clearInterval time_id : " + time_id)
@@ -356,7 +357,7 @@ export struct ToolBarComp {
             Image($r('app.media.tick_thin')).height(24).width(24)
               .onClick(() => {
                 // 保存笔记信息到数据库
-                this.controllerShow.runJavaScript({ script: "get_html_content()" })
+                this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
                 this.editModel = false
               })
           }.width(42)
