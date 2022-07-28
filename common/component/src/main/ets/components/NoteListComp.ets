@@ -27,6 +27,7 @@ import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleCons
 import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/SearchModel'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import router from '@system.router';
+import rs from '@ohos.resourceManager'
 
 const TAG = "NoteListComp"
 
@@ -569,7 +570,12 @@ export struct OperateNoteComp {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_deleted = Delete.No
             noteItem.deleted_time = 0
-            prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
+            rs.getResourceManager().then((manager) => {
+              manager.getString($r('app.string.restore').id)
+                .then((strVal)=>{
+                  prompt.showToast({ message: strVal, duration: 2000 });
+                });
+            });
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
@@ -878,7 +884,12 @@ export struct OperateNoteCompForPortrait {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_deleted = Delete.No
                 noteItem.deleted_time = 0
-                prompt.showToast({ message: $r('app.string.restore'), duration: 2000 })
+                rs.getResourceManager().then((manager) => {
+                  manager.getString($r('app.string.restore').id)
+                    .then((strVal)=>{
+                      prompt.showToast({ message: strVal, duration: 2000 });
+                    });
+                });
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
                 predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)

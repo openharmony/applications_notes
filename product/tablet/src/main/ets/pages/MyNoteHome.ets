@@ -55,7 +55,8 @@ export struct MyNoteHomeComp {
       "ohos.permission.DISTRIBUTED_DATASYNC"
     ]
     LogUtil.info(this.TAG, 'permissions need to require from user')
-    this.context.requestPermissionsFromUser(permissionList).then((data) => {
+    let context: any = getContext(this);
+    context.requestPermissionsFromUser(permissionList).then((data) => {
       LogUtil.info(this.TAG, 'data permissions : ' + data.permissions)
       LogUtil.info(this.TAG, 'data result: ' + data.authResults)
       let sum = 0
@@ -67,7 +68,7 @@ export struct MyNoteHomeComp {
       LogUtil.warn(this.TAG, 'failed to requestPermissionsFromUser : ' + err.code);
     })
 
-    let dbPath = this.context.databaseDir + "/db/note.db"
+    let dbPath = context.databaseDir + "/db/note.db"
     try {
       fileio.accessSync(dbPath)
       LogUtil.info(this.TAG, "db has created")
