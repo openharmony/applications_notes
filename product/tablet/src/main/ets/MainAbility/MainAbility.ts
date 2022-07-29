@@ -14,6 +14,7 @@
  */
 
 import Ability from '@ohos.application.Ability'
+import deviceInfo from '@ohos.deviceInfo';
 import AbilityConstant from '@ohos.application.AbilityConstant'
 import fileio from '@ohos.fileio'
 import inputMethod from '@ohos.inputmethod';
@@ -23,6 +24,11 @@ export default class MainAbility extends Ability {
 
     onCreate(want, launchParam) {
         console.info(this.Tag + " onCreate, launchReason is " + launchParam.launchReason)
+        console.info(this.Tag + " onCreate, deviceType" + deviceInfo.deviceType)
+        if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
+            AppStorage.SetOrCreate<boolean>('Expand', false)
+            AppStorage.SetOrCreate<boolean>('Choose', true)
+        }
         if (launchParam.launchReason == AbilityConstant.LaunchReason.CONTINUATION) {
             // 设置迁移标记
             AppStorage.SetOrCreate<boolean>('IsContinue', true)
@@ -37,6 +43,9 @@ export default class MainAbility extends Ability {
             if (continueChoose) {
                 console.info(this.Tag + " continue from phone")
                 AppStorage.SetOrCreate<boolean>('ContinueFromPhone', true)
+            } else {
+                AppStorage.SetOrCreate<boolean>('ContinueFromTablet', true)
+                console.info(this.Tag + " continue from tablet")
             }
             this.context.restoreWindowStage(null)
         }
@@ -85,6 +94,9 @@ export default class MainAbility extends Ability {
         // 保存本端的迁移数据
         wantParam["ContinueNote"] = continueNote
         wantParam["ContinueSection"] = continueSection
+        if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
+            wantParam["ContinueChoose"] = true
+        }
 
         // save img to DisFileDir
         console.info(this.Tag + " onContinue, save img to DisFileDir")
