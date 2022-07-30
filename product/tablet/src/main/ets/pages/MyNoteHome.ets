@@ -68,14 +68,26 @@ export struct MyNoteHomeComp {
       LogUtil.warn(this.TAG, 'failed to requestPermissionsFromUser : ' + err.code);
     })
 
+    let dbExist = false;
     let dbPath = context.databaseDir + "/db/note.db"
     try {
       fileio.accessSync(dbPath)
       LogUtil.info(this.TAG, "db has created")
       RdbStoreUtil.initAppStorage(this.context)
+      dbExist = true
     } catch (err) {
-      LogUtil.info(this.TAG, "db has not created, start to create db")
-      RdbStoreUtil.createRdbStore(this.context)
+      LogUtil.info(this.TAG, "db has not created, find to rdb folder")
+    }
+    if (!dbExist) {
+      dbPath = context.databaseDir + "/rdb/note.db"
+      try{
+        fileio.accessSync(dbPath)
+        LogUtil.info(this.TAG,"db has created")
+        RdbStoreUtil.initAppStorage(this.context)
+      } catch (err) {
+        LogUtil.info(this.TAG,"db has not created, start to create db")
+        RdbStoreUtil.createRdbStore(this.context)
+      }
     }
   }
 
