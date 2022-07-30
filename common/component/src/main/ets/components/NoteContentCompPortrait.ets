@@ -29,7 +29,7 @@ import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import router from '@system.router'
 import inputMethod from '@ohos.inputmethod';
-import {folderTextMap} from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
+import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import rs from '@ohos.resourceManager'
 
 var time_id: number
@@ -121,6 +121,9 @@ export struct NoteContentCompPortrait {
         }
         .flexShrink(1)
         .onClick(() => {
+          if (time_id) {
+            clearInterval(time_id)
+          }
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
             this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
@@ -213,43 +216,45 @@ export struct NoteContentOverViewComp {
   }
 
   build() {
-    Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
-      justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
-      Row() {
-        Text(this.selectedNoteData.title).fontSize(30).fontWeight(FontWeight.Medium)
-          .onClick(() => {
-            clearInterval(time_id)
-            this.editTitleDialogCtl.open()
-          })
-      }.height(40)
-      .width(StyleConstants.PERCENTAGE_100)
-
-      Row() {
-        Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time)))
-          .fontSize(12)
-          .padding({ top: 4, bottom: 4 })
-          .fontColor($r("app.color.modified_time_font_color"))
+    if (this.selectedNoteData && this.selectedNoteData.is_deleted) {
+      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
+        justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
-          Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
-               folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
-               FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
-            .fontColor($r('app.color.folder_color_99182431'))
+          Text(this.selectedNoteData.title).fontSize(30).fontWeight(FontWeight.Medium)
+            .onClick(() => {
+              clearInterval(time_id)
+              this.editTitleDialogCtl.open()
+            })
+        }.height(40)
+        .width(StyleConstants.PERCENTAGE_100)
+
+        Row() {
+          Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time)))
             .fontSize(12)
-          Image($r('app.media.triangle'))
-            .width(6)
-            .height(12)
-            .margin({ left: 4 })
-        }
-        .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-        .margin({ left: 8 })
-        .borderRadius(16)
-        .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
-        .bindMenu(this.MenuBuilder)
-      }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
+            .padding({ top: 4, bottom: 4 })
+            .fontColor($r("app.color.modified_time_font_color"))
+          Row() {
+            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
+                 folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
+            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+              .fontColor($r('app.color.folder_color_99182431'))
+              .fontSize(12)
+            Image($r('app.media.triangle'))
+              .width(6)
+              .height(12)
+              .margin({ left: 4 })
+          }
+          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .margin({ left: 8 })
+          .borderRadius(16)
+          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
+          .bindMenu(this.MenuBuilder)
+        }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
+      }
+      .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
+      .width(StyleConstants.PERCENTAGE_100)
+      .height(82)
     }
-    .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
-    .width(StyleConstants.PERCENTAGE_100)
-    .height(82)
   }
 }
 
@@ -324,7 +329,7 @@ export struct ToolBarComp {
               LogUtil.info(TAG, 'ToolBarComp, set continue note success')
             })
           Image($r('app.media.delete')).height(24).width(24)
-            .onClick(()=>{
+            .onClick(() => {
               this.noteDataDeleteDialogCtl.open()
             })
         }.width(72)
@@ -437,7 +442,7 @@ export struct DeleteNoteComp {
             this.selectedNoteData.deleted_time = 0
             rs.getResourceManager().then((manager) => {
               manager.getString($r('app.string.restore').id)
-                .then((strVal)=>{
+                .then((strVal) => {
                   prompt.showToast({ message: strVal, duration: 2000 });
                 });
             });

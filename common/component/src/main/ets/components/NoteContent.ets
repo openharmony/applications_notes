@@ -17,20 +17,20 @@ import DateUtil from '@ohos/utils/src/main/ets/default/baseUtil/DateUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import {TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
+import { TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
-import {EditContentDialog, DeleteDialog, EditTitleDialog} from './CusDialogComp'
+import { EditContentDialog, DeleteDialog, EditTitleDialog } from './CusDialogComp'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import prompt from '@system.prompt'
 import featureAbility from '@ohos.ability.featureAbility'
-import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import mediaquery from '@ohos.mediaquery'
 import router from '@system.router';
 import inputMethod from '@ohos.inputmethod';
-import {folderTextMap} from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
+import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 
 const TAG = "NoteContent"
 
@@ -44,7 +44,6 @@ export struct NoteContent {
   @Provide('EditModel') editModel: boolean = false
   controllerShow: WebController
   private editContentFlag = false
-
   noteContent = {
     callbackhtml: (html) => {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
@@ -57,7 +56,7 @@ export struct NoteContent {
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
       LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
       AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
-      AppStorage.SetOrCreate<boolean>('needRefresh',true)
+      AppStorage.SetOrCreate<boolean>('needRefresh', true)
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -107,7 +106,9 @@ export struct NoteContent {
                 this.editContentFlag = true
               }
               LogUtil.info(TAG, "finish loadurl")
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+              this.controllerShow.runJavaScript({
+                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              })
             })
             .zoomAccess(false)
             .height('70%')
@@ -117,11 +118,12 @@ export struct NoteContent {
         .width(StyleConstants.PERCENTAGE_100)
         .onClick(() => {
           // 添加定时器：3s自动保存
-          if (timeID == undefined) {
-            timeID = setInterval(() => {
-              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
-            }, 3000)
+          if (timeID) {
+            clearInterval(timeID)
           }
+          timeID = setInterval(() => {
+            this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+          }, 3000)
           LogUtil.info(TAG, "setInterval timeID : " + timeID)
           this.issave = 0
           this.editModel = true
@@ -150,7 +152,6 @@ export struct ToolBarComp {
   @Consume('Issave') issave: number
   @Consume('EditModel') editModel: boolean
   controllerShow: WebController
-
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditContentDialog({ confirm: this.confirm.bind(this) }),
     alignment: DialogAlignment.Bottom,
@@ -250,11 +251,13 @@ export struct ToolBarComp {
                         imageUri = uri;
                       }
                       // 拷贝
-                      if(imageUri != null && imageUri != "") {
+                      if (imageUri != null && imageUri != "") {
                         OperationUtils.copy(imageUri).then((uriPath) => {
                           var path = "file://" + uriPath
                           LogUtil.info(TAG, 'image uri is:' + path)
-                          this.controllerShow.runJavaScript({script:"javascript:RICH_EDITOR.insertImage('" + path + "')"})
+                          this.controllerShow.runJavaScript({
+                            script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
+                          })
                         })
                       }
                     }
@@ -369,46 +372,48 @@ export struct NoteContentOverViewComp {
   }
 
   build() {
-    Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
-      justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
-      Row() {
-        Text(this.selectedNoteData.title)
-          .fontSize(30)
-          .margin({ left: 12, right: 24 })
-          .onClick(() => {
-            clearInterval(timeID)
-            this.editTitleDialogCtl.open()
-          })
-      }.height(40)
-      .width(StyleConstants.PERCENTAGE_100)
-
-      Row() {
-        Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time)))
-          .fontSize(12)
-          .padding({ top: 4, bottom: 4 })
-          .fontColor($r("app.color.modified_time_font_color"))
-          .margin({ left: 12 })
+    if (this.selectedNoteData && this.selectedNoteData.is_deleted) {
+      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
+        justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
-          Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
-               folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
-               FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+          Text(this.selectedNoteData.title)
+            .fontSize(30)
+            .margin({ left: 12, right: 24 })
+            .onClick(() => {
+              clearInterval(timeID)
+              this.editTitleDialogCtl.open()
+            })
+        }.height(40)
+        .width(StyleConstants.PERCENTAGE_100)
+
+        Row() {
+          Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time)))
             .fontSize(12)
-            .fontColor($r("app.color.list_modified_time_font_color"))
-          Image($r('app.media.triangle'))
-            .width(6)
-            .height(12)
-            .margin({ left: 4 })
-        }
-        .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-        .margin({ left: 8 })
-        .borderRadius(16)
-        .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
-        .bindMenu(this.MenuBuilder)
-      }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
+            .padding({ top: 4, bottom: 4 })
+            .fontColor($r("app.color.modified_time_font_color"))
+            .margin({ left: 12 })
+          Row() {
+            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
+                 folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
+            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+              .fontSize(12)
+              .fontColor($r("app.color.list_modified_time_font_color"))
+            Image($r('app.media.triangle'))
+              .width(6)
+              .height(12)
+              .margin({ left: 4 })
+          }
+          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .margin({ left: 8 })
+          .borderRadius(16)
+          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
+          .bindMenu(this.MenuBuilder)
+        }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
+      }
+      .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
+      .width(StyleConstants.PERCENTAGE_100)
+      .height(80)
     }
-    .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
-    .width(StyleConstants.PERCENTAGE_100)
-    .height(80)
   }
 }
 
