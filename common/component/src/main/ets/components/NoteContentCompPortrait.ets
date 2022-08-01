@@ -441,11 +441,17 @@ export struct DeleteNoteComp {
             this.selectedNoteData.is_deleted = Delete.No
             this.selectedNoteData.deleted_time = 0
             let context: any = getContext(this)
-            context.resourceManager.getResourceManager().then((manager) => {
-              manager.getString($r('app.string.restore').id)
-                .then((strVal) => {
-                  prompt.showToast({ message: strVal, duration: 2000 });
-                });
+            let resource = {
+              bundleName: "com.ohos.note",
+              moduleName: "phone",
+              id: $r('app.string.restore').id
+            };
+            context.resourceManager.getString(resource, (error, value) => {
+              if (error != null) {
+                console.log("error is " + error);
+              } else {
+                prompt.showToast({ message: value, duration: 2000 });
+              }
             });
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             // update note to db
