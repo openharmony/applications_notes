@@ -570,7 +570,8 @@ export struct OperateNoteComp {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_deleted = Delete.No
             noteItem.deleted_time = 0
-            rs.getResourceManager().then((manager) => {
+            let context: any = getContext(this)
+            context.resourceManager.getResourceManager().then((manager) => {
               manager.getString($r('app.string.restore').id)
                 .then((strVal)=>{
                   prompt.showToast({ message: strVal, duration: 2000 });
@@ -884,7 +885,8 @@ export struct OperateNoteCompForPortrait {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_deleted = Delete.No
                 noteItem.deleted_time = 0
-                rs.getResourceManager().then((manager) => {
+                let context: any = getContext(this)
+                context.resourceManager.getResourceManager().then((manager) => {
                   manager.getString($r('app.string.restore').id)
                     .then((strVal)=>{
                       prompt.showToast({ message: strVal, duration: 2000 });
