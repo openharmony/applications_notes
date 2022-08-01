@@ -162,7 +162,11 @@ struct ColorCircleComp {
         .fill($r("app.color.color_ffffff"))
         .visibility(this.circleColor == this.selectedColor ? Visibility.Visible : Visibility.None)
     }.onClick(() => {
-      this.selectedColor = this.circleColor
+      try {
+        this.selectedColor = this.circleColor
+      } catch (error) {
+        console.log("selectedColor error: ", error.toString());
+      }
     })
   }
 }

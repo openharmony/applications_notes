@@ -216,7 +216,7 @@ export struct NoteContentOverViewComp {
   }
 
   build() {
-    if (this.selectedNoteData && this.selectedNoteData.is_deleted) {
+//    if (this.selectedNoteData && this.selectedNoteData.is_deleted) {
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
@@ -254,7 +254,7 @@ export struct NoteContentOverViewComp {
       .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
       .width(StyleConstants.PERCENTAGE_100)
       .height(82)
-    }
+//    }
   }
 }
 
@@ -440,7 +440,8 @@ export struct DeleteNoteComp {
           .onClick(() => {
             this.selectedNoteData.is_deleted = Delete.No
             this.selectedNoteData.deleted_time = 0
-            rs.getResourceManager().then((manager) => {
+            let context: any = getContext(this)
+            context.resourceManager.getResourceManager().then((manager) => {
               manager.getString($r('app.string.restore').id)
                 .then((strVal) => {
                   prompt.showToast({ message: strVal, duration: 2000 });

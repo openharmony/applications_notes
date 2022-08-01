@@ -282,7 +282,7 @@ export struct NoteContentOverViewComp {
   }
 
   build() {
-    if (this.selectedNoteData && this.selectedNoteData.is_deleted) {
+//    if (this.selectedNoteData && this.selectedNoteData.is_deleted) {
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
@@ -329,7 +329,7 @@ export struct NoteContentOverViewComp {
       .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
       .width(StyleConstants.PERCENTAGE_100)
       .height(80)
-    }
+//    }
   }
 }
 
