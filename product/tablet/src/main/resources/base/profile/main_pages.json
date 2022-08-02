@@ -2,6 +2,7 @@
   "src": [
     "pages/MyNoteHome",
     "pages/NoteContentHome",
-    "pages/NoteHome"
+    "pages/NoteHome",
+    "pages/NoteHomePortrait"
   ]
 }

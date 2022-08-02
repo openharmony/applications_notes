@@ -14,19 +14,20 @@
  */
 
 import fileio from '@ohos.fileio'
-import bundle from '@ohos.bundle'
-import abilityAccessCtrl from '@ohos.abilityAccessCtrl'
+import deviceInfo from '@ohos.deviceInfo';
 import {NoteHomeComp} from './NoteHome'
+import {NoteHomePortraitComp} from './NoteHomePortrait'
 import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import inputMethod from '@ohos.inputmethod';
+import router from '@system.router';
 
 @Entry
 @Component
 export struct MyNoteHomeComp {
   @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
-  @Provide('PortraitModel') portraitModel: boolean = false
+  @Provide('PortraitModel') portraitModel: boolean = (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default')
   @Provide('RefreshFlag') refreshFlag: number = 0
   private controllerShow: WebController = new WebController()
   private context = getContext(this)
@@ -35,7 +36,12 @@ export struct MyNoteHomeComp {
   build() {
     Row() {
       if (this.dBQueryFinished == 1) {
-        NoteHomeComp({ controllerShow: this.controllerShow })
+        if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
+          NoteHomePortraitComp()
+        } else {
+          NoteHomeComp({ controllerShow: this.controllerShow })
+        }
+
       }
     }
     .width('100%')
@@ -54,6 +60,13 @@ export struct MyNoteHomeComp {
       "ohos.permission.READ_MEDIA",
       "ohos.permission.DISTRIBUTED_DATASYNC"
     ]
+    if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
+      permissionList = [
+        "ohos.permission.READ_MEDIA",
+        "ohos.permission.MEDIA_LOCATION",
+        "ohos.permission.DISTRIBUTED_DATASYNC"
+      ]
+    }
     LogUtil.info(this.TAG, 'permissions need to require from user')
     let context: any = getContext(this);
     context.requestPermissionsFromUser(permissionList).then((data) => {
@@ -97,12 +110,25 @@ export struct MyNoteHomeComp {
 
   onPageShow(): void{
     LogUtil.info(this.TAG, "onPageShow")
-    let currentNote = AppStorage.Get<NoteData>('NewNote')
-    let needRefesh = AppStorage.Get<boolean>('needRefresh')
-    if (currentNote != null && needRefesh == true) {
-      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + currentNote.content_text + "')" })
-      AppStorage.SetOrCreate<boolean>('needRefresh',false)
+    if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
+      // continue from tablet
+      let continueFromTablet = AppStorage.Get<boolean>('ContinueFromTablet')
+      LogUtil.info(this.TAG, "onPageShow, continueFromTablet : " + continueFromTablet)
+      let noteContentHomeExist = AppStorage.Get<boolean>('NoteContentHomeExist')
+      LogUtil.info(this.TAG, "onPageShow, noteContentHomeExist : " + noteContentHomeExist)
+      if (continueFromTablet && !noteContentHomeExist) {
+        router.push({ uri: 'pages/NoteContentHome' })
+        AppStorage.SetOrCreate<boolean>('ContinueFromTablet', false)
+      }
+    } else {
+      let currentNote = AppStorage.Get<NoteData>('NewNote')
+      let needRefresh = AppStorage.Get<boolean>('needRefresh')
+      if (currentNote != null && needRefresh == true) {
+        this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + currentNote.content_text + "')" })
+        AppStorage.SetOrCreate<boolean>('needRefresh',false)
+      }
     }
+
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
   }
 

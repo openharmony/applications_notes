@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import deviceInfo from '@ohos.deviceInfo';
+import {NoteContentCompPortrait} from '@ohos/component/src/main/ets/components/NoteContentCompPortrait'
 import {NoteContent} from '@ohos/component/src/main/ets/components/NoteContent'
 import {LogUtil} from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
@@ -21,6 +23,7 @@ import inputMethod from '@ohos.inputmethod'
 @Entry
 @Component
 struct NoteContentHome {
+  @Provide('RefreshFlag') refreshFlag: number = 0
   private controllerShow: WebController = new WebController()
   @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
   TAG = "NoteContentHome_Tablet"
@@ -29,7 +32,12 @@ struct NoteContentHome {
     // Note content display area
     Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
       if (this.dBQueryFinished == 1) {
-        NoteContent({ controllerShow: this.controllerShow })
+        if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
+          NoteContentCompPortrait({ controllerShow: this.controllerShow })
+        } else {
+          NoteContent({ controllerShow: this.controllerShow })
+        }
+
       }
     }
     .backgroundColor($r("app.color.notecontent_color_ffffff"))
@@ -41,7 +49,9 @@ struct NoteContentHome {
      LogUtil.info(this.TAG, "onBackPress")
      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
      this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
-     inputMethod.getInputMethodController().stopInput()
+     if (deviceInfo.deviceType !== 'phone' && deviceInfo.deviceType !== 'default') {
+       inputMethod.getInputMethodController().stopInput()
+     }
   }
 
   aboutToAppear(): void{
@@ -50,6 +60,9 @@ struct NoteContentHome {
     LogUtil.info(this.TAG, "aboutToAppear, isContinue : " + isContinue)
     if (isContinue) {
       RdbStoreUtil.initAppStorage(globalThis.noteContext)
+    }
+    if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
+      AppStorage.SetOrCreate<boolean>('NoteContentHomeExist', true)
     }
   }
 
