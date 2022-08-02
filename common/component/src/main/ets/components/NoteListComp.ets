@@ -571,11 +571,17 @@ export struct OperateNoteComp {
             noteItem.is_deleted = Delete.No
             noteItem.deleted_time = 0
             let context: any = getContext(this)
-            context.resourceManager.getResourceManager().then((manager) => {
-              manager.getString($r('app.string.restore').id)
-                .then((strVal)=>{
-                  prompt.showToast({ message: strVal, duration: 2000 });
-                });
+            let resource = {
+              bundleName: "com.ohos.note",
+              moduleName: "tablet",
+              id: $r('app.string.restore').id
+            };
+            context.resourceManager.getString(resource, (error, value) => {
+              if (error != null) {
+                console.log("error is " + error);
+              } else {
+                prompt.showToast({ message: value, duration: 2000 });
+              }
             });
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
@@ -886,11 +892,17 @@ export struct OperateNoteCompForPortrait {
                 noteItem.is_deleted = Delete.No
                 noteItem.deleted_time = 0
                 let context: any = getContext(this)
-                context.resourceManager.getResourceManager().then((manager) => {
-                  manager.getString($r('app.string.restore').id)
-                    .then((strVal)=>{
-                      prompt.showToast({ message: strVal, duration: 2000 });
-                    });
+                let resource = {
+                  bundleName: "com.ohos.note",
+                  moduleName: "phone",
+                  id: $r('app.string.restore').id
+                };
+                context.resourceManager.getString(resource, (error, value) => {
+                  if (error != null) {
+                    console.log("error is " + error);
+                  } else {
+                    prompt.showToast({ message: value, duration: 2000 });
+                  }
                 });
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
@@ -939,6 +951,7 @@ export struct OperateNoteCompForPortrait {
       .alignItems(HorizontalAlign.Center)
       .justifyContent(FlexAlign.Center)
     }
+    .justifyContent(FlexAlign.Center)
     .width("100%")
     .height(56)
     .visibility(this.longpress && this.portraitModel == true ? Visibility.Visible : Visibility.None)
