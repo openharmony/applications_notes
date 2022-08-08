@@ -894,7 +894,7 @@ export struct OperateNoteCompForPortrait {
                 let context: any = getContext(this)
                 let resource = {
                   bundleName: "com.ohos.note",
-                  moduleName: "phone",
+                  moduleName: "tablet",
                   id: $r('app.string.restore').id
                 };
                 context.resourceManager.getString(resource, (error, value) => {

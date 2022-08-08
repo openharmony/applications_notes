@@ -11,6 +11,10 @@
     {
       "name": "distributed_dataSync_permission",
       "value": "Used for memo data exchange between different equipment"
+    },
+    {
+      "name": "write_media_permission",
+      "value": "Used to write media file information in external storage of users"
     }
   ]
 }

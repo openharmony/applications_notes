@@ -341,15 +341,23 @@ export default {
     } catch (err) {
       LogUtil.warn(TAG, "desPath has not existed, need to write")
     }
-
-    let srcPath = globalThis.noteContext.distributedFilesDir + "/" + fileName
-    LogUtil.info(TAG, "srcPath : " + srcPath)
-    let size = fileio.statSync(srcPath).size
-    LogUtil.info(TAG, "srcPath size : " + size)
-    if (size > FileMaxSize) {
-      LogUtil.warn(TAG, "srcPath size more then FileMaxSize, return")
+    let srcPath
+    let size
+    try{
+      srcPath = globalThis.noteContext.distributedFilesDir + "/" + fileName
+      LogUtil.info(TAG, "srcPath : " + srcPath)
+      size = fileio.statSync(srcPath).size
+      LogUtil.info(TAG, "srcPath size : " + size)
+      if (size > FileMaxSize) {
+        LogUtil.warn(TAG, "srcPath size more then FileMaxSize, return")
+        return
+      }
+    }
+    catch (err) {
+      LogUtil.warn(TAG, "desPath has not existed, need to write two")
       return
     }
+
 
     let srcFd
     try {

@@ -18,13 +18,15 @@ import deviceInfo from '@ohos.deviceInfo';
 import AbilityConstant from '@ohos.application.AbilityConstant'
 import fileio from '@ohos.fileio'
 import inputMethod from '@ohos.inputmethod';
+import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import { atob } from 'js-base64'
 globalThis.rdbStore = undefined
 export default class MainAbility extends Ability {
     private Tag = "MainAbility_Tablet"
 
     onCreate(want, launchParam) {
-        console.info(this.Tag + " onCreate, launchReason is " + launchParam.launchReason)
-        console.info(this.Tag + " onCreate, deviceType" + deviceInfo.deviceType)
+        LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason)
+        LogUtil.info(this.Tag, " onCreate, deviceType" + deviceInfo.deviceType)
         if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
             AppStorage.SetOrCreate<boolean>('Expand', false)
             AppStorage.SetOrCreate<boolean>('Choose', true)
@@ -35,17 +37,17 @@ export default class MainAbility extends Ability {
             // 获取对端的迁移数据
             let continueNote: string = want.parameters["ContinueNote"]
             let continueSection: number = want.parameters["ContinueSection"]
-            console.info(this.Tag + " continueSection : " + continueSection)
+            LogUtil.info(this.Tag, " continueSection : " + continueSection)
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
             AppStorage.SetOrCreate<number>('ContinueSection', continueSection)
             // 来自手机的迁移
             let continueChoose: boolean = want.parameters["ContinueChoose"]
             if (continueChoose) {
-                console.info(this.Tag + " continue from phone")
+                LogUtil.info(this.Tag, " continue from phone")
                 AppStorage.SetOrCreate<boolean>('ContinueFromPhone', true)
             } else {
                 AppStorage.SetOrCreate<boolean>('ContinueFromTablet', true)
-                console.info(this.Tag + " continue from tablet")
+                LogUtil.info(this.Tag, " continue from tablet")
             }
             this.context.restoreWindowStage(null)
         }
@@ -53,43 +55,43 @@ export default class MainAbility extends Ability {
     }
 
     onDestroy() {
-        console.info(this.Tag + " onDestroy")
+        LogUtil.info(this.Tag, " onDestroy")
     }
 
     onWindowStageCreate(windowStage) {
-        console.info(this.Tag + " onWindowStageCreate")
+        LogUtil.info(this.Tag, " onWindowStageCreate")
         windowStage.setUIContent(this.context, "pages/MyNoteHome", null)
     }
 
     onWindowStageDestroy() {
-        console.info(this.Tag + " onWindowStageDestroy")
+        LogUtil.info(this.Tag, " onWindowStageDestroy")
     }
 
     onForeground() {
-        console.info(this.Tag + " onForeground")
+        LogUtil.info(this.Tag, " onForeground")
     }
 
     onBackground() {
-        console.info(this.Tag + " onBackground")
+        LogUtil.info(this.Tag, " onBackground")
         // 退出键盘
         inputMethod.getInputMethodController().stopInput();
     }
 
     onContinue(wantParam: { [key: string]: any }) {
-        console.info(this.Tag + " onContinue")
+        LogUtil.info(this.Tag, " onContinue")
         // 获取本端的迁移数据
         let continueNote = AppStorage.Get<string>('ContinueNote')
         if (continueNote == undefined || continueNote == null) {
-            console.info(this.Tag + " onContinue, continueNote is error, default [0]")
+            LogUtil.info(this.Tag, " onContinue, continueNote is error, default [0]")
             continueNote = JSON.stringify(AppStorage.Get('AllNoteArray')[0].toNoteObject())
         }
 
         let continueSection = AppStorage.Get<number>('ContinueSection')
         if (continueSection == undefined || continueSection == null) {
-            console.info(this.Tag + " onContinue, continueSection is error, default 3")
+            LogUtil.info(this.Tag, " onContinue, continueSection is error, default 3")
             continueSection = 3
         }
-        console.info(this.Tag + " onContinue, continueSection : " + continueSection)
+        LogUtil.info(this.Tag, " onContinue, continueSection : " + continueSection)
 
         // 保存本端的迁移数据
         wantParam["ContinueNote"] = continueNote
@@ -99,7 +101,7 @@ export default class MainAbility extends Ability {
         }
 
         // save img to DisFileDir
-        console.info(this.Tag + " onContinue, save img to DisFileDir")
+        LogUtil.info(this.Tag, " onContinue, save img to DisFileDir")
         let continueNoteObj = JSON.parse(continueNote)
         let srcArray = this.getSrcFromHtml(continueNoteObj.content_text)
         srcArray.forEach((src: string) => {
@@ -109,7 +111,7 @@ export default class MainAbility extends Ability {
                 this.writeToDisFileDir(imgName)
             }
         })
-        console.info(this.Tag + " onContinue end")
+        LogUtil.info(this.Tag, " onContinue end")
         return AbilityConstant.OnContinueResult.AGREE
     }
 
@@ -118,14 +120,15 @@ export default class MainAbility extends Ability {
         if (html == undefined || html == null || html == "") {
             return srcArray
         }
+        let realHtml = atob(html)
         let imgReg = /<img[^>]+>/g
         let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
-        let imgArray = html.match(imgReg)
+        let imgArray = realHtml.match(imgReg)
         if (imgArray != null) {
             for (let i = 0; i < imgArray.length; i++) {
                 let src = imgArray[i].match(srcReg)
                 if (src != null && src.length > 1) {
-                    console.info(this.Tag + " getSrcFromHtml, src[1] : " + src[1])
+                    LogUtil.info(this.Tag, " getSrcFromHtml, src[1] : " + src[1])
                     srcArray.push(src[1])
                 }
             }
@@ -134,16 +137,16 @@ export default class MainAbility extends Ability {
     }
 
     writeToDisFileDir(fileName: string) {
-        console.info(this.Tag + " writeToDisFileDir, fileName : " + fileName)
+        LogUtil.info(this.Tag, " writeToDisFileDir, fileName : " + fileName)
         let filesDir = this.context.filesDir
         let srcPath = filesDir + "/" + fileName
         let distributedFilesDir = this.context.distributedFilesDir
         let desPath = distributedFilesDir + "/" + fileName
         try {
             fileio.copyFileSync(srcPath, desPath)
-            console.info(this.Tag + " onContinue, writeToDisFileDir, copyFile successfully")
+            LogUtil.info(this.Tag, " onContinue, writeToDisFileDir, copyFile successfully" + desPath + " " + srcPath)
         } catch (err) {
-            console.warn(this.Tag + " onContinue, writeToDisFileDir, copyFile failed : " + err)
+            LogUtil.warn(this.Tag, " onContinue, writeToDisFileDir, copyFile failed : " + err)
         }
     }
 }
