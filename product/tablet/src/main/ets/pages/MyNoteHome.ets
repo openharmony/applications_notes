@@ -58,11 +58,13 @@ export struct MyNoteHomeComp {
 
     let permissionList: Array<string> = [
       "ohos.permission.READ_MEDIA",
+      "ohos.permission.WRITE_MEDIA",
       "ohos.permission.DISTRIBUTED_DATASYNC"
     ]
     if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
       permissionList = [
         "ohos.permission.READ_MEDIA",
+        "ohos.permission.WRITE_MEDIA",
         "ohos.permission.MEDIA_LOCATION",
         "ohos.permission.DISTRIBUTED_DATASYNC"
       ]
