@@ -142,7 +142,7 @@ export struct NoteContentComp {
                 this.editContentFlag = true
               }
               LogUtil.info(TAG, "finish loadurl")
-              if(this.selectedNoteData.content_text){
+              if(this.selectedNoteData){
                 this.controllerShow.runJavaScript({
                   script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
                 })
