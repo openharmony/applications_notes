@@ -591,7 +591,7 @@ export struct OperateNoteComp {
           this.longpress = false
           NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
         })
-      Image(this.selectedAll ? $r('app.media.check_all1') : $r('app.media.check_all'))
+      Image(this.CheckedNoteArray.length == NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length ? $r('app.media.check_all1') : $r('app.media.check_all'))
         .width(24)
         .height(24)
         .onClick(() => {
