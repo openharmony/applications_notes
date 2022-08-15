@@ -144,6 +144,9 @@ export class NoteUtil {
     if (folderData.color == "#ffffff") {
       return "#FFEBE1"
     }
+    if (folderData.color == "#e84026") {
+      return "#ffe0b2ac"
+    }
     LogUtil.info(TAG, "isSelected " + isSelected.toString() + ", folderData.color: " + folderData.color.toString())
     return isSelected ? selectedNoteBgColorMap[folderData.color] : unSelectedNoteBgColorMap[folderData.color]
   }

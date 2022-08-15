@@ -142,9 +142,11 @@ export struct NoteContentComp {
                 this.editContentFlag = true
               }
               LogUtil.info(TAG, "finish loadurl")
-              this.controllerShow.runJavaScript({
-                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              })
+              if(this.selectedNoteData.content_text){
+                this.controllerShow.runJavaScript({
+                  script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                })
+              }
               // 初次加载为为小屏预览模式
               if (this.sectionStatus != 1) {
                 this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
@@ -282,7 +284,7 @@ export struct NoteContentOverViewComp {
   }
 
   build() {
-//    if (this.selectedNoteData && this.selectedNoteData.is_deleted) {
+    if (this.selectedNoteData) {
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
@@ -329,7 +331,7 @@ export struct NoteContentOverViewComp {
       .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
       .width(StyleConstants.PERCENTAGE_100)
       .height(80)
-//    }
+    }
   }
 }
 
@@ -442,7 +444,19 @@ export struct ToolBarComp {
               .onClick(() => {
                 this.selectedNoteData.is_deleted = Delete.No
                 this.selectedNoteData.deleted_time = 0
-                prompt.showToast({ message: "已恢复", duration: 2000 })
+                let context: any = getContext(this)
+                let resource = {
+                  bundleName: "com.ohos.note",
+                  moduleName: "tablet",
+                  id: $r('app.string.restore').id
+                };
+                context.resourceManager.getString(resource, (error, value) => {
+                  if (error != null) {
+                    console.log("error is " + error);
+                  } else {
+                    prompt.showToast({ message: value, duration: 2000 });
+                  }
+                });
                 this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
                 this.chooseNote = false
                 // update note to db
