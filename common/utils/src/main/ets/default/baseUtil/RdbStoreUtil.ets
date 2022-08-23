@@ -299,7 +299,13 @@ export default {
       LogUtil.info(TAG, "noteData.content_text is null or undefined")
       return imgNameArray
     }
-    let html = atob(noteData.content_text)
+    let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+    let html = ""
+    if (base64regex.test(noteData.content_text)) {
+      html = atob(noteData.content_text)
+    } else {
+      html = noteData.content_text
+    }
     if (html == undefined || html == null || html == "") {
       return imgNameArray
     }

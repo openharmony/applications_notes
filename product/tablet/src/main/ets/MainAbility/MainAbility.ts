@@ -120,7 +120,13 @@ export default class MainAbility extends Ability {
         if (html == undefined || html == null || html == "") {
             return srcArray
         }
-        let realHtml = atob(html)
+        let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+        let realHtml = ""
+        if (base64regex.test(html)) {
+            realHtml = atob(html)
+        } else {
+            realHtml = html;
+        }
         let imgReg = /<img[^>]+>/g
         let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
         let imgArray = realHtml.match(imgReg)
