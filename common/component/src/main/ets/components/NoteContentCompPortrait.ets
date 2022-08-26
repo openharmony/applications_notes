@@ -403,12 +403,14 @@ export struct DeleteNoteComp {
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+      routePage()
     } else {
       NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData.uuid)
       // delete note from db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.delete(predicates_note, null)
+      routePage()
     }
   }
 
