@@ -99,17 +99,13 @@ export struct NoteContentCompPortrait {
         Column() {
           Web({ src: $rawfile('editor.html'), controller: this.controllerShow })
             .javaScriptAccess(true)
+            .javaScriptProxy({
+              object: this.noteContent,
+              name: "callBackToApp", // html-->  name.method
+              methodList: ["callbackhtml", "callbackScheduledSave"],
+              controller:this.controllerShow
+            })
             .onPageEnd((e) => {
-              if (this.editContentFlag == false) {
-                this.controllerShow.registerJavaScriptProxy({
-                  object: this.noteContent,
-                  name: "callBackToApp", // html-->  name.method
-                  methodList: ["callbackhtml", "callbackScheduledSave"],
-                })
-                LogUtil.info(TAG, "finish register")
-                this.controllerShow.refresh()
-                this.editContentFlag = true
-              }
               LogUtil.info(TAG, "finish loadurl")
               this.controllerShow.runJavaScript({
                 script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
