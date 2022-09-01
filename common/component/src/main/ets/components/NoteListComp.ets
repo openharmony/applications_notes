@@ -691,7 +691,7 @@ export struct SearchComp {
           .padding({ left:6, top:1 })
           .padding({left:6})
           .onEditChange((isEditing: boolean) => {
-            this.search = isEditing
+//            this.search = isEditing
           })
           .onChange((value: string) => {
             if (!this.longpress) {

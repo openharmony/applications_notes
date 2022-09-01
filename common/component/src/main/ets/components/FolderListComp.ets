@@ -254,9 +254,11 @@ struct FolderItemComp {
       this.selectedFolderData = FolderUtil.getFolderData(this.AllFolderArray, SysDefFolderUuid.AllNotes)
       this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, SysDefFolderUuid.AllNotes)
       // 刷新web界面
-      this.controllerShow.runJavaScript({
-        script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-      })
+      if (this.portraitModel == false) {
+        this.controllerShow.runJavaScript({
+          script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+        })
+      }
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
