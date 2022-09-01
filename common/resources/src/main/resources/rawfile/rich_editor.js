@@ -223,10 +223,17 @@ RICH_EDITOR.setFontSize = function (fontSize) {
 };
 
 RICH_EDITOR.execFontSize = function (size, unit) {
-    document.execCommand('fontSize', false, '7');
-    var fontElements = window.getSelection().anchorNode.parentNode;
-    fontElements.removeAttribute('size');
-    fontElements.style.fontSize = size + 'px';
+    if (size === '12') {
+        document.execCommand('fontSize', false, 3);
+    } else if (size === '16') {
+        document.execCommand('fontSize', false, 4);
+    } else if (size === '20') {
+        document.execCommand('fontSize', false, 5);
+    } else if (size === '24') {
+        document.execCommand('fontSize', false, 6);
+    } else if (size === '28') {
+        document.execCommand('fontSize', false, 7);
+    }
 };
 
 var pad = 24;
