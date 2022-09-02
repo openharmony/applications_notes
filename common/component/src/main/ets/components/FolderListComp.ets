@@ -253,6 +253,9 @@ struct FolderItemComp {
       // update selectedFolderData and selectedNoteData
       this.selectedFolderData = FolderUtil.getFolderData(this.AllFolderArray, SysDefFolderUuid.AllNotes)
       this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, SysDefFolderUuid.AllNotes)
+      if (!this.selectedNoteData) {
+        return
+      }
       // 刷新web界面
       if (this.portraitModel == false) {
         this.controllerShow.runJavaScript({
@@ -390,6 +393,9 @@ struct FolderItemComp {
           } else {
             this.selectedFolderData = this.folderItem
             this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
+            if (!this.selectedNoteData) {
+              return
+            }
             // 刷新web界面
             if (this.portraitModel == false) {
               this.controllerShow.runJavaScript({
@@ -442,6 +448,9 @@ struct FolderItemComp {
           } else {
             this.selectedFolderData = this.folderItem
             this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
+            if (!this.selectedNoteData) {
+              return
+            }
             // 刷新web界面
             if (this.portraitModel == false) {
               this.controllerShow.runJavaScript({
