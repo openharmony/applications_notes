@@ -69,27 +69,28 @@ RICH_EDITOR.getListStyle = function () {
         selection = getSelection();
     }
     if (selection) {
-        var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-        try {
-            var child = range.commonAncestorContainer.parentNode;
-            for (var i = 0; i < 10; i++) {
-                if (child.nodeName === 'OL') {
-                    console.info('insertOrderedList');
-                    document.execCommand('insertOrderedList', false, null);
-                    return child.style['list-style'];
-                }
-                if (child.nodeName === 'UL') {
-                    console.info('insertUnorderedList');
-                    document.execCommand('insertUnorderedList', false, null);
-                    return child.style['list-style'];
-                }
-                if (child.parentNode) {
-                    child = child.parentNode;
-                }
+        return
+    }
+    var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+    try {
+        var child = range.commonAncestorContainer.parentNode;
+        for (var i = 0; i < 10; i++) {
+            if (child.nodeName === 'OL') {
+                console.info('insertOrderedList');
+                document.execCommand('insertOrderedList', false, null);
+                return child.style['list-style'];
             }
-        } catch (err) {
-            console.error(err);
+            if (child.nodeName === 'UL') {
+                console.info('insertUnorderedList');
+                document.execCommand('insertUnorderedList', false, null);
+                return child.style['list-style'];
+            }
+            if (child.parentNode) {
+                child = child.parentNode;
+            }
         }
+    } catch (err) {
+        console.error(err);
     }
 
 };
@@ -106,21 +107,22 @@ RICH_EDITOR.setNumbers = function () {
         selection = getSelection();
     }
     if (selection) {
-        var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-        try {
-            var child = range.commonAncestorContainer.parentNode;
-            for (var i = 0; i < 10; i++) {
-                if (child.nodeName === 'OL') {
-                    child.style['list-style'] = 'decimal';
-                    break;
-                }
-                if (child.parentNode) {
-                    child = child.parentNode;
-                }
+        return
+    }
+    var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+    try {
+        var child = range.commonAncestorContainer.parentNode;
+        for (var i = 0; i < 10; i++) {
+            if (child.nodeName === 'OL') {
+                child.style['list-style'] = 'decimal';
+                break;
             }
-        } catch (err) {
-            console.error(err);
+            if (child.parentNode) {
+                child = child.parentNode;
+            }
         }
+    } catch (err) {
+        console.error(err);
     }
 };
 
@@ -136,21 +138,22 @@ RICH_EDITOR.setABC = function () {
         selection = getSelection();
     }
     if (selection) {
-        var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-        try {
-            var child = range.commonAncestorContainer.parentNode;
-            for (var i = 0; i < 10; i++) {
-                if (child.nodeName === 'OL') {
-                    child.style['list-style'] = 'lower-alpha';
-                    break;
-                }
-                if (child.parentNode) {
-                    child = child.parentNode;
-                }
+        return
+    }
+    var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+    try {
+        var child = range.commonAncestorContainer.parentNode;
+        for (var i = 0; i < 10; i++) {
+            if (child.nodeName === 'OL') {
+                child.style['list-style'] = 'lower-alpha';
+                break;
             }
-        } catch (err) {
-            console.error(err);
+            if (child.parentNode) {
+                child = child.parentNode;
+            }
         }
+    } catch (err) {
+        console.error(err);
     }
 };
 
@@ -166,21 +169,22 @@ RICH_EDITOR.setBullets = function () {
         selection = getSelection();
     }
     if (selection) {
-        var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-        try {
-            var child = range.commonAncestorContainer.parentNode;
-            for (var i = 0; i < 10; i++) {
-                if (child.nodeName === 'UL') {
-                    child.style['list-style'] = 'disc';
-                    break;
-                }
-                if (child.parentNode) {
-                    child = child.parentNode;
-                }
+        return
+    }
+    var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+    try {
+        var child = range.commonAncestorContainer.parentNode;
+        for (var i = 0; i < 10; i++) {
+            if (child.nodeName === 'UL') {
+                child.style['list-style'] = 'disc';
+                break;
             }
-        } catch (err) {
-            console.error(err);
+            if (child.parentNode) {
+                child = child.parentNode;
+            }
         }
+    } catch (err) {
+        console.error(err);
     }
 };
 
@@ -196,21 +200,22 @@ RICH_EDITOR.setSquare = function () {
         selection = getSelection();
     }
     if (selection) {
-        var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-        try {
-            var child = range.commonAncestorContainer.parentNode;
-            for (var i = 0; i < 10; i++) {
-                if (child.nodeName === 'UL') {
-                    child.style['list-style'] = 'square';
-                    break;
-                }
-                if (child.parentNode) {
-                    child = child.parentNode;
-                }
+        return
+    }
+    var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+    try {
+        var child = range.commonAncestorContainer.parentNode;
+        for (var i = 0; i < 10; i++) {
+            if (child.nodeName === 'UL') {
+                child.style['list-style'] = 'square';
+                break;
             }
-        } catch (err) {
-            console.error(err);
+            if (child.parentNode) {
+                child = child.parentNode;
+            }
         }
+    } catch (err) {
+        console.error(err);
     }
 };
 
