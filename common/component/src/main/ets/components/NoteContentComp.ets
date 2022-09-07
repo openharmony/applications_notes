@@ -149,11 +149,11 @@ export struct NoteContentComp {
               }
             })
             .zoomAccess(false)
-            .height('70%')
+            .height('88%')
             .width('100%')
         }
         .margin({ left: 24, right: 24 })
-        .width(StyleConstants.PERCENTAGE_100)
+//        .width(StyleConstants.PERCENTAGE_100)
         .enabled(this.selectedNoteData && this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .onClick(() => {
           this.issave = 0
