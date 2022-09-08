@@ -58,7 +58,9 @@
               "action.system.home"
             ]
           }
-        ]
+        ],
+        "startWindowBackground": "$color:color_1",
+        "startWindowIcon": "$media:note"
       }
     ]
   }
