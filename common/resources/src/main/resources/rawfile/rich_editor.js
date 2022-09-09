@@ -68,7 +68,7 @@ RICH_EDITOR.getListStyle = function () {
     if (window.getSelection) {
         selection = getSelection();
     }
-    if (selection) {
+    if (!selection) {
         return
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
@@ -106,7 +106,7 @@ RICH_EDITOR.setNumbers = function () {
     if (window.getSelection) {
         selection = getSelection();
     }
-    if (selection) {
+    if (!selection) {
         return
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
@@ -137,7 +137,7 @@ RICH_EDITOR.setABC = function () {
     if (window.getSelection) {
         selection = getSelection();
     }
-    if (selection) {
+    if (!selection) {
         return
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
@@ -168,7 +168,7 @@ RICH_EDITOR.setBullets = function () {
     if (window.getSelection) {
         selection = getSelection();
     }
-    if (selection) {
+    if (!selection) {
         return
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
@@ -199,7 +199,7 @@ RICH_EDITOR.setSquare = function () {
     if (window.getSelection) {
         selection = getSelection();
     }
-    if (selection) {
+    if (!selection) {
         return
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
