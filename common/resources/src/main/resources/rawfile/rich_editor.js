@@ -373,9 +373,32 @@ function scheduledSaveContent() {
     console.info('scheduledSaveContent end');
 }
 
+document.body.addEventListener('paste', (event) => {
+    let length = event.clipboardData.items.length;
+    if (length > 0) {
+        let file = event.clipboardData.items[0].getAsFile();
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            callBackToApp.callbackPasteImage(reader.result);
+        }
+        reader.readAsDataURL(file);
+        event.preventDefault();
+    }
+});
+
 RICH_EDITOR.getFontSizes = function () {
     document.execCommand('fontSize', false, null);
     var fontElements = window.getSelection().anchorNode.parentNode;
     var getSize = fontElements.style.fontSize;
     var str = callBackToApp.callbackGetSize(getSize);
+};
+
+RICH_EDITOR.insertImageHtml = function (contents) {
+    let selection = window.getSelection();
+    if (!selection.rangeCount)
+    return false;
+    selection.deleteFromDocument();
+    let img = document.createElement('img');
+    img.src = contents;
+    selection.getRangeAt(0).insertNode(img);
 };

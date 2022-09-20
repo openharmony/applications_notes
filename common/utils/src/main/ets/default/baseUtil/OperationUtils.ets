@@ -57,6 +57,33 @@ export class OperationUtils {
         return imagePath.toString()
     }
 
+    saveImage(imageData: string, imageType: string): string {
+        try {
+            var context = globalThis.noteContext
+            // 1、获取本地路径
+            var dir = context.filesDir
+            // 2、生成本地文件名
+            var time = new Date().getTime()
+            var imagePath = dir + "/" + time.toString() + "_note" + "." + imageType
+            let fd = fileio.openSync(imagePath, 0o100 | 0o2, 0o666)
+            let arrayBuffer = new ArrayBuffer(imageData.length)
+            let ia = new Uint8Array(arrayBuffer)
+            for(let i = 0; i < imageData.length; i++) {
+                ia[i] = imageData.charCodeAt(i)
+            }
+
+            // 3、把image数据写入本地图片文件中
+            fileio.writeSync(fd, ia.buffer)
+
+        } catch (error) {
+            LogUtil.info(TAG, "create error: " + error);
+            return;
+        }
+        LogUtil.debug(TAG, 'save image end');
+
+        return imagePath.toString()
+    }
+
     getIdByUri(uri:string): number {
         let srcIndex = uri.lastIndexOf('/');
         let srcEnd = uri.length;
