@@ -171,7 +171,6 @@ export struct NoteContentComp {
               clearInterval(timeId)
             }
             timeId = setInterval(() => {
-//              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
               if(this.CloseEditContentDialog){
                 this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
               }
