@@ -92,6 +92,7 @@ struct NoteOverViewComp {
   @Consume("Longpress") longpress: boolean
   @Consume('ExpandStatus') expandStatus: boolean
   @Consume('Search') search: boolean
+  @Consume('PortraitModel') portraitModel: boolean
   controllerShow: WebController
 
   build() {
@@ -99,10 +100,10 @@ struct NoteOverViewComp {
       Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
         Column() {
           Image($r("app.media.suojin_back"))
-            .height(24)
-            .width(24)
-            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
-            .margin({ right: this.sectionStatus != 3 ? 24 : 0 }) // 两分栏时缩进图片与右边有个24的间距
+            .height(this.portraitModel ? 24 : '12lpx')
+            .width(this.portraitModel ? 24 : '12lpx')
+            .responseRegion({ x: -15.0, y: -15.0, width: this.portraitModel ? 54 : '27lpx', height: this.portraitModel ? 54 : '27lpx'})
+            .margin({ right: this.sectionStatus != 3 ? this.portraitModel ? 24 : '12lpx' : 0 }) // 两分栏时缩进图片与右边有个24的间距
             .visibility(this.sectionStatus != 3 ? Visibility.Visible : Visibility.None)
             .onClick(() => {
               if (this.sectionStatus == 1) {
@@ -123,42 +124,42 @@ struct NoteOverViewComp {
           alignItems: ItemAlign.Start
         }) {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
-            .fontSize(30)
+            .fontSize(this.portraitModel ? 30 : '15lpx')
             .fontColor($r("app.color.all_notes_font_color"))
             .fontWeight(FontWeight.Medium)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
-              .fontSize(14)
+              .fontSize(this.portraitModel ? 14 : '7lpx')
               .fontColor($r("app.color.num_of_notes_font_color"))
             Text($r("app.string.noteslist"))
-              .fontSize(14)
+              .fontSize(this.portraitModel ? 14 : '7lpx')
               .fontColor($r("app.color.num_of_notes_font_color"))
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
-          .margin({ top: 5 })
+          .margin({ top: this.portraitModel ? 5 : '2.5lpx' })
           .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
         }.visibility(this.longpress ? Visibility.None : Visibility.Visible)
 
         Row() {
           Image($r("app.media.cross"))
-            .height(24)
-            .width(24)
-            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+            .height(this.portraitModel ? 24 : '12lpx')
+            .width(this.portraitModel ? 24 : '12lpx')
+            .responseRegion({ x: -15.0, y: -15.0, width: this.portraitModel ? 54 : '27lpx', height: this.portraitModel ? 54 : '27lpx' })
             .onClick(() => {
               this.longpress = false
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             })
           Text(this.CheckedNoteArray.length == 0 ? $r("app.string.none_selected") : $r("app.string.selected", this.CheckedNoteArray.length))
-            .fontSize(20)
+            .fontSize(this.portraitModel ? 20 : '10lpx')
             .fontColor($r("app.color.note_selected_font_color"))
-            .margin({ left: 16 })
+            .margin({ left: this.portraitModel ? 16 : '8lpx' })
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .fontWeight(FontWeight.Medium)
         }.alignItems(VerticalAlign.Center)
         .visibility(this.longpress ? Visibility.Visible : Visibility.None)
-      }.padding({ top: 8, bottom: 8 })
+      }.padding({ top: this.portraitModel ? 8 : '4lpx', bottom: this.portraitModel ? 8 : '4lpx' })
       .height('100%')
 
       AddNoteComp({ controllerShow: this.controllerShow })
@@ -166,8 +167,8 @@ struct NoteOverViewComp {
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
     }
     .width('100%')
-    .height(82)
-    .padding({ left: this.sectionStatus == 2 ? 24 : 36, right: 24 }) // 两分栏时缩进图标与左侧不需要间距
+    .height(this.portraitModel ? 82 : '41lpx')
+    .padding({ left: this.sectionStatus == 2 ? this.portraitModel ? 24 : '12lpx' : this.portraitModel ? 36 : '18lpx', right: this.portraitModel ? 24 : '12lpx' }) // 两分栏时缩进图标与左侧不需要间距
     .visibility(this.search ? Visibility.None : Visibility.Visible)
   }
 }
@@ -195,8 +196,8 @@ export struct NoteItemComp {
         Column({ space: 2 }) {
           Row({ space: 8 }) {
             Image($r("app.media.verticalBar"))
-              .height(16)
-              .width(4)
+              .height(this.portraitModel ? 16 : '8lpx')
+              .width(this.portraitModel ? 4 : '2lpx')
               .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.Get('AllFolderArray'), this.noteItem.folder_uuid))
             Text() {
               ForEach(this.spans.map((item1, index1) => {
@@ -206,12 +207,12 @@ export struct NoteItemComp {
                 if (item.data.type == 0) {
                   Span(item.data.text)
                     .fontColor($r("app.color.note_title_font_color"))
-                    .fontSize(16)
+                    .fontSize(this.portraitModel ? 16 : '8lpx')
                     .fontWeight(FontWeight.Medium)
                 } else if (item.data.type == 1) {
                   Span(item.data.text)
                     .fontColor($r("app.color.note_title_font_color_blue"))
-                    .fontSize(16)
+                    .fontSize(this.portraitModel ? 16 : '8lpx')
                     .fontWeight(FontWeight.Medium)
                 }
               },
@@ -221,53 +222,53 @@ export struct NoteItemComp {
 
           Row({ space: 4 }) {
             Text(DateUtil.formateDateForNoteTitle(new Date(this.noteItem.modified_time)))
-              .fontSize(14)
+              .fontSize(this.portraitModel ? 14 : '7lpx')
               .fontColor($r("app.color.list_modified_time_font_color"))
               .fontWeight(FontWeight.Regular)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
             Image($r("app.media.favorite"))
-              .height(16)
-              .width(16)
+              .height(this.portraitModel ? 16 : '8lpx')
+              .width(this.portraitModel ? 16 : '8lpx')
               .visibility(this.noteItem.is_favorite == Favorite.Yes ? Visibility.Visible : Visibility.None)
             Image($r("app.media.topped"))
-              .height(16)
-              .width(16)
+              .height(this.portraitModel ? 16 : '8lpx')
+              .width(this.portraitModel ? 16 : '8lpx')
               .visibility(this.noteItem.is_top == Top.Yes ? Visibility.Visible : Visibility.None)
           }
-          .padding({ left: 12 })
+          .padding({ left: this.portraitModel ? 12 : '6lpx' })
         }.alignItems(HorizontalAlign.Start)
       }.flexShrink(1)
 
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Stack({ alignContent: Alignment.Center }) {
           Image(this.noteItem.content_img)
-            .height(47)
-            .width(47)
-            .borderRadius(12)
-            .border({ width: 0.5, color: '#19182431' })
+            .height(this.portraitModel ? 47 : '23.5lpx')
+            .width(this.portraitModel ? 47 : '23.5lpx')
+            .borderRadius(this.portraitModel ? 12 : '6lpx')
+            .border({ width: this.portraitModel ? 0.5 : '0.25lpx', color: '#19182431' })
             .visibility(this.noteItem.content_img ? Visibility.Visible : Visibility.None)
         }
 
         Stack({ alignContent: Alignment.Center }) {
           Image($r("app.media.unChecked"))
-            .height(24)
-            .width(24)
+            .height(this.portraitModel ? 24 : '12lpx')
+            .width(this.portraitModel ? 24 : '12lpx')
           Image($r("app.media.checked"))
-            .width(24)
-            .height(24)
+            .width(this.portraitModel ? 24 : '12lpx')
+            .height(this.portraitModel ? 24 : '12lpx')
             .visibility(NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem) ? Visibility.Visible : Visibility.None)
-        }.width(24)
-        .height(24)
+        }.width(this.portraitModel ? 24 : '12lpx')
+        .height(this.portraitModel ? 24 : '12lpx')
         .visibility(this.longpress ? Visibility.Visible : Visibility.None)
       }
       .flexShrink(0)
-      .height(48)
-      .width(this.longpress ? 80 : 48)
+      .height(this.portraitModel ? 48 : '24lpx')
+      .width(this.longpress ? this.portraitModel ? 80 : '40lpx' : this.portraitModel ? 48 : '24lpx')
     }
     .width('100%')
-    .height(72)
-    .padding({ left: 16, right: 12, top: 4, bottom: 4 })
-    .borderRadius(24)
+    .height(this.portraitModel ? 72 : '36lpx')
+    .padding({ left: this.portraitModel ? 16 : '8lpx', right: this.portraitModel ? 12 : '6lpx', top: this.portraitModel ? 4 : '2lpx', bottom: this.portraitModel ? 4 : '2lpx' })
+    .borderRadius(this.portraitModel ? 24 : '12lpx')
     .linearGradient({
       direction: GradientDirection.Right,
       colors: this.selectedNoteData.uuid == this.noteItem.uuid ? [[0xffcdae, 0.0], [0xFfece2, 1.0]] : [[0xffffff, 0.0], [0xffffff, 1.0]]
