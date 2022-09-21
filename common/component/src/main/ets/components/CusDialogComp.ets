@@ -390,6 +390,7 @@ export struct EditContentDialog {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   private circleColor: string
   private fontSize: number
+  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
 
   aboutToAppear() {
     this.confirm("javascript:RICH_EDITOR.getFontSizes()")
@@ -577,6 +578,7 @@ export struct EditContentDialog {
             .fillColor('#99182431')
             .onClick(() => {
               this.editContentDialogCtl.close()
+              this.CloseEditContentDialog = true
             })
         }
         .height(36)

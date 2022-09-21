@@ -49,6 +49,7 @@ export struct NoteContentComp {
   @Consume('LastSectionStatus') lastSectionStatus: number
   @Consume('Issave') issave: number
   @Consume('Search') search: boolean
+  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
   controllerShow: WebController
   private editContentFlag = false
   @State uri1: string = ""
@@ -170,7 +171,10 @@ export struct NoteContentComp {
               clearInterval(timeId)
             }
             timeId = setInterval(() => {
-              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+//              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+              if(this.CloseEditContentDialog){
+                this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+              }
             }, 3000)
             LogUtil.info(TAG, "setInterval timeId : " + timeId)
             // save continue data
@@ -345,6 +349,7 @@ export struct ToolBarComp {
   @Consume('Issave') issave: number
   controllerShow: WebController
   private context = getContext(this)
+  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
     alignment: DialogAlignment.Center,
@@ -383,6 +388,10 @@ export struct ToolBarComp {
     autoCancel: true,
     customStyle: true,
   })
+
+  exisApp() {
+    this.CloseEditContentDialog = true
+  }
 
   confirm(excuteJs: string) {
     this.controllerShow.runJavaScript({ script: excuteJs })
@@ -494,6 +503,7 @@ export struct ToolBarComp {
                 .onClick(() => {
                   // 退出键盘
                   inputMethod.getInputMethodController().stopInput();
+                  this.CloseEditContentDialog = false
                   this.editContentDialogCtl.open()
                 })
             }.width(42)
