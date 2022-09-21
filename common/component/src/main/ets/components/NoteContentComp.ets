@@ -24,7 +24,7 @@ import { EditContentDialog, DeleteDialog, EditTitleDialog } from './CusDialogCom
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import prompt from '@system.prompt'
-import featureAbility from '@ohos.ability.featureAbility'
+import { atob, btoa } from 'js-base64'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import mediaquery from '@ohos.mediaquery'
@@ -107,6 +107,34 @@ export struct NoteContentComp {
       LogUtil.info(TAG, 'callbackScheduledSave, set continue note success')
     },
 
+    callbackPasteImage: (html) => {
+      if (html) {
+        LogUtil.info(TAG, 'paste info' + html)
+        let realHtml = ""
+        let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+        if (html && html.indexOf("base64") > 0) {
+              LogUtil.info(TAG, " getSrcFromHtml, src[1] : " + html)
+              let imgData = html.split(',')[1];
+              let imgType = 'png'
+              if (html.indexOf("jpeg") > 0){
+                imgType = 'jpg'
+              } else if (html.indexOf("gif") > 0) {
+                imgType = 'gif'
+              }
+              if (base64regex.test(imgData)) {
+                imgData = atob(imgData)
+              }
+              let filePath = OperationUtils.saveImage(imgData, imgType)
+              realHtml = "file://" + filePath
+        }
+        LogUtil.info(TAG, 'paste info11-' + realHtml)
+        this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImageHtml('" + realHtml + "')" })
+        LogUtil.info(TAG, 'paste info11--' + realHtml)
+      } else {
+        LogUtil.info(TAG, 'paste info22225')
+      }
+    },
+
     callbackGetSize: (size) => {
       if (size) {
         AppStorage.Set<number>('inSetValue', parseInt(size.slice(0, -2)) - 12)
@@ -133,7 +161,7 @@ export struct NoteContentComp {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave", "callbackGetSize"],
+              methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave", "callbackGetSize", "callbackPasteImage"],
               controller:this.controllerShow
             })
             .onPageEnd((e) => {
@@ -148,6 +176,10 @@ export struct NoteContentComp {
                 this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
               }
             })
+            .imageAccess(true)
+            .onlineImageAccess(true)
+            .fileAccess(true)
+            .domStorageAccess(true)
             .zoomAccess(false)
             .height('88%')
             .width('100%')

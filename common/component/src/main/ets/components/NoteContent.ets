@@ -17,6 +17,7 @@ import DateUtil from '@ohos/utils/src/main/ets/default/baseUtil/DateUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
+import { atob, btoa } from 'js-base64'
 import { TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
@@ -78,6 +79,32 @@ export struct NoteContent {
       LogUtil.info(TAG, 'continueNote content', continueNote)
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(TAG, 'callbackScheduledSave, set continue note success')
+    },
+    callbackPasteImage: (html) => {
+      if (html) {
+        LogUtil.info(TAG, 'paste info' + html)
+        let realHtml = ""
+        let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+        if (html && html.indexOf("base64") > 0) {
+          LogUtil.info(TAG, " getSrcFromHtml, src[1] : " + html)
+          let imgData = html.split(',')[1];
+          let imgType = 'png'
+          if (html.indexOf("jpeg") > 0){
+            imgType = 'jpg'
+          } else if (html.indexOf("gif") > 0) {
+            imgType = 'gif'
+          }
+          if (base64regex.test(imgData)) {
+            imgData = atob(imgData)
+          }
+          let filePath = OperationUtils.saveImage(imgData, imgType)
+          realHtml = "file://" + filePath
+        }
+        LogUtil.info(TAG, 'paste info11' + realHtml)
+        this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImageHtml('" + realHtml + "')" })
+      } else {
+        LogUtil.info(TAG, 'paste info22223')
+      }
     }
   }
 
@@ -97,7 +124,7 @@ export struct NoteContent {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackScheduledSave"],
+              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage"],
               controller:this.controllerShow
             })
             .onPageEnd((e) => {
@@ -109,6 +136,10 @@ export struct NoteContent {
               }
             })
             .zoomAccess(false)
+            .imageAccess(true)
+            .onlineImageAccess(true)
+            .fileAccess(true)
+            .domStorageAccess(true)
             .height('70%')
             .width('100%')
         }
