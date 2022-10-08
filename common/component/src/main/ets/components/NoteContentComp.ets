@@ -94,6 +94,10 @@ export struct NoteContentComp {
 
     callbackScheduledSave: (html) => {
       LogUtil.info(TAG, 'callbackScheduledSave')
+      if (this.selectedNoteData.content_text == html) {
+        LogUtil.info(TAG, 'callbackScheduledSave the same value return')
+        return;
+      }
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       // updata note image
