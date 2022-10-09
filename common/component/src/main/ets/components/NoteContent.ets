@@ -194,7 +194,7 @@ export struct ToolBarComp {
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
-    cancel: this.existApp()
+    cancel: this.existApp
   })
 
   existApp() {
