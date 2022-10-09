@@ -39,7 +39,7 @@ var timeID: number
 
 @Component
 export struct NoteContent {
-  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
+  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('NewNote')
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Provide('Issave') issave: number = 0
@@ -156,7 +156,7 @@ export struct NoteContent {
             clearInterval(timeID)
           }
           timeID = setInterval(() => {
-            if(this.CloseEditContentDialog){
+            if(this.closeEditContentDialog){
               this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
             }
           }, 3000)
@@ -183,7 +183,7 @@ export struct NoteContent {
 
 @Component
 export struct ToolBarComp {
-  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
+  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Consume('Issave') issave: number
@@ -198,7 +198,7 @@ export struct ToolBarComp {
   })
 
   existApp() {
-    this.CloseEditContentDialog = true
+    this.closeEditContentDialog = true
   }
 
   confirm(excuteJs: string) {
@@ -265,7 +265,7 @@ export struct ToolBarComp {
                 // 退出键盘
                 inputMethod.getInputMethodController().stopInput();
                 LogUtil.info(TAG, 'editContentDialogCtl start')
-                this.CloseEditContentDialog = false
+                this.closeEditContentDialog = false
                 this.editContentDialogCtl.open()
               })
           }.width(42)

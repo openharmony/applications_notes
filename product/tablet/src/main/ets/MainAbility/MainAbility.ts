@@ -25,7 +25,7 @@ export default class MainAbility extends Ability {
     private Tag = "MainAbility_Tablet"
 
     onCreate(want, launchParam) {
-        AppStorage.SetOrCreate<boolean>('CloseEditContentDialog', true)
+        AppStorage.SetOrCreate<boolean>('closeEditContentDialog', true)
         LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason)
         LogUtil.info(this.Tag, " onCreate, deviceType" + deviceInfo.deviceType)
         if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {

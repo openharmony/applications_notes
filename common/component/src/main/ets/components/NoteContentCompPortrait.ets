@@ -52,7 +52,7 @@ export struct NoteContentCompPortrait {
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get("NewFolder")
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
   @Provide('EditModel') editModel: boolean = false
-  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
+  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   private editContentFlag = false
   noteContent = {
@@ -158,7 +158,7 @@ export struct NoteContentCompPortrait {
           }
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
-            if(this.CloseEditContentDialog){
+            if(this.closeEditContentDialog){
               this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
             }
           }, 3000)
@@ -519,7 +519,7 @@ export struct EditNoteCompForPortrait {
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('SelectedNoteData') selectedNoteData: NoteData;
   @Consume('EditModel') editModel: boolean
-  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
+  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditContentDialogPortrait({ confirm: this.confirm.bind(this) }),
@@ -530,7 +530,7 @@ export struct EditNoteCompForPortrait {
   })
 
   exissApp() {
-    this.CloseEditContentDialog = true
+    this.closeEditContentDialog = true
   }
 
   confirm(excuteJs: string) {
@@ -564,7 +564,7 @@ export struct EditNoteCompForPortrait {
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
           .onClick(() => {
-            this.CloseEditContentDialog = false
+            this.closeEditContentDialog = false
             this.editContentDialogCtl.open()
           })
         Text($r("app.string.style"))
