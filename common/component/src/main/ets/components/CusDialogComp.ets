@@ -728,6 +728,7 @@ export struct EditContentDialogPortrait {
   confirm: (excuteJs: string) => void
   @State selectFontColor: string = fontColorArray[0]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
+  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
   private circleColor: string
   private fontSize: number
 
@@ -745,6 +746,7 @@ export struct EditContentDialogPortrait {
           .fillColor($r("app.color.font_stylecolor_AD182431"))
           .onClick(() => {
             this.editContentDialogCtl.close()
+            this.CloseEditContentDialog = true
           })
       }
       .height(48)

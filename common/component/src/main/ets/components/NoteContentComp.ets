@@ -422,6 +422,7 @@ export struct ToolBarComp {
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
+    cancel: this.exisApp
   })
 
   exisApp() {
