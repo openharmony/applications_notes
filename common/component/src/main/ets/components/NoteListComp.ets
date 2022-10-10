@@ -362,7 +362,7 @@ export struct NoteItemListComp {
   }
 
   build() {
-    Flex({ direction: FlexDirection.Column }) {
+    Column() {
       Text(this.refreshFlag.toString()).visibility(Visibility.None)
       Flex() {
         SearchComp()
@@ -414,6 +414,7 @@ export struct NoteItemListComp {
                 }
               }, noteItem => noteItem.uuid.toString())
             }
+            .margin((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? { bottom: 0 } : { bottom: 130 })
             .layoutWeight(1)
             .listDirection(Axis.Vertical)
             .edgeEffect(EdgeEffect.Spring)
@@ -434,9 +435,7 @@ export struct NoteItemListComp {
         .opacity(0.1)
         .visibility(this.search ? Visibility.Visible : Visibility.Hidden)
       }
-      .flexShrink(1)
     }
-    .flexShrink(1)
     .onClick(() => {
       this.search = false
     })
@@ -670,6 +669,7 @@ export struct SearchComp {
   @Consume('Search') search: boolean
   @Consume('InputKeyword') inputKeyword: string
   @Consume('Longpress') longpress: boolean
+  @State text: string = ''
 
   build() {
     Row() {
@@ -685,7 +685,7 @@ export struct SearchComp {
 
       Flex({ justifyContent: FlexAlign.Start }) {
         Image($r('app.media.search')).width(20).height(20)
-        TextInput({ placeholder: $r('app.string.searchNote') })
+        TextInput({ placeholder: $r('app.string.searchNote'), text: this.text })
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
           .enabled(this.longpress ? false : true)
@@ -697,6 +697,7 @@ export struct SearchComp {
           .onChange((value: string) => {
             if (!this.longpress) {
               LogUtil.info(TAG, "Search value: " + value)
+              this.text = value
               this.inputKeyword = value
             }
           })

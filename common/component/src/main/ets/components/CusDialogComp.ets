@@ -390,7 +390,7 @@ export struct EditContentDialog {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   private circleColor: string
   private fontSize: number
-  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
+  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
 
   aboutToAppear() {
     this.confirm("javascript:RICH_EDITOR.getFontSizes()")
@@ -578,7 +578,7 @@ export struct EditContentDialog {
             .fillColor('#99182431')
             .onClick(() => {
               this.editContentDialogCtl.close()
-              this.CloseEditContentDialog = true
+              this.closeEditContentDialog = true
             })
         }
         .height(36)
@@ -728,6 +728,7 @@ export struct EditContentDialogPortrait {
   confirm: (excuteJs: string) => void
   @State selectFontColor: string = fontColorArray[0]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
+  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   private circleColor: string
   private fontSize: number
 
@@ -745,6 +746,7 @@ export struct EditContentDialogPortrait {
           .fillColor($r("app.color.font_stylecolor_AD182431"))
           .onClick(() => {
             this.editContentDialogCtl.close()
+            this.closeEditContentDialog = true
           })
       }
       .height(48)

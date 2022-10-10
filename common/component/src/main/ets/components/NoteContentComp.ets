@@ -49,7 +49,7 @@ export struct NoteContentComp {
   @Consume('LastSectionStatus') lastSectionStatus: number
   @Consume('Issave') issave: number
   @Consume('Search') search: boolean
-  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
+  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   private editContentFlag = false
   @State uri1: string = ""
@@ -207,7 +207,7 @@ export struct NoteContentComp {
               clearInterval(timeId)
             }
             timeId = setInterval(() => {
-              if(this.CloseEditContentDialog){
+              if(this.closeEditContentDialog){
                 this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
               }
             }, 3000)
@@ -384,7 +384,7 @@ export struct ToolBarComp {
   @Consume('Issave') issave: number
   controllerShow: WebController
   private context = getContext(this)
-  @StorageLink('CloseEditContentDialog') CloseEditContentDialog: boolean = AppStorage.Link('CloseEditContentDialog')
+  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
     alignment: DialogAlignment.Center,
@@ -422,10 +422,11 @@ export struct ToolBarComp {
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
+    cancel: this.exisApp
   })
 
   exisApp() {
-    this.CloseEditContentDialog = true
+    this.closeEditContentDialog = true
   }
 
   confirm(excuteJs: string) {
@@ -538,7 +539,7 @@ export struct ToolBarComp {
                 .onClick(() => {
                   // 退出键盘
                   inputMethod.getInputMethodController().stopInput();
-                  this.CloseEditContentDialog = false
+                  this.closeEditContentDialog = false
                   this.editContentDialogCtl.open()
                 })
             }.width(42)
