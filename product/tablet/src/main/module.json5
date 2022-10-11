@@ -21,7 +21,8 @@
     "description": "$string:entry_MainAbility",
     "mainElement": "MainAbility",
     "deviceTypes": [
-      "tablet"
+      "tablet",
+      "default"
     ],
     "requestPermissions": [
       {
