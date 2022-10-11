@@ -21,7 +21,7 @@
     "description": "$string:entry_MainAbility",
     "mainElement": "MainAbility",
     "deviceTypes": [
-      "phone",
+      "default",
     ],
     "requestPermissions": [
       {
