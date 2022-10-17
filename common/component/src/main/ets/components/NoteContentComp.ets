@@ -59,8 +59,6 @@ export struct NoteContentComp {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
-      // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -71,13 +69,16 @@ export struct NoteContentComp {
       LogUtil.info(TAG, "callbackhtml, set continue note success")
       return "AceString"
     },
+    callbackImagePath: (imgName) => {
+      // updata note image
+      LogUtil.info(TAG, 'note imgName is:' + imgName)
+      this.selectedNoteData.content_img = imgName
+    },
 
     callbackhtmlSave: (html) => {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
-      // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -100,8 +101,6 @@ export struct NoteContentComp {
       }
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
-      // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -166,7 +165,7 @@ export struct NoteContentComp {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave", "callbackGetSize", "callbackPasteImage"],
+              methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave", "callbackGetSize", "callbackPasteImage", "callbackImagePath"],
               controller:this.controllerShow
             })
             .onPageEnd((e) => {

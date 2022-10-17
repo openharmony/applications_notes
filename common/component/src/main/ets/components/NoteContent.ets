@@ -51,8 +51,6 @@ export struct NoteContent {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
-      // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -64,6 +62,11 @@ export struct NoteContent {
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(TAG, "callbackhtml, set continue note success")
     },
+    callbackImagePath: (imgName) => {
+      // updata note image
+      LogUtil.info(TAG, 'note imgPath is:' + imgName)
+      this.selectedNoteData.content_img = imgName
+    },
 
     callbackScheduledSave: (html) => {
       LogUtil.info(TAG, 'callbackScheduledSave')
@@ -73,8 +76,6 @@ export struct NoteContent {
       }
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
-      // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -129,7 +130,7 @@ export struct NoteContent {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage"],
+              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath"],
               controller:this.controllerShow
             })
             .onPageEnd((e) => {
