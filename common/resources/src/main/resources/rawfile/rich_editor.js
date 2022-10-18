@@ -375,7 +375,7 @@ function getImagePathFromContent(contentInfo) {
     let imgName = "";
     let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
     let imgArray = contentInfo.match(imgReg);
-    //取第一张图片做为标题栏后的缩略图
+    // 取第一张图片做为标题栏后的缩略图
     if (imgArray && imgArray.length > 0) {
         let src = imgArray[0].match(srcReg);
         if (src != null && src.length > 1) {
