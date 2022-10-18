@@ -352,7 +352,9 @@ var callBackToApp;
 function getHtmlContent() {
     console.log('getHtmlContent');
     var htmlString =  RICH_EDITOR.getHtml();
+    let imgName = getImagePathFromContent(htmlString);
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
+    callBackToApp.callbackImagePath(imgName);
     var str = callBackToApp.callbackhtml(htmlString);
     console.log('getHtmlContent end');
 }
@@ -360,15 +362,38 @@ function getHtmlContent() {
 function saveHtmlContent() {
     console.log('saveHtmlContent');
     var htmlString =  RICH_EDITOR.getHtml();
+    let imgName = getImagePathFromContent(htmlString);
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
+
+    callBackToApp.callbackImagePath(imgName);
     var str = callBackToApp.callbackhtmlSave(htmlString);
     console.log('saveHtmlContent end');
+}
+
+function getImagePathFromContent(contentInfo) {
+    let imgReg = /<img[^>]+>/g;
+    let imgName = "";
+    let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+    let imgArray = contentInfo.match(imgReg);
+    // 取第一张图片做为标题栏后的缩略图
+    if (imgArray && imgArray.length > 0) {
+        let src = imgArray[0].match(srcReg);
+        if (src != null && src.length > 1) {
+            imgName = src[1];
+            if (imgName.indexOf('shuxue.png') >= 0 || imgName.indexOf('cake.png') >= 0) {
+                imgName = "/res/" + imgName;
+            }
+        }
+    }
+    return imgName;
 }
 
 function scheduledSaveContent() {
     console.info('scheduledSaveContent');
     var htmlString = RICH_EDITOR.getHtml();
+    let imgName = getImagePathFromContent(htmlString);
     htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
+    callBackToApp.callbackImagePath(imgName);
     var str = callBackToApp.callbackScheduledSave(htmlString);
     console.info('scheduledSaveContent end');
 }

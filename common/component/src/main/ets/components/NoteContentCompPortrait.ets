@@ -17,7 +17,7 @@ import DateUtil from '@ohos/utils/src/main/ets/default/baseUtil/DateUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import { atob, btoa } from 'js-base64'
+import { atob } from 'js-base64'
 import { TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
@@ -25,7 +25,6 @@ import { EditContentDialogPortrait, DeleteDialog, EditTitleDialog } from './CusD
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import prompt from '@system.prompt'
-import featureAbility from '@ohos.ability.featureAbility';
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import router from '@system.router'
@@ -60,8 +59,6 @@ export struct NoteContentCompPortrait {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
-      // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -70,6 +67,11 @@ export struct NoteContentCompPortrait {
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(TAG, "callbackhtml, set continue note success")
+    },
+    callbackImagePath: (imgName) => {
+      // updata note image
+      LogUtil.info(TAG, 'note imgName is:' + imgName)
+      this.selectedNoteData.content_img = imgName
     },
 
     callbackScheduledSave: (html) => {
@@ -80,8 +82,6 @@ export struct NoteContentCompPortrait {
       }
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
-      // updata note image
-      this.selectedNoteData.content_img = RdbStoreUtil.updataNoteImage(this.selectedNoteData)
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
@@ -134,7 +134,7 @@ export struct NoteContentCompPortrait {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage"],
+              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath"],
               controller:this.controllerShow
             })
             .onPageEnd((e) => {
