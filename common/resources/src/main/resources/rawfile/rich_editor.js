@@ -375,15 +375,13 @@ function getImagePathFromContent(contentInfo) {
     let imgName = "";
     let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
     let imgArray = contentInfo.match(imgReg);
-    if (imgArray) {
-        for (let i = 0; i < imgArray.length; i++) {
-            let src = imgArray[i].match(srcReg);
-            if (src != null && src.length > 1) {
-                imgName = src[1];
-                if (imgName.indexOf('shuxue.png') >= 0 || imgName.indexOf('cake.png') >= 0) {
-                    imgName = "/res/" + imgName;
-                }
-                break;
+    //取第一张图片做为标题栏后的缩略图
+    if (imgArray && imgArray.length > 0) {
+        let src = imgArray[0].match(srcReg);
+        if (src != null && src.length > 1) {
+            imgName = src[1];
+            if (imgName.indexOf('shuxue.png') >= 0 || imgName.indexOf('cake.png') >= 0) {
+                imgName = "/res/" + imgName;
             }
         }
     }
