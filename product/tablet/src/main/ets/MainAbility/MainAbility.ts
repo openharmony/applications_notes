@@ -38,9 +38,14 @@ export default class MainAbility extends Ability {
             // 获取对端的迁移数据
             let continueNote: string = want.parameters["ContinueNote"]
             let continueSection: number = want.parameters["ContinueSection"]
+            let scrollTopPercent: number = want.parameters["ScrollTopPercent"]
+            let isFocusOnSearch: boolean = want.parameters["isFocusOnSearch"]
             LogUtil.info(this.Tag, " continueSection : " + continueSection)
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
             AppStorage.SetOrCreate<number>('ContinueSection', continueSection)
+            // 使用新的key保存数据，防止迁移过来的数据在使用前被本地操作覆盖
+            AppStorage.SetOrCreate<number>('remoteScrollTopPercent', scrollTopPercent)
+            AppStorage.SetOrCreate<boolean>('isRemoteFocusOnSearch', isFocusOnSearch)
             // 来自手机的迁移
             let continueChoose: boolean = want.parameters["ContinueChoose"]
             if (continueChoose) {
@@ -94,9 +99,23 @@ export default class MainAbility extends Ability {
         }
         LogUtil.info(this.Tag, " onContinue, continueSection : " + continueSection)
 
+        let scrollTopPercent = AppStorage.Get<number>('ScrollTopPercent')
+        if (scrollTopPercent == undefined || scrollTopPercent == null) {
+            LogUtil.info(this.Tag, " onContinue, scrollTopPercent is error, default 0")
+            scrollTopPercent = 0
+        }
+
+        let isFocusOnSearch = AppStorage.Get<boolean>('isFocusOnSearch')
+        if (isFocusOnSearch == undefined || isFocusOnSearch == null) {
+            LogUtil.info(this.Tag, " onContinue, isFocusOnSearch is error, default true")
+            isFocusOnSearch = true
+        }
+
         // 保存本端的迁移数据
         wantParam["ContinueNote"] = continueNote
         wantParam["ContinueSection"] = continueSection
+        wantParam["ScrollTopPercent"] = scrollTopPercent
+        wantParam["isFocusOnSearch"] = isFocusOnSearch
         if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
             wantParam["ContinueChoose"] = true
         }

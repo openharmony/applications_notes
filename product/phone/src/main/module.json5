@@ -52,6 +52,7 @@
         "icon": "$media:note",
         "label": "$string:entry_MainAbility",
         "visible": true,
+        "continuable": true,
         "skills": [
           {
             "entities": [

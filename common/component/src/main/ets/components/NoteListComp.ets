@@ -670,6 +670,7 @@ export struct SearchComp {
   @Consume('InputKeyword') inputKeyword: string
   @Consume('Longpress') longpress: boolean
   @State text: string = ''
+  @StorageLink('isFocusOnSearch') isFocusOnSearch: boolean = true
 
   build() {
     Row() {
@@ -708,6 +709,16 @@ export struct SearchComp {
               this.search = true
             }
           })
+          // whether the focus is on the search input before coutinue
+          .onFocus(() => {
+            this.isFocusOnSearch = true
+          })
+          .onBlur(() => {
+            this.isFocusOnSearch = false
+          })
+          // key for request focus after coutinue
+          .key('searchInput')
+          .restoreId(3)
       }
       .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
       .height(40)
