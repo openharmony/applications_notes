@@ -54,6 +54,36 @@ export struct NoteContentCompPortrait {
   @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   private editContentFlag = false
+  @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
+  storeScrollTop(scrollTop: number) {
+    if (scrollTop < 0) {
+      return
+    }
+    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop/this.controllerShow.getPageHeight())
+  }
+  restoreScrollTop() {
+    if (!AppStorage.Has('remoteScrollTopPercent')) {
+      return
+    }
+    var scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')
+    if (scrollTopPercent < 0) {
+      return
+    }
+    this.controllerShow.runJavaScript({
+      script: 'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight()*scrollTopPercent
+    })
+  }
+  restoreFocus() {
+    if (!AppStorage.Has('isRemoteFocusOnSearch')) {
+      return
+    }
+    let isRemoteFocusOnSearch = AppStorage.Get<boolean>('isRemoteFocusOnSearch')
+    if (isRemoteFocusOnSearch) {
+      focusControl.requestFocus('searchInput')
+    }
+    AppStorage.Delete('isRemoteFocusOnSearch')
+  }
+
   noteContent = {
     callbackhtml: (html) => {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
@@ -139,8 +169,16 @@ export struct NoteContentCompPortrait {
             })
             .onPageEnd((e) => {
               LogUtil.info(TAG, "finish loadurl")
+              let self = this
               this.controllerShow.runJavaScript({
-                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
+                callback: () => {
+                  // wait for the image in the note to load
+                  setTimeout(function() {
+                    self.restoreScrollTop()
+                    self.restoreFocus()
+                  }, 100)
+                }
               })
             })
             .imageAccess(true)
@@ -150,6 +188,9 @@ export struct NoteContentCompPortrait {
             .zoomAccess(false)
             .height('100%')
             .width('100%')
+            .onScroll((event) => {
+              this.storeScrollTop(event.yOffset)
+            })
         }
         .flexShrink(1)
         .onClick(() => {

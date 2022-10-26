@@ -54,6 +54,36 @@ export struct NoteContentComp {
   private editContentFlag = false
   @State uri1: string = ""
   private context = getContext(this)
+  @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
+  storeScrollTop(scrollTop: number) {
+    if (scrollTop < 0) {
+      return
+    }
+    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop/this.controllerShow.getPageHeight())
+  }
+  restoreScrollTop() {
+    if (!AppStorage.Has('remoteScrollTopPercent')) {
+      return
+    }
+    var scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')
+    if (scrollTopPercent < 0) {
+      return
+    }
+    this.controllerShow.runJavaScript({
+      script: 'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight()*scrollTopPercent
+    })
+  }
+  restoreFocus() {
+    if (!AppStorage.Has('isRemoteFocusOnSearch')) {
+      return
+    }
+    let isRemoteFocusOnSearch = AppStorage.Get<boolean>('isRemoteFocusOnSearch')
+    if (isRemoteFocusOnSearch) {
+      focusControl.requestFocus('searchInput')
+    }
+    AppStorage.Delete('isRemoteFocusOnSearch')
+  }
+
   noteContent = {
     callbackhtml: (html) => {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
@@ -171,8 +201,16 @@ export struct NoteContentComp {
             .onPageEnd((e) => {
               LogUtil.info(TAG, "finish loadurl")
               if(this.selectedNoteData){
+                let self = this
                 this.controllerShow.runJavaScript({
-                  script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                  script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
+                  callback: () => {
+                    // wait for the image in the note to load
+                    setTimeout(function() {
+                      self.restoreScrollTop()
+                      self.restoreFocus()
+                    }, 100)
+                  }
                 })
               }
               // 初次加载为为小屏预览模式
@@ -187,6 +225,9 @@ export struct NoteContentComp {
             .zoomAccess(false)
             .height('88%')
             .width('100%')
+            .onScroll((event) => {
+              this.storeScrollTop(event.yOffset)
+            })
         }
         .margin({ left: 24, right: 24 })
 //        .width(StyleConstants.PERCENTAGE_100)

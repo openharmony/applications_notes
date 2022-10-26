@@ -69,6 +69,7 @@ export struct NewOrEditFolderDialog {
               this.isExisted = result
             })
           })
+          .restoreId(1)
       }.margin({ bottom: 4, left: 24, right: 24 })
 
       Divider()
@@ -682,6 +683,7 @@ export struct EditTitleDialog {
             }
             this.inputName = value
           })
+          .restoreId(2)
       }.margin({ bottom: 4, left: 24, right: 24 })
 
 
