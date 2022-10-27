@@ -27,13 +27,13 @@ body {
   min-height: 100%;
   color: #333333;
   margin: 0;
+  height: 100%;
 }
 
 #editorjs {
   padding-left: 1px;
   padding-right: 24px;
   width: 100%;
-  display: table-cell;
   outline: 0px solid transparent;
   background-repeat: no-repeat;
   background-position: center;
@@ -41,6 +41,7 @@ body {
   color: #182431;
   opacity: 0.9;
   font-size: 16px;
+  height: 100%;
 }
 
 #editorjs[placeholder]:empty:not(:focus):before {
