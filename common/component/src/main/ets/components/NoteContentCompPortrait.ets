@@ -17,7 +17,7 @@ import DateUtil from '@ohos/utils/src/main/ets/default/baseUtil/DateUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import { atob } from 'js-base64'
+import util from '@ohos.util'
 import { TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
@@ -135,10 +135,14 @@ export struct NoteContentCompPortrait {
           } else if (html.indexOf("gif") > 0) {
             imgType = 'gif'
           }
+          let filePath = ""
           if (base64regex.test(imgData)) {
-            imgData = atob(imgData)
+            let base64 = new util.Base64()
+            let decodeArr = base64.decodeSync(imgData)
+            filePath = OperationUtils.saveImageData(decodeArr, imgType)
+          } else {
+            filePath = OperationUtils.saveImage(imgData, imgType)
           }
-          let filePath = OperationUtils.saveImage(imgData, imgType)
           realHtml = "file://" + filePath
         }
         LogUtil.info(TAG, 'paste info11' + realHtml)
