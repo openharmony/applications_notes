@@ -24,7 +24,7 @@ import { EditContentDialog, DeleteDialog, EditTitleDialog } from './CusDialogCom
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import prompt from '@system.prompt'
-import { atob, btoa } from 'js-base64'
+import util from '@ohos.util'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import mediaquery from '@ohos.mediaquery'
@@ -155,10 +155,14 @@ export struct NoteContentComp {
               } else if (html.indexOf("gif") > 0) {
                 imgType = 'gif'
               }
+              let filePath = ""
               if (base64regex.test(imgData)) {
-                imgData = atob(imgData)
+                let base64 = new util.Base64()
+                let decodeArr = base64.decodeSync(imgData)
+                filePath = OperationUtils.saveImageData(decodeArr, imgType)
+              } else {
+                filePath = OperationUtils.saveImage(imgData, imgType)
               }
-              let filePath = OperationUtils.saveImage(imgData, imgType)
               realHtml = "file://" + filePath
         }
         LogUtil.info(TAG, 'paste info11-' + realHtml)
