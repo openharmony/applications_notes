@@ -1,0 +1,17 @@
+{
+  "apiType": 'stageMode',
+  "buildOption": {
+  },
+  "entryModules": [
+    "phone",
+    "tablet"
+  ],
+  "targets": [
+    {
+      "name": "default"
+    },
+    {
+      "name": "ohosTest",
+    }
+  ]
+}

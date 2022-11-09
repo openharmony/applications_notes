@@ -1,20 +1,18 @@
 {
 	"license": "ISC",
 	"devDependencies": {},
-	"name": "ohos_note",
+	"name": "default",
 	"ohos": {
 		"org": "huawei",
-		"directoryLevel": "project",
+		"directoryLevel": "module",
 		"buildTool": "hvigor"
 	},
 	"description": "example description",
 	"repository": {},
 	"version": "1.0.0",
 	"dependencies": {
-		"@ohos/hvigor": "1.2.2",
-		"@ohos/hvigor-ohos-plugin": "1.2.2",
-		"hypium": "^1.0.0",
-		"js-base64": "^3.7.2",
-		"@ohos/hypium": "1.0.2"
+		"@ohos/utils": "file:../../common/utils",
+		"@ohos/component": "file:../../features",
+		"@ohos/source": "file:../../common/resources"
 	}
 }
