@@ -445,11 +445,7 @@ export struct NoteItemListComp {
                 }
               }, noteItem => noteItem.uuid.toString())
             }
-            .margin((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? {
-                                                                                                                     bottom: 0
-                                                                                                                   } : {
-                                                                                                                         bottom: 130
-                                                                                                                       })
+            .margin((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? { bottom: 0 } : { bottom: 130 })
             .layoutWeight(1)
             .listDirection(Axis.Vertical)
             .edgeEffect(EdgeEffect.Spring)
