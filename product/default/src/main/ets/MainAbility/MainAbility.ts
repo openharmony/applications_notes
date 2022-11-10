@@ -22,6 +22,7 @@ import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import { atob } from 'js-base64'
 import display from '@ohos.display';
 
+
 globalThis.rdbStore = undefined
 
 export default class MainAbility extends Ability {
