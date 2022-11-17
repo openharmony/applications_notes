@@ -401,7 +401,7 @@ export struct EditContentDialog {
     Row() {
       Column() {
         Row({ space: 70 }) {
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.action_bold'))
               .height(24)
               .width(24)
@@ -413,7 +413,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.format_italic'))
               .height(24)
               .width(24)
@@ -425,7 +425,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.underline'))
               .height(24)
               .width(24)
@@ -437,7 +437,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.right_justify'))
               .height(24)
               .width(24)
@@ -449,7 +449,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.mid_justify'))
               .height(24)
               .width(24)
@@ -461,7 +461,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.left_justify'))
               .height(24)
               .width(24)
@@ -482,7 +482,7 @@ export struct EditContentDialog {
           .color($r("app.color.divider_color_e4e4e4"))
 
         Row({ space: 70 }) {
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.suojin'))
               .height(24)
               .width(24)
@@ -494,7 +494,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.suojin_back'))
               .height(24)
               .width(24)
@@ -507,7 +507,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r("app.media.format_menulist_number"))
               .height(24)
               .width(24)
@@ -519,7 +519,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r("app.media.format_menulist_alphabet"))
               .height(24)
               .width(24)
@@ -531,7 +531,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.format_menubullte2'))
               .height(24)
               .width(24)
@@ -543,7 +543,7 @@ export struct EditContentDialog {
           .borderRadius(8)
           .backgroundColor($r('app.color.color_ffffff'))
 
-          Button({ type: ButtonType.Normal, stateEffect: true }) {
+          Button({ type: ButtonType.Normal }) {
             Image($r('app.media.format_menubullte1'))
               .height(24)
               .width(24)
@@ -756,7 +756,7 @@ export struct EditContentDialogPortrait {
 
 
       Row({ space: 16 }) {
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.action_bold'))
             .height(24)
             .width(24)
@@ -768,7 +768,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.format_italic'))
             .height(24)
             .width(24)
@@ -780,7 +780,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.underline'))
             .height(24)
             .width(24)
@@ -792,7 +792,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.right_justify'))
             .height(24)
             .width(24)
@@ -804,7 +804,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.mid_justify'))
             .height(24)
             .width(24)
@@ -816,7 +816,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.left_justify'))
             .height(24)
             .width(24)
@@ -834,7 +834,7 @@ export struct EditContentDialogPortrait {
 
       Row({ space: 16 }) {
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.suojin'))
             .height(24)
             .width(24)
@@ -846,7 +846,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.suojin_back'))
             .height(24)
             .width(24)
@@ -859,7 +859,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r("app.media.format_menulist_number"))
             .height(24)
             .width(24)
@@ -871,7 +871,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r("app.media.format_menulist_alphabet"))
             .height(24)
             .width(24)
@@ -883,7 +883,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.format_menubullte2'))
             .height(24)
             .width(24)
@@ -895,7 +895,7 @@ export struct EditContentDialogPortrait {
         .borderRadius(8)
         .backgroundColor($r('app.color.color_ffffff'))
 
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Button({ type: ButtonType.Normal }) {
           Image($r('app.media.format_menubullte1'))
             .height(24)
             .width(24)

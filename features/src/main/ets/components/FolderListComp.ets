@@ -391,7 +391,7 @@ struct FolderItemComp {
         .height(56)
         .padding({ left: 12, right: 12 })
         .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
-                                                                                      ? $r("app.color.folder_color_ffffff") : "")
+                                                                                      ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
         .bindContextMenu(this.menuBuilder, ResponseType.LongPress)
         .bindContextMenu(this.menuBuilder, ResponseType.RightClick)
         .onClick(() => {
@@ -448,7 +448,7 @@ struct FolderItemComp {
         .height(56)
         .padding({ left: 12, right: 12 })
         .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
-                                                                                      ? $r("app.color.folder_color_ffffff") : "")
+                                                                                      ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
         .onClick(() => {
           if (this.longpress) {
             this.longpress = false
@@ -498,10 +498,6 @@ export struct FolderListBackGround {
   build() {
     Column() {
     }
-    .shadow({
-      radius: 54,
-      offsetY: 24
-    })
     .width("100%")
     .height("100%")
     .backgroundColor($r('app.color.folder_color_d6d6d6'))
