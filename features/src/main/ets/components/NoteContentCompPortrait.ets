@@ -425,7 +425,7 @@ export struct ToolBarComp {
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.todo')).height(24).width(24)
@@ -437,7 +437,7 @@ export struct ToolBarComp {
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.tick_thin')).height(24).width(24)
@@ -449,7 +449,7 @@ export struct ToolBarComp {
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
         }
         .width(130)
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)

@@ -371,7 +371,7 @@ export struct ToolBarComp {
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.todo'))
@@ -385,7 +385,7 @@ export struct ToolBarComp {
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
 
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
@@ -401,7 +401,7 @@ export struct ToolBarComp {
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
         }.width(274)
       }
     }
