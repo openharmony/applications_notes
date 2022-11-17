@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import util from '@ohos.util'
 import {LogUtil} from '../../baseUtil/LogUtil'
 import NoteData from '../../model/databaseModel/NoteData'
 import ohosDataRdb from '@ohos.data.rdb';
@@ -40,9 +41,19 @@ export class SearchModel {
       LogUtil.info(TAG, "query is null")
       return []
     }
-    let searchData: NoteData[] = [];
+    let searchData: NoteData[] = []
     noteDataArray.forEach((noteData) => {
-      if (noteData.content_text.replace(/<[^>]+>/g,"").toLowerCase().indexOf(query.toLowerCase()) != -1
+      let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+      let contentTextValue: string
+      if (base64regex.test(noteData.content_text)) {
+        let Base64 = new util.Base64()
+        let textDecoder = new util.TextDecoder("utf-8", { ignoreBOM: true }) // utf-8:编码格式为utf-8,ignoreBOM:是否忽略BOM标记
+        let decodeStr = Base64.decodeSync(noteData.content_text)
+        contentTextValue = textDecoder.decode(decodeStr, { stream: false }) // stream:在随后的decode()调用中是否跟随附加数据块
+      } else {
+        contentTextValue = noteData.content_text
+      }
+      if (contentTextValue.replace(/<[^>]+>/g, "").toLowerCase().indexOf(query.toLowerCase()) != -1
       || noteData.title.toLowerCase().indexOf(query.toLowerCase()) != -1) {
         LogUtil.info(TAG, "uuid " + noteData.uuid)
         searchData.push(noteData);
