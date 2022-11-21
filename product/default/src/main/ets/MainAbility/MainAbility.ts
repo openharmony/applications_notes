@@ -21,6 +21,7 @@ import inputMethod from '@ohos.inputmethod';
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import { atob } from 'js-base64'
 import display from '@ohos.display';
+import window from '@ohos.window';
 
 
 globalThis.rdbStore = undefined
@@ -29,6 +30,11 @@ export default class MainAbility extends Ability {
     private Tag = "MainAbility_Tablet"
 
     onCreate(want, launchParam) {
+        // @ts-ignore
+        window.getLastWindow(this.context,(err,data)=>{
+            let windowWidth = data.getWindowProperties().windowRect.width
+            this.screenBreakPoints(windowWidth)
+        })
         AppStorage.SetOrCreate<boolean>('closeEditContentDialog', true)
         LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason)
         LogUtil.info(this.Tag, " onCreate, deviceType" + deviceInfo.deviceType)
@@ -69,22 +75,11 @@ export default class MainAbility extends Ability {
     }
 
     onWindowStageCreate(windowStage) {
-        let displayClass = null
-        let screenDpi = null
-        displayClass = display.getDefaultDisplaySync()
-        screenDpi = displayClass.densityDPI
         windowStage.getMainWindow((err, data) => {
             let windowClass = data
             try {
                 windowClass.on('windowSizeChange', (data) => {
-                    let windowWidth = data.width / (screenDpi / 160)
-                    if (windowWidth >= 320 && windowWidth < 520 || windowWidth < 320) {
-                        AppStorage.SetOrCreate('breakPoint', 'sm')
-                    } else if (windowWidth >= 520 && windowWidth < 840) {
-                        AppStorage.SetOrCreate('breakPoint', 'md')
-                    } else if (windowWidth >= 840) {
-                        AppStorage.SetOrCreate('breakPoint', 'lg')
-                    }
+                    this.screenBreakPoints(data.width)
                 })
             } catch (exception) {
                 LogUtil.info(this.Tag, 'windowSizeChange fail')
@@ -199,6 +194,21 @@ export default class MainAbility extends Ability {
             LogUtil.info(this.Tag, " onContinue, writeToDisFileDir, copyFile successfully" + desPath + " " + srcPath)
         } catch (err) {
             LogUtil.warn(this.Tag, " onContinue, writeToDisFileDir, copyFile failed : " + err)
+        }
+    }
+
+    screenBreakPoints(data){
+        let displayClass = null
+        let screenDpi = null
+        displayClass = display.getDefaultDisplaySync()
+        screenDpi = displayClass.densityDPI
+        let windowWidth = data / (screenDpi / 160)
+        if (windowWidth >= 320 && windowWidth < 520 || windowWidth < 320) {
+            AppStorage.SetOrCreate('breakPoint', 'sm')
+        } else if (windowWidth >= 520 && windowWidth < 840) {
+            AppStorage.SetOrCreate('breakPoint', 'md')
+        } else if (windowWidth >= 840) {
+            AppStorage.SetOrCreate('breakPoint', 'lg')
         }
     }
 }
