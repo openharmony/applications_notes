@@ -533,7 +533,7 @@ export struct ToolBarComp {
                 let context: any = getContext(this)
                 let resource = {
                   bundleName: "com.ohos.note",
-                  moduleName: "tablet",
+                  moduleName: "default",
                   id: $r('app.string.restore').id
                 };
                 context.resourceManager.getString(resource, (error, value) => {
