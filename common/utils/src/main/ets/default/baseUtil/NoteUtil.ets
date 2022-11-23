@@ -38,6 +38,7 @@ export class NoteUtil {
   setNoteChecked(checkedNoteArray: NoteData[], noteItem: NoteData) {
     LogUtil.info(TAG, "setNoteChecked")
     checkedNoteArray.push(noteItem)
+    AppStorage.Set('CheckedNoteArray',checkedNoteArray)
   }
 
   /**
@@ -52,6 +53,7 @@ export class NoteUtil {
     })
     LogUtil.info(TAG, "index " + index.toString() + noteItem.uuid)
     index == -1 ? null : checkedNoteArray.splice(index, 1)
+    AppStorage.Set('CheckedNoteArray',checkedNoteArray)
   }
 
   /**
