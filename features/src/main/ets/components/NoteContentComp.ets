@@ -459,6 +459,7 @@ export struct ToolBarComp {
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "NoteContentOverViewComp, set continue note success")
+    AppStorage.SetOrCreate('isUpdate', true)
   }
 
   editContentDialogCtl: CustomDialogController = new CustomDialogController({

@@ -35,7 +35,7 @@ export struct MyNoteHomeComp {
 
   @StorageLink('breakPoint')@Watch('onBreakPointChange') breakPoints: string = 'lg'
   onBreakPointChange(){
-    if(this.breakPoints == 'sm'){
+    if(this.breakPoints == 'sm' || this.breakPoints == 'md'){
       this.portraitModel = true
     }else{
       this.portraitModel = false
