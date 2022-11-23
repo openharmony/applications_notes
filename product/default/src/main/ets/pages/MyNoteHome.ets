@@ -35,7 +35,7 @@ export struct MyNoteHomeComp {
 
   @StorageLink('breakPoint')@Watch('onBreakPointChange') breakPoints: string = 'lg'
   onBreakPointChange(){
-    if(this.breakPoints == 'sm'){
+    if(this.breakPoints == 'sm' || this.breakPoints == 'md'){
       this.portraitModel = true
     }else{
       this.portraitModel = false
@@ -60,6 +60,11 @@ export struct MyNoteHomeComp {
   aboutToAppear(): void {
     LogUtil.info(this.TAG, "aboutToAppear")
     this.breakPoints = AppStorage.Get('breakPoint')
+    if(this.breakPoints == 'sm' || this.breakPoints == 'md'){
+      this.portraitModel = true
+    }else{
+      this.portraitModel = false
+    }
     if (this.context == undefined || this.context == null) {
       LogUtil.warn(this.TAG, "context is error")
       return

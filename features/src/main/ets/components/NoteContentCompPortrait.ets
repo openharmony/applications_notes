@@ -362,6 +362,7 @@ export struct ToolBarComp {
       RdbStoreUtil.delete(predicates_note, null)
       routePage()
     }
+    AppStorage.SetOrCreate('isUpdate', true)
   }
 
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
@@ -491,6 +492,7 @@ export struct DeleteNoteComp {
       RdbStoreUtil.delete(predicates_note, null)
       routePage()
     }
+    AppStorage.SetOrCreate('isUpdate', false)
   }
 
   build() {

@@ -132,6 +132,7 @@ export struct NoteAndCreateComp {
     this.AllFolderArray.push(folderData)
     // insert folder to db
     RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null)
+    AppStorage.SetOrCreate('isUpdate', true)
   }
 
   build() {
@@ -177,6 +178,7 @@ struct FolderItemComp {
   controllerShow: WebController
   private isLongPress: boolean = false
   TAG = "FolderListComp"
+  @StorageLink('isUpdata') isUpdate: boolean = false
   // Folder Edit Dialog
   folderEditDialogCtl: CustomDialogController = new CustomDialogController({
     builder: NewOrEditFolderDialog({
@@ -208,6 +210,7 @@ struct FolderItemComp {
     let predicates_folder = RdbStoreUtil.getRdbPredicates(TableName.FolderTable)
     predicates_folder.equalTo(FolderTableColumn.Uuid, this.folderItem.uuid)
     RdbStoreUtil.update(this.folderItem.toFolderObject(), predicates_folder, null)
+    this.isUpdate = true
   }
   // Folder Delete Dialog
   folderDeleteDialogCtl: CustomDialogController = new CustomDialogController({
@@ -275,6 +278,7 @@ struct FolderItemComp {
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(this.TAG, "onDeleteConfirm, set continue note success")
     }
+    this.isUpdate = true
   }
   // Folder Create Dialog
   folderCreateDialogCtl: CustomDialogController = new CustomDialogController({
@@ -296,6 +300,7 @@ struct FolderItemComp {
     this.AllFolderArray.push(folderData)
     // insert folder to db
     RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null)
+    this.isUpdate = true
   }
 
   @Builder menuBuilder() {
@@ -363,13 +368,13 @@ struct FolderItemComp {
       if (this.folderItem.folder_type == FolderType.CusDef) {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Row() {
-            Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+            Image(this.isUpdate ? FolderUtil.getFolderIcon(this.folderItem.uuid) : FolderUtil.getFolderIcon(this.folderItem.uuid))
               .objectFit(ImageFit.Fill)
               .width(24)
               .height(24)
-              .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
+              .fillColor(this.isUpdate ? FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid) : FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
               .margin({ right: 16 })
-            Text(FolderUtil.getFolderText(this.folderItem))
+            Text(this.isUpdate ? FolderUtil.getFolderText(this.folderItem) : FolderUtil.getFolderText(this.folderItem))
               .fontWeight(FontWeight.Medium)
               .fontSize(16)
               .textAlign(TextAlign.Center)
@@ -381,7 +386,7 @@ struct FolderItemComp {
               .visibility(Visibility.None) // 用于强制刷新使用
           }.width(118)
 
-          Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+          Text(this.isUpdate ? FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString() : FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
             .fontWeight(FontWeight.Regular)
             .fontSize(14)
             .textAlign(TextAlign.Center)
@@ -420,13 +425,13 @@ struct FolderItemComp {
       } else {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Row() {
-            Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+            Image(this.isUpdate ? FolderUtil.getFolderIcon(this.folderItem.uuid) : FolderUtil.getFolderIcon(this.folderItem.uuid))
               .objectFit(ImageFit.Fill)
               .width(24)
               .height(24)
-              .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
+              .fillColor(this.isUpdate ? FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid) : FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
               .margin({ right: 16 })
-            Text(FolderUtil.getFolderText(this.folderItem))
+            Text(this.isUpdate ? FolderUtil.getFolderText(this.folderItem) : FolderUtil.getFolderText(this.folderItem))
               .fontWeight(FontWeight.Medium)
               .fontSize(16)
               .textAlign(TextAlign.Center)
@@ -438,7 +443,7 @@ struct FolderItemComp {
               .visibility(Visibility.None) // 用于强制刷新使用
           }.width(118)
 
-          Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+          Text(this.isUpdate == true ? FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString() : FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
             .fontWeight(FontWeight.Regular)
             .fontSize(14)
             .textAlign(TextAlign.Center)
