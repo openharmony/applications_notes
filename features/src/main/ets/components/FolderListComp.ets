@@ -178,7 +178,7 @@ struct FolderItemComp {
   controllerShow: WebController
   private isLongPress: boolean = false
   TAG = "FolderListComp"
-  @StorageLink('isUpdata') isUpdate: boolean = false
+  @StorageLink('isUpdate') isUpdate: boolean = false
   // Folder Edit Dialog
   folderEditDialogCtl: CustomDialogController = new CustomDialogController({
     builder: NewOrEditFolderDialog({
@@ -368,13 +368,15 @@ struct FolderItemComp {
       if (this.folderItem.folder_type == FolderType.CusDef) {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Row() {
-            Image(this.isUpdate ? FolderUtil.getFolderIcon(this.folderItem.uuid) : FolderUtil.getFolderIcon(this.folderItem.uuid))
+            Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+              .id(this.isUpdate + '')
               .objectFit(ImageFit.Fill)
               .width(24)
               .height(24)
-              .fillColor(this.isUpdate ? FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid) : FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
+              .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
               .margin({ right: 16 })
-            Text(this.isUpdate ? FolderUtil.getFolderText(this.folderItem) : FolderUtil.getFolderText(this.folderItem))
+            Text(FolderUtil.getFolderText(this.folderItem))
+              .id(this.isUpdate + '')
               .fontWeight(FontWeight.Medium)
               .fontSize(16)
               .textAlign(TextAlign.Center)
@@ -386,7 +388,8 @@ struct FolderItemComp {
               .visibility(Visibility.None) // 用于强制刷新使用
           }.width(118)
 
-          Text(this.isUpdate ? FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString() : FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+          Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+            .id(this.isUpdate + '')
             .fontWeight(FontWeight.Regular)
             .fontSize(14)
             .textAlign(TextAlign.Center)
@@ -421,17 +424,20 @@ struct FolderItemComp {
             AppStorage.SetOrCreate('ContinueSection', 3)
             LogUtil.info(this.TAG, "FolderItemComp, set continue note success")
           }
+          NoteUtil.refreshAll()
         })
       } else {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Row() {
-            Image(this.isUpdate ? FolderUtil.getFolderIcon(this.folderItem.uuid) : FolderUtil.getFolderIcon(this.folderItem.uuid))
+            Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+              .id(this.isUpdate + '')
               .objectFit(ImageFit.Fill)
               .width(24)
               .height(24)
               .fillColor(this.isUpdate ? FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid) : FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
               .margin({ right: 16 })
-            Text(this.isUpdate ? FolderUtil.getFolderText(this.folderItem) : FolderUtil.getFolderText(this.folderItem))
+            Text(FolderUtil.getFolderText(this.folderItem))
+              .id(this.isUpdate + '')
               .fontWeight(FontWeight.Medium)
               .fontSize(16)
               .textAlign(TextAlign.Center)
@@ -443,7 +449,8 @@ struct FolderItemComp {
               .visibility(Visibility.None) // 用于强制刷新使用
           }.width(118)
 
-          Text(this.isUpdate == true ? FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString() : FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+          Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.folderItem.uuid).toString())
+            .id(this.isUpdate + '')
             .fontWeight(FontWeight.Regular)
             .fontSize(14)
             .textAlign(TextAlign.Center)
@@ -476,6 +483,7 @@ struct FolderItemComp {
             AppStorage.SetOrCreate('ContinueSection', 3)
             LogUtil.info(this.TAG, "FolderItemComp, set continue note success")
           }
+          NoteUtil.refreshAll()
         })
       }
     }

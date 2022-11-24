@@ -274,6 +274,11 @@ export class NoteUtil {
     }
     return false
   }
+
+  refreshAll() {
+    let isRefresh = AppStorage.Get('isUpdate')
+    AppStorage.Set('isUpdate',!isRefresh)
+  }
 }
 
 let noteUtil = new NoteUtil()

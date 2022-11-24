@@ -140,13 +140,15 @@ struct NoteOverViewComp {
           alignItems: ItemAlign.Start
         }) {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
+            .id(this.isUpdate+'')
             .maxLines(1)
             .fontSize(30)
             .fontColor($r("app.color.all_notes_font_color"))
             .fontWeight(FontWeight.Medium)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
-            Text(this.isUpdate? FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString():FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
+            Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
+              .id(this.isUpdate+'')
               .maxLines(1)
               .fontSize(14)
               .fontColor($r("app.color.num_of_notes_font_color"))
@@ -215,6 +217,7 @@ export struct NoteItemComp {
   @Consume('PortraitModel') portraitModel: boolean
   @State isChecked: boolean = undefined
   @Consume('Longpress')@Watch('isLongPress') longpress: boolean
+  @StorageLink('isUpdate') isUpdate: boolean = false
   isLongPress(){
     if(this.longpress){
       this.isChecked = false
@@ -227,6 +230,7 @@ export struct NoteItemComp {
         Column({ space: 2 }) {
           Row({ space: 8 }) {
             Image($r("app.media.verticalBar"))
+              .id(this.isUpdate+'')
               .height(16)
               .width(4)
               .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.Get('AllFolderArray'), this.noteItem.folder_uuid))
@@ -237,6 +241,7 @@ export struct NoteItemComp {
 
           Row({ space: 4 }) {
             Text(DateUtil.formateDateForNoteTitle(new Date(this.noteItem.modified_time)))
+              .id(this.isUpdate+'')
               .maxLines(1)
               .fontSize(14)
               .fontColor($r("app.color.list_modified_time_font_color"))
@@ -405,6 +410,7 @@ export struct NoteItemListComp {
       Flex() {
         SearchComp()
       }
+      .id(this.isUpdate+'')
       .width("100%")
       .padding({ left: 24, right: 24, bottom: 12 })
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
@@ -433,6 +439,7 @@ export struct NoteItemListComp {
                     .fontColor($r("app.color.Empty_page_font_color"))
                 }
               }
+              .id(this.isUpdate+'')
               .width('100%')
               .height('100%')
               .padding({ bottom: 120 })
@@ -452,6 +459,7 @@ export struct NoteItemListComp {
                 }
               }, noteItem => JSON.stringify(noteItem))
             }
+            .id(this.isUpdate+'')
             .margin((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? {
                                                                                                                      bottom: 0
                                                                                                                    } : {
@@ -560,6 +568,7 @@ export struct OperateNoteComp {
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "OperateNoteComp, set continue note success")
+    NoteUtil.refreshAll()
   }
 
   build() {
@@ -581,6 +590,7 @@ export struct OperateNoteComp {
           })
           this.longpress = false
           NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
+          NoteUtil.refreshAll()
         })
       Image($r('app.media.move'))
         .width(24)
@@ -632,6 +642,7 @@ export struct OperateNoteComp {
           })
           this.longpress = false
           NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
+          NoteUtil.refreshAll()
         })
       Image(this.CheckedNoteArray.length == NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length ? $r('app.media.check_all1') : $r('app.media.check_all'))
         .width(24)
