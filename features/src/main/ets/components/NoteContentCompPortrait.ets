@@ -18,7 +18,12 @@ import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import util from '@ohos.util'
-import { TableName, NoteTableColumn, SysDefFolderUuid, Favorite, Delete
+import {
+  TableName,
+  NoteTableColumn,
+  SysDefFolderUuid,
+  Favorite,
+  Delete
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import { EditContentDialogPortrait, DeleteDialog, EditTitleDialog } from './CusDialogComp'
@@ -49,18 +54,20 @@ async function routePage() {
 export struct NoteContentCompPortrait {
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('NewNote')
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get("NewFolder")
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
+  @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Provide('EditModel') editModel: boolean = false
   @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   private editContentFlag = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
+
   storeScrollTop(scrollTop: number) {
     if (scrollTop < 0) {
       return
     }
-    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop/this.controllerShow.getPageHeight())
+    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop / this.controllerShow.getPageHeight())
   }
+
   restoreScrollTop() {
     if (!AppStorage.Has('remoteScrollTopPercent')) {
       return
@@ -70,9 +77,10 @@ export struct NoteContentCompPortrait {
       return
     }
     this.controllerShow.runJavaScript({
-      script: 'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight()*scrollTopPercent
+      script: 'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
     })
   }
+
   restoreFocus() {
     if (!AppStorage.Has('isRemoteFocusOnSearch')) {
       return
@@ -130,7 +138,7 @@ export struct NoteContentCompPortrait {
           LogUtil.info(TAG, " getSrcFromHtml, src[1] : " + html)
           let imgData = html.split(',')[1];
           let imgType = 'png'
-          if (html.indexOf("jpeg") > 0){
+          if (html.indexOf("jpeg") > 0) {
             imgType = 'jpg'
           } else if (html.indexOf("gif") > 0) {
             imgType = 'gif'
@@ -169,7 +177,7 @@ export struct NoteContentCompPortrait {
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
               methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath"],
-              controller:this.controllerShow
+              controller: this.controllerShow
             })
             .onPageEnd((e) => {
               LogUtil.info(TAG, "finish loadurl")
@@ -178,7 +186,7 @@ export struct NoteContentCompPortrait {
                 script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
                 callback: () => {
                   // wait for the image in the note to load
-                  setTimeout(function() {
+                  setTimeout(function () {
                     self.restoreScrollTop()
                     self.restoreFocus()
                   }, 100)
@@ -203,7 +211,7 @@ export struct NoteContentCompPortrait {
           }
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
-            if(this.closeEditContentDialog){
+            if (this.closeEditContentDialog) {
               this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
             }
           }, 3000)
@@ -223,11 +231,11 @@ export struct NoteContentCompPortrait {
     .width(StyleConstants.PERCENTAGE_100)
   }
 
-  aboutToAppear(): void{
+  aboutToAppear(): void {
     LogUtil.info(TAG, "aboutToAppear")
   }
 
-  aboutToDisappear(): void{
+  aboutToDisappear(): void {
     clearInterval(time_id)
     LogUtil.info(TAG, "aboutToDisappear")
   }
@@ -236,8 +244,9 @@ export struct NoteContentCompPortrait {
 @Component
 export struct NoteContentOverViewComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
-  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
+  @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
+  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
+  @StorageLink('isUpdate') isUpdate: boolean = false
   NoteDataMoveArray: FolderData[]
   editTitleDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditTitleDialog({ confirm: this.confirm.bind(this) }),
@@ -309,6 +318,7 @@ export struct NoteContentOverViewComp {
 
         Row() {
           Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time)))
+            .id(this.isUpdate + '')
             .fontSize(12)
             .padding({ top: 4, bottom: 4 })
             .fontColor($r("app.color.modified_time_font_color"))
@@ -316,6 +326,7 @@ export struct NoteContentOverViewComp {
             Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
                  folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
             FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+              .id(this.isUpdate + '')
               .fontColor($r('app.color.folder_color_99182431'))
               .fontSize(12)
             Image($r('app.media.triangle'))
@@ -323,6 +334,7 @@ export struct NoteContentOverViewComp {
               .height(12)
               .margin({ left: 4 })
           }
+          .id(this.isUpdate + '')
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
           .margin({ left: 8 })
           .borderRadius(16)
@@ -342,7 +354,7 @@ export struct ToolBarComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('EditModel') editModel: boolean
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
+  @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   controllerShow: WebController
 
   onDeleteConfirm() {
@@ -410,6 +422,7 @@ export struct ToolBarComp {
                 AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
                 LogUtil.info(TAG, "ToolBarComp, set continue note success")
               }
+              NoteUtil.refreshAll()
             })
           Image($r('app.media.delete')).height(24).width(24)
             .onClick(() => {
@@ -423,6 +436,7 @@ export struct ToolBarComp {
             Image($r('app.media.undo')).height(24).width(24)
               .onClick(() => {
                 // 退出键盘
+                // @ts-ignore
                 inputMethod.getController().stopInputSession();
                 this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
               })
@@ -435,6 +449,7 @@ export struct ToolBarComp {
             Image($r('app.media.todo')).height(24).width(24)
               .onClick(() => {
                 // 退出键盘
+                // @ts-ignore
                 inputMethod.getController().stopInputSession();
                 this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
               })
@@ -466,8 +481,8 @@ export struct ToolBarComp {
 
 @Component
 export struct DeleteNoteComp {
-  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
+  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
+  @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('RefreshFlag') refreshFlag: number
   @Consume('SelectedNoteData') selectedNoteData: NoteData;
@@ -544,6 +559,7 @@ export struct DeleteNoteComp {
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
             RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+            NoteUtil.refreshAll()
           })
         Text($r("app.string.recover"))
           .fontSize(10)
@@ -558,14 +574,14 @@ export struct DeleteNoteComp {
     .width(360)
     .height(56)
     .visibility(this.selectedNoteData.is_deleted == Delete.Yes ?
-      Visibility.Visible : Visibility.None)
+    Visibility.Visible : Visibility.None)
   }
 }
 
 @Component
 export struct EditNoteCompForPortrait {
-  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
+  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
+  @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('SelectedNoteData') selectedNoteData: NoteData;
   @Consume('EditModel') editModel: boolean
@@ -673,14 +689,15 @@ export struct EditNoteCompForPortrait {
     .width(360)
     .height(56)
     .visibility(this.selectedNoteData.is_deleted == Delete.No && this.editModel == true ?
-      Visibility.Visible : Visibility.None)
+    Visibility.Visible : Visibility.None)
   }
 }
 
 @Component
 struct NoteDataMoveItemCompMenu {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
+  @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
+  @StorageLink('isUpdate') isUpdate: boolean = false
   folderItem: FolderData
   uuid: String
 
@@ -688,6 +705,7 @@ struct NoteDataMoveItemCompMenu {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {
       Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
         Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+          .id(this.isUpdate + '')
           .objectFit(ImageFit.Fill)
           .width(24)
           .height(24)
@@ -699,6 +717,7 @@ struct NoteDataMoveItemCompMenu {
       Column() {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Text(FolderUtil.getFolderText(this.folderItem))
+            .id(this.isUpdate + '')
             .fontSize(16)
             .fontColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid == this.uuid ? this.folderItem.uuid : '', this.folderItem.uuid == this.uuid))
             .textAlign(TextAlign.Center)
@@ -718,6 +737,7 @@ struct NoteDataMoveItemCompMenu {
       }
       .padding({ left: 16 })
     }
+    .id(this.isUpdate + '')
     .width('100%')
     .height(56)
     .visibility(FolderUtil.isFolderMoveIn(this.folderItem) ? Visibility.Visible : Visibility.None)

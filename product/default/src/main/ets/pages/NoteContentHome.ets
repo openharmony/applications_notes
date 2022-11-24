@@ -51,6 +51,7 @@ struct NoteContentHome {
     this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
     this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
     if (deviceInfo.deviceType !== 'phone' && deviceInfo.deviceType !== 'default') {
+      // @ts-ignore
       inputMethod.getController().stopInputSession();
     }
   }

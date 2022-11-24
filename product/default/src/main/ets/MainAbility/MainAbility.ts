@@ -101,6 +101,7 @@ export default class MainAbility extends Ability {
     onBackground() {
         LogUtil.info(this.Tag, " onBackground")
         // 退出键盘
+        // @ts-ignore
         inputMethod.getController().stopInputSession();
     }
 
