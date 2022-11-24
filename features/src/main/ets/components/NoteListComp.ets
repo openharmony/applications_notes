@@ -578,7 +578,7 @@ export struct OperateNoteComp {
         .height(24)
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
-        .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 24 })
+        .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 18 })
         .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
         .onClick(() => {
           this.CheckedNoteArray.forEach((noteItem) => {
@@ -597,7 +597,7 @@ export struct OperateNoteComp {
         .height(24)
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
-        .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 24 })
+        .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 18 })
         .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
         .onClick(() => {
           this.noteDataMoveDialogCtl.open()
@@ -605,7 +605,7 @@ export struct OperateNoteComp {
       Image($r('app.media.delete'))
         .width(24)
         .height(24)
-        .margin({ right: 24 })
+        .margin({ right: 18 })
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
         .onClick(() => {
@@ -616,7 +616,7 @@ export struct OperateNoteComp {
         .height(24)
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
-        .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 24 : 0 })
+        .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 18 : 0 })
         .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
         .onClick(() => {
           this.CheckedNoteArray.forEach((noteItem) => {
@@ -659,7 +659,7 @@ export struct OperateNoteComp {
           this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
         })
     }
-    .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 120 : 168)
+    .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 120 : 248)
     .visibility(this.longpress && this.portraitModel == false ? Visibility.Visible : Visibility.None)
   }
 }
