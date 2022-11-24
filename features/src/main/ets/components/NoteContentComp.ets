@@ -570,7 +570,7 @@ export struct ToolBarComp {
                   // 清单
                   this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
                   // 退出键盘
-                  iinputMethod.getController().stopInputSession();
+                  inputMethod.getController().stopInputSession();
                 })
             }.width(42)
             .height(42)
