@@ -151,6 +151,6 @@ export struct MyNoteHomeComp {
   onBackPress() {
     LogUtil.info(this.TAG, "onBackPress")
     // 退出键盘
-    inputMethod.getInputMethodController().stopInput();
+    inputMethod.getController().stopInputSession();
   }
 }

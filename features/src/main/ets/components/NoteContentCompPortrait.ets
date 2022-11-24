@@ -402,11 +402,14 @@ export struct ToolBarComp {
               RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
               if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
                 this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
+                this.controllerShow.runJavaScript({
+                  script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                })
+                // save continue data
+                let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+                AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+                LogUtil.info(TAG, "ToolBarComp, set continue note success")
               }
-              // save continue data
-              let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-              AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-              LogUtil.info(TAG, 'ToolBarComp, set continue note success')
             })
           Image($r('app.media.delete')).height(24).width(24)
             .onClick(() => {
@@ -420,7 +423,7 @@ export struct ToolBarComp {
             Image($r('app.media.undo')).height(24).width(24)
               .onClick(() => {
                 // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
+                inputMethod.getController().stopInputSession();
                 this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
               })
           }.width(42)
@@ -432,7 +435,7 @@ export struct ToolBarComp {
             Image($r('app.media.todo')).height(24).width(24)
               .onClick(() => {
                 // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
+                inputMethod.getController().stopInputSession();
                 this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
               })
           }.width(42)

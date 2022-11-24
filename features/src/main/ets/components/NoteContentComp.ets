@@ -498,7 +498,7 @@ export struct ToolBarComp {
               LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
               this.controllerShow.runJavaScript({ script: "saveHtmlContent()" })
               //退出键盘
-              inputMethod.getInputMethodController().stopInput();
+              inputMethod.getController().stopInputSession();
               // 清除定时器
               if (timeId != undefined) {
                 LogUtil.info(TAG, "zoom, clearInterval timeId : " + timeId)
@@ -570,7 +570,7 @@ export struct ToolBarComp {
                   // 清单
                   this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
                   // 退出键盘
-                  inputMethod.getInputMethodController().stopInput();
+                  iinputMethod.getController().stopInputSession();
                 })
             }.width(42)
             .height(42)
@@ -583,7 +583,7 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(() => {
                   // 退出键盘
-                  inputMethod.getInputMethodController().stopInput();
+                  inputMethod.getController().stopInputSession();
                   this.closeEditContentDialog = false
                   this.editContentDialogCtl.open()
                 })
@@ -598,7 +598,7 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(async () => {
                   // 退出键盘
-                  inputMethod.getInputMethodController().stopInput();
+                  inputMethod.getController().stopInputSession();
                   LogUtil.info(TAG, 'startAbility start')
                   await globalThis.noteContext.startAbilityForResult({
                     parameters: { uri: "singleselect" },
@@ -639,7 +639,7 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(() => {
                   // 退出键盘
-                  inputMethod.getInputMethodController().stopInput();
+                  inputMethod.getController().stopInputSession();
                   this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
                 })
             }.width(42)
@@ -653,7 +653,7 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(() => {
                   // 退出键盘
-                  inputMethod.getInputMethodController().stopInput();
+                  inputMethod.getController().stopInputSession();
                   this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
                 })
             }.width(42)

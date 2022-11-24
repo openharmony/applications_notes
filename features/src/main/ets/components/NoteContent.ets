@@ -295,14 +295,14 @@ export struct ToolBarComp {
               .width(24)
               .onClick(() => {
                 // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
+                inputMethod.getController().stopInputSession();
                 // 清单
                 this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
               })
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.font_style'))
@@ -310,7 +310,7 @@ export struct ToolBarComp {
               .width(24)
               .onClick(() => {
                 // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
+                inputMethod.getController().stopInputSession();
                 LogUtil.info(TAG, 'editContentDialogCtl start')
                 this.closeEditContentDialog = false
                 this.editContentDialogCtl.open()
@@ -318,13 +318,13 @@ export struct ToolBarComp {
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.picture_white')).height(24).width(24)
               .onClick(async () => {
                 // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
+                inputMethod.getController().stopInputSession();
                 LogUtil.info(TAG, 'startAbility start')
                 await globalThis.noteContext.startAbilityForResult({
                   parameters: { uri: "singleselect" },
@@ -356,7 +356,7 @@ export struct ToolBarComp {
           }.width(42)
           .height(42)
           .borderRadius(8)
-          .backgroundColor($r('app.color.color_ffffff'))
+          .backgroundColor($r('app.color.color_fffffB'))
 
 
           Button({ type: ButtonType.Normal, stateEffect: true }) {
@@ -365,7 +365,7 @@ export struct ToolBarComp {
               .width(24)
               .onClick(() => {
                 // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
+                inputMethod.getController().stopInputSession();
                 this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
               })
           }.width(42)
@@ -379,7 +379,7 @@ export struct ToolBarComp {
               .width(24)
               .onClick(() => {
                 // 退出键盘
-                inputMethod.getInputMethodController().stopInput();
+                inputMethod.getController().stopInputSession();
                 this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
               })
           }.width(42)

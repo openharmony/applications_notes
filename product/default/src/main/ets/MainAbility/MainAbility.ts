@@ -101,7 +101,7 @@ export default class MainAbility extends Ability {
     onBackground() {
         LogUtil.info(this.Tag, " onBackground")
         // 退出键盘
-        inputMethod.getInputMethodController().stopInput();
+        inputMethod.getController().stopInputSession();
     }
 
     onContinue(wantParam: { [key: string]: any }) {
