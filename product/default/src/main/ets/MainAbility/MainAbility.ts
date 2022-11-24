@@ -23,7 +23,6 @@ import { atob } from 'js-base64'
 import display from '@ohos.display';
 import window from '@ohos.window';
 
-
 globalThis.rdbStore = undefined
 
 export default class MainAbility extends Ability {
@@ -33,11 +32,12 @@ export default class MainAbility extends Ability {
         // @ts-ignore
         window.getLastWindow(this.context,(err,data)=>{
             let windowWidth = data.getWindowProperties().windowRect.width
+            LogUtil.info(this.Tag, " getLastWindow：" + windowWidth)
             this.screenBreakPoints(windowWidth)
         })
         AppStorage.SetOrCreate<boolean>('closeEditContentDialog', true)
-        LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason)
-        LogUtil.info(this.Tag, " onCreate, deviceType" + deviceInfo.deviceType)
+        LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason +
+            ", deviceType" + deviceInfo.deviceType)
         if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
             AppStorage.SetOrCreate<boolean>('Expand', false)
             AppStorage.SetOrCreate<boolean>('Choose', true)
@@ -203,6 +203,7 @@ export default class MainAbility extends Ability {
         displayClass = display.getDefaultDisplaySync()
         screenDpi = displayClass.densityDPI
         let windowWidth = data / (screenDpi / 160)
+        LogUtil.debug(this.Tag, " screenBreakPoints windowWidth: " + windowWidth)
         if (windowWidth >= 320 && windowWidth < 520 || windowWidth < 320) {
             AppStorage.SetOrCreate('breakPoint', 'sm')
         } else if (windowWidth >= 520 && windowWidth < 840) {
