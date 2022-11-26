@@ -235,6 +235,7 @@ export struct NoteItemComp {
               .width(4)
               .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.Get('AllFolderArray'), this.noteItem.folder_uuid))
             Text(this.noteItem.title)
+              .fontSize(16)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
