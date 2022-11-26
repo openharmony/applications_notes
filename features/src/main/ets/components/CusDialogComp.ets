@@ -438,11 +438,11 @@ export struct EditContentDialog {
           .backgroundColor($r('app.color.color_ffffff'))
 
           Button({ type: ButtonType.Normal }) {
-            Image($r('app.media.right_justify'))
+            Image($r('app.media.left_justify'))
               .height(24)
               .width(24)
               .onClick(() => {
-                this.confirm("javascript:RICH_EDITOR.setJustifyRight()")
+                this.confirm("javascript:RICH_EDITOR.setJustifyLeft()")
               })
           }.width(42)
           .height(42)
@@ -462,11 +462,11 @@ export struct EditContentDialog {
           .backgroundColor($r('app.color.color_ffffff'))
 
           Button({ type: ButtonType.Normal }) {
-            Image($r('app.media.left_justify'))
+            Image($r('app.media.right_justify'))
               .height(24)
               .width(24)
               .onClick(() => {
-                this.confirm("javascript:RICH_EDITOR.setJustifyLeft()")
+                this.confirm("javascript:RICH_EDITOR.setJustifyRight()")
               })
           }.width(42)
           .height(42)
