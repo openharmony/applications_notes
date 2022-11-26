@@ -222,7 +222,7 @@ export struct NoteContentCompPortrait {
         .width(StyleConstants.PERCENTAGE_100)
       }
       .flexShrink(1)
-      .margin({ left: 24, right: 24 })
+      .padding({ left: 24, right: 24 })
 
       EditNoteCompForPortrait({ controllerShow: this.controllerShow })
       DeleteNoteComp()
@@ -391,7 +391,7 @@ export struct ToolBarComp {
       Image($r('app.media.back'))
         .height(24)
         .width(24)
-        .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+        .responseRegion({ width: 54, height: 54 })
         .onClick(() => {
           this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
           // 清除定时器
