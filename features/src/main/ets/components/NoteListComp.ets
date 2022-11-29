@@ -829,6 +829,7 @@ export struct OperateNoteCompForPortrait {
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
+    NoteUtil.refreshAll()
   }
 
   noteDataDeleteDialogCtlBottom: CustomDialogController = new CustomDialogController({
@@ -865,6 +866,7 @@ export struct OperateNoteCompForPortrait {
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "OperateNoteCompForPortrait, set continue note success")
+    NoteUtil.refreshAll()
   }
 
   build() {
@@ -983,6 +985,7 @@ export struct OperateNoteCompForPortrait {
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               AppStorage.SetOrCreate('isUpdate', true)
+              NoteUtil.refreshAll()
             })
           Text($r("app.string.recover"))
             .fontSize(10)

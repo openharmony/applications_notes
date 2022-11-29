@@ -400,6 +400,7 @@ export struct ToolBarComp {
             clearInterval(time_id)
           }
           router.back()
+          NoteUtil.refreshAll()
         })
 
       if (this.editModel == false) {
