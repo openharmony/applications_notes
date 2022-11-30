@@ -18,7 +18,6 @@
     "name": "resources",
     "type": "har",
     "deviceTypes": [
-      "phone",
       "tablet"
     ],
     "uiSyntax": "ets"

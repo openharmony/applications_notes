@@ -18,7 +18,6 @@
     "name": "utils",
     "type": "har",
     "deviceTypes": [
-      "phone",
       "tablet"
     ],
     "uiSyntax": "ets"
