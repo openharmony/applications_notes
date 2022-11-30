@@ -192,7 +192,7 @@ export struct NoteItemComp {
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
       Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
-        Text(this.refreshFlag.toString()).visibility(Visibility.None) // 用于强制刷新使用
+        Text(JSON.stringify(this.refreshFlag)).visibility(Visibility.None) // 用于强制刷新使用
         Column({ space: 2 }) {
           Row({ space: 8 }) {
             Image($r("app.media.verticalBar"))

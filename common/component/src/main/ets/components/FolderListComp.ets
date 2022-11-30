@@ -369,7 +369,7 @@ struct FolderItemComp {
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .flexShrink(1)
               .fontColor(FolderUtil.getFolderTextColor(this.selectedFolderData.uuid == this.folderItem.uuid))
-            Text(this.refreshFlag.toString())
+            Text(JSON.stringify(this.refreshFlag))
               .visibility(Visibility.None) // 用于强制刷新使用
           }.width(118)
 
@@ -426,7 +426,7 @@ struct FolderItemComp {
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .flexShrink(1)
               .fontColor(FolderUtil.getFolderTextColor(this.selectedFolderData.uuid == this.folderItem.uuid))
-            Text(this.refreshFlag.toString())
+            Text(JSON.stringify(this.refreshFlag))
               .visibility(Visibility.None) // 用于强制刷新使用
           }.width(118)
 
