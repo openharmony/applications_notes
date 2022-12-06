@@ -200,8 +200,14 @@ export default {
           let title = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.Title))
           let uuid = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.Uuid))
           let folder_uuid = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.FolderUuid))
-          let content_text = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.ContentText))
-          let content_img = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.ContentImg))
+          let content_text = '';
+          let content_img = '';
+          try {
+            content_text = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.ContentText))
+            content_img = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.ContentImg))
+          } catch (err) {
+            LogUtil.error(TAG, "initAppStorage, content_img = error : " + err)
+          }
           let noteType = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.NoteType))
           let is_top = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.IsTop))
           let is_favorite = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.IsFavorite))

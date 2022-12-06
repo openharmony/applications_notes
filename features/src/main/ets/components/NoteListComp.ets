@@ -35,6 +35,7 @@ import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/Sear
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import router from '@system.router';
 import rs from '@ohos.resourceManager'
+import inputMethod from '@ohos.inputmethod';
 
 const TAG = "NoteListComp"
 
@@ -218,11 +219,18 @@ export struct NoteItemComp {
   @State isChecked: boolean = undefined
   @Consume('Longpress')@Watch('isLongPress') longpress: boolean
   @StorageLink('isUpdate') isUpdate: boolean = false
+
   isLongPress(){
     if(this.longpress){
       this.isChecked = false
     }
   }
+
+  updateAndGetChecked() {
+    this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)
+    return this.isChecked
+  }
+
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
       Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
@@ -264,6 +272,7 @@ export struct NoteItemComp {
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Stack({ alignContent: Alignment.Center }) {
           Image(this.noteItem.content_img)
+            .id(this.isUpdate+'')
             .height(47)
             .width(47)
             .borderRadius(12)
@@ -278,7 +287,8 @@ export struct NoteItemComp {
           Image($r("app.media.checked"))
             .width(24)
             .height(24)
-            .visibility(this.isChecked ? Visibility.Visible : Visibility.None)
+            .visibility(this.updateAndGetChecked() ? Visibility.Visible : Visibility.None)
+            .id(this.isUpdate+'')
         }.width(24)
         .height(24)
         .visibility(this.longpress ? Visibility.Visible : Visibility.None)
@@ -303,17 +313,18 @@ export struct NoteItemComp {
     .onClick(() => {
       if (this.search) {
         this.search = false
+        AppStorage.SetOrCreate<boolean>('Search', this.search)
         return
       }
       if (this.longpress) {
         if (NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)) {
           NoteUtil.unsetNoteChecked(this.CheckedNoteArray, this.noteItem)
           this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-          this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem) ? true : false
+          this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)
         } else {
           NoteUtil.setNoteChecked(this.CheckedNoteArray, this.noteItem)
           this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-          this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem) ? true : false
+          this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)
         }
         return;
       } else {
@@ -376,6 +387,7 @@ export struct NoteItemListComp {
       this.dateList = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     }
     this.isUpdate = false
+    this.doSearch()
   }
 
   aboutToAppear() {
@@ -383,6 +395,9 @@ export struct NoteItemListComp {
   }
 
   doSearch() {
+    if (this.inputKeyword.length == 0) {
+      return
+    }
     SearchModel.search(NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid), this.inputKeyword)
       .then((result: NoteData[]) => {
         LogUtil.info(TAG, "result size " + result.length.toString())
@@ -464,7 +479,7 @@ export struct NoteItemListComp {
             .margin((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? {
                                                                                                                      bottom: 0
                                                                                                                    } : {
-                                                                                                                         bottom: 130
+                                                                                                                         bottom: 56
                                                                                                                        })
             .layoutWeight(1)
             .listDirection(Axis.Vertical)
@@ -489,6 +504,7 @@ export struct NoteItemListComp {
     }
     .onClick(() => {
       this.search = false
+      AppStorage.SetOrCreate<boolean>('Search', this.search)
     })
   }
 }
@@ -503,6 +519,7 @@ export struct OperateNoteComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('PortraitModel') portraitModel: boolean
   @Consume('selectedAll') selectedAll: boolean
+  @StorageLink('isUpdate') isUpdate: boolean = false
   controllerShow: WebController
   noteDataMoveDialogCtl: CustomDialogController = new CustomDialogController({
     builder: NoteDataMoveDialog({ onConfirm: this.onMoveConfirm.bind(this) }),
@@ -530,6 +547,7 @@ export struct OperateNoteComp {
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
+    NoteUtil.refreshAll()
   }
 
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
@@ -648,19 +666,21 @@ export struct OperateNoteComp {
       Image(this.CheckedNoteArray.length == NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length ? $r('app.media.check_all1') : $r('app.media.check_all'))
         .width(24)
         .height(24)
+        .id(this.isUpdate + '')
         .onClick(() => {
+          LogUtil.info(TAG, "select all click")
           if (this.CheckedNoteArray.length <
-          NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-            .length) {
+          NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length) {
             NoteUtil.setAllNotesChecked(this.CheckedNoteArray, NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid))
           } else {
             NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           }
           this.selectedAll = !this.selectedAll
           this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+          NoteUtil.refreshAll()
         })
     }
-    .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 120 : 248)
+    .width(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 168 : 248)
     .visibility(this.longpress && this.portraitModel == false ? Visibility.Visible : Visibility.None)
   }
 }
@@ -737,6 +757,10 @@ export struct SearchComp {
         .visibility(this.search ? Visibility.Visible : Visibility.None)
         .onClick(() => {
           this.search = false
+          // 退出键盘
+          // @ts-ignore
+          inputMethod.getController().stopInputSession()
+          AppStorage.SetOrCreate<boolean>('Search', this.search)
         })
 
       Flex({ justifyContent: FlexAlign.Start }) {
@@ -760,8 +784,10 @@ export struct SearchComp {
           .onClick(() => {
             if (this.longpress) {
               this.search = false
+              AppStorage.SetOrCreate<boolean>('Search', this.search)
             } else {
               this.search = true
+              AppStorage.SetOrCreate<boolean>('Search', this.search)
             }
           })
             // whether the focus is on the search input before coutinue
@@ -796,6 +822,7 @@ export struct OperateNoteCompForPortrait {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('PortraitModel') portraitModel: boolean
   @State greyOpacity: boolean = false
+  @StorageLink('isUpdate') isUpdate: boolean = false
   noteDataMoveDialogCtlBottom: CustomDialogController = new CustomDialogController({
     builder: NoteDataMoveDialog({ onConfirm: this.onMoveConfirm.bind(this) }),
     alignment: DialogAlignment.Bottom,
@@ -889,6 +916,7 @@ export struct OperateNoteCompForPortrait {
               this.longpress = false
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
+              NoteUtil.refreshAll()
             })
           Text($r("app.string.set_top"))
             .opacity(this.greyOpacity ? 0.4 : 1)
@@ -1005,6 +1033,7 @@ export struct OperateNoteCompForPortrait {
           .width(24)
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+          .id(this.isUpdate + '')
           .onClick(() => {
             if (this.CheckedNoteArray.length <
             NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
@@ -1014,6 +1043,7 @@ export struct OperateNoteCompForPortrait {
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             }
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+            NoteUtil.refreshAll()
           })
         Text($r("app.string.check_all"))
           .fontSize(10)

@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import util from '@ohos.util'
 import {LogUtil} from '../../baseUtil/LogUtil'
 import NoteData from '../../model/databaseModel/NoteData'
 import ohosDataRdb from '@ohos.data.rdb';
@@ -21,6 +20,7 @@ import {TableName, NoteTableColumn} from '../../model/databaseModel/EnumData'
 import NoteUtil from '../../baseUtil/NoteUtil'
 import RdbStoreUtil from '../../baseUtil/RdbStoreUtil'
 import SysDefData from '../../model/databaseModel/SysDefData'
+import util from '@ohos.util'
 
 const TAG = "SearchModel"
 
@@ -41,7 +41,7 @@ export class SearchModel {
       LogUtil.info(TAG, "query is null")
       return []
     }
-    let searchData: NoteData[] = []
+    let searchData: NoteData[] = [];
     noteDataArray.forEach((noteData) => {
       let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
       let contentTextValue: string

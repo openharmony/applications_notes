@@ -54,7 +54,6 @@ export struct NoteContentComp {
   @Consume('LastSectionStatus') lastSectionStatus: number
   @Consume('Issave') issave: number
   @Consume('Search') search: boolean
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   private editContentFlag = false
   @State uri1: string = ""
@@ -260,9 +259,7 @@ export struct NoteContentComp {
               clearInterval(timeId)
             }
             timeId = setInterval(() => {
-              if (this.closeEditContentDialog) {
                 this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
-              }
             }, 3000)
             LogUtil.info(TAG, "setInterval timeId : " + timeId)
             // save continue data
@@ -335,6 +332,7 @@ export struct NoteContentOverViewComp {
     let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
     predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
     RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+    NoteUtil.refreshAll()
   }
 
   @Builder MenuBuilder() {
@@ -379,6 +377,7 @@ export struct NoteContentOverViewComp {
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
           Text(this.selectedNoteData.title)
+            .id(this.isUpdate+'')
             .fontSize(30)
             .margin({ left: 0, right: 24 })
             .onClick(() => {
@@ -442,7 +441,6 @@ export struct ToolBarComp {
   @Consume('Issave') issave: number
   controllerShow: WebController
   private context = getContext(this)
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
     alignment: DialogAlignment.Center,
@@ -481,12 +479,7 @@ export struct ToolBarComp {
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
-    cancel: this.exisApp
   })
-
-  exisApp() {
-    this.closeEditContentDialog = true
-  }
 
   confirm(excuteJs: string) {
     this.controllerShow.runJavaScript({ script: excuteJs })
@@ -527,6 +520,7 @@ export struct ToolBarComp {
           // save continue data
           AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
           LogUtil.info(TAG, "ToolBarComp, set continue section success")
+          NoteUtil.refreshAll()
         })
         .visibility(!this.selectedNoteData ? Visibility.None : this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
 
@@ -602,7 +596,6 @@ export struct ToolBarComp {
                   // 退出键盘
                   // @ts-ignore
                   inputMethod.getController().stopInputSession();
-                  this.closeEditContentDialog = false
                   this.editContentDialogCtl.open()
                 })
             }.width(42)
@@ -644,6 +637,7 @@ export struct ToolBarComp {
                           })
                         }
                       }
+                      NoteUtil.refreshAll()
                     });
                 })
             }.width(42)

@@ -19,6 +19,7 @@ import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import { circleColorArray, fontColorArray, SysDefFolderUuid, DeleteFileType, FolderType, LogUtil } from '@ohos/utils'
+import inputMethod from '@ohos.inputmethod'
 
 const TAG = "CusDialogComp"
 
@@ -98,6 +99,8 @@ export struct NewOrEditFolderDialog {
           .width('48%')
           .onClick(() => {
             this.newOrEditFolderDialogCtl.close()
+            // @ts-ignore
+            inputMethod.getController().stopInputSession();
           })
         Divider()
           .vertical(true)
@@ -120,6 +123,8 @@ export struct NewOrEditFolderDialog {
           .onClick(() => {
             this.newOrEditFolderDialogCtl.close()
             this.confirm(this.selectedColor, this.inputName)
+            // @ts-ignore
+            inputMethod.getController().stopInputSession();
           })
       }.width('100%')
       .margin({ top: 21, bottom: 25 })
@@ -391,7 +396,6 @@ export struct EditContentDialog {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   private circleColor: string
   private fontSize: number
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
 
   aboutToAppear() {
     this.confirm("javascript:RICH_EDITOR.getFontSizes()")
@@ -579,7 +583,6 @@ export struct EditContentDialog {
             .fillColor('#99182431')
             .onClick(() => {
               this.editContentDialogCtl.close()
-              this.closeEditContentDialog = true
             })
         }
         .height(36)
@@ -656,7 +659,7 @@ export struct EditTitleDialog {
   editTitleDialog: CustomDialogController
   confirm: (newTitle: string) => void
   @State inputName: string = ""
-  private isEquivalentVal: boolean= true
+  @State isEquivalentVal: boolean= true
 
 
   build() {
@@ -675,10 +678,10 @@ export struct EditTitleDialog {
           .backgroundColor($r("app.color.title_input_bg_color"))
           .width('90%')
           .onChange((value: string) => {
-            if (this.inputName == value) {
+            let reg = /^\S+$/
+            if (this.inputName == value && reg.test(value)) {
               this.isEquivalentVal = true
-            }
-            else {
+            } else {
               this.isEquivalentVal = false
             }
             this.inputName = value
@@ -696,6 +699,8 @@ export struct EditTitleDialog {
           .width('48%')
           .onClick(() => {
             this.editTitleDialog.close()
+            // @ts-ignore
+            inputMethod.getController().stopInputSession();
           })
         Divider()
           .vertical(true)
@@ -712,6 +717,8 @@ export struct EditTitleDialog {
           .onClick(() => {
             this.editTitleDialog.close()
             this.confirm(this.inputName)
+            // @ts-ignore
+            inputMethod.getController().stopInputSession();
           })
       }.width('100%')
       .margin({ top: 21, bottom: 25 })
@@ -730,7 +737,6 @@ export struct EditContentDialogPortrait {
   confirm: (excuteJs: string) => void
   @State selectFontColor: string = fontColorArray[0]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   private circleColor: string
   private fontSize: number
 
@@ -748,7 +754,6 @@ export struct EditContentDialogPortrait {
           .fillColor($r("app.color.font_stylecolor_AD182431"))
           .onClick(() => {
             this.editContentDialogCtl.close()
-            this.closeEditContentDialog = true
           })
       }
       .height(48)

@@ -75,7 +75,7 @@ export struct NoteHomePortraitComp {
         .width("100%")
         .backgroundColor("#18181A")
         .opacity(0.2)
-        .visibility(this.expandStatus ? Visibility.Visible : Visibility.Hidden)
+        .visibility(this.expandStatus ? Visibility.Visible : Visibility.None)
       }
     }
     .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)
