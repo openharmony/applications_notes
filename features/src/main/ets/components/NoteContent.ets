@@ -353,7 +353,7 @@ export struct ToolBarComp {
                           })
                           this.issave = 1
                           // 保存笔记信息到数据库
-                          this.controllerShow.runJavaScript({script:"getHtmlContent"})
+                          this.controllerShow.runJavaScript({script:"getHtmlContent()"})
                         })
                       }
                     }

@@ -60,7 +60,7 @@ export struct NoteContentComp {
   private context = getContext(this)
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
   @StorageLink('isUpdate') isUpdate: boolean = false
-  @StorageLink('refreshCurrentNote')@Watch('isDatacChange') refreshCurrentNote: boolean = false
+  @StorageLink('refreshCurrentNote')@Watch('isDataChange') refreshCurrentNote: boolean = false
 
   isDataChange() {
     if (!this.refreshCurrentNote) {
@@ -646,7 +646,7 @@ export struct ToolBarComp {
                             })
                             this.issave = 1
                             // 保存笔记信息到数据库
-                            this.controllerShow.runJavaScript({script:"getHtmlContent"})
+                            this.controllerShow.runJavaScript({script:"getHtmlContent()"})
                           })
                         }
                       }
