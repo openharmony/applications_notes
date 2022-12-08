@@ -394,6 +394,7 @@ export struct ToolBarComp {
         .width(24)
         .responseRegion({ width: 54, height: 54 })
         .onClick(() => {
+          inputMethod.getController().stopInputSession()
           this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
           // 清除定时器
           if (time_id != undefined) {
@@ -463,6 +464,7 @@ export struct ToolBarComp {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.tick_thin')).height(24).width(24)
               .onClick(() => {
+                inputMethod.getController().stopInputSession()
                 // 保存笔记信息到数据库
                 this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
                 this.editModel = false
