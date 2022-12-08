@@ -44,7 +44,6 @@ var timeID: number
 
 @Component
 export struct NoteContent {
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('NewNote')
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Provide('Issave') issave: number = 0
@@ -202,23 +201,21 @@ export struct NoteContent {
             .onScroll((event) => {
               this.storeScrollTop(event.yOffset)
             })
+            .onClick(() => {
+              // 添加定时器：3s自动保存
+              if (timeID) {
+                clearInterval(timeID)
+              }
+              timeID = setInterval(() => {
+                  this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+              }, 3000)
+              LogUtil.info(TAG, "setInterval timeID : " + timeID)
+              this.issave = 0
+              this.editModel = true
+            })
         }
         .margin({ left: 12, right: 24, top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
-        .onClick(() => {
-          // 添加定时器：3s自动保存
-          if (timeID) {
-            clearInterval(timeID)
-          }
-          timeID = setInterval(() => {
-            if (this.closeEditContentDialog) {
-              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
-            }
-          }, 3000)
-          LogUtil.info(TAG, "setInterval timeID : " + timeID)
-          this.issave = 0
-          this.editModel = true
-        })
       }
       .height(StyleConstants.PERCENTAGE_100)
     }
@@ -238,7 +235,6 @@ export struct NoteContent {
 
 @Component
 export struct ToolBarComp {
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Consume('Issave') issave: number
@@ -249,12 +245,7 @@ export struct ToolBarComp {
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
-    cancel: this.existApp
   })
-
-  existApp() {
-    this.closeEditContentDialog = true
-  }
 
   confirm(excuteJs: string) {
     this.controllerShow.runJavaScript({ script: excuteJs })
@@ -275,6 +266,7 @@ export struct ToolBarComp {
             clearInterval(timeID)
           }
           router.back()
+          NoteUtil.refreshAll()
         })
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
 
@@ -323,7 +315,6 @@ export struct ToolBarComp {
                 // @ts-ignore
                 inputMethod.getController().stopInputSession();
                 LogUtil.info(TAG, 'editContentDialogCtl start')
-                this.closeEditContentDialog = false
                 this.editContentDialogCtl.open()
               })
           }.width(42)
@@ -360,6 +351,9 @@ export struct ToolBarComp {
                           this.controllerShow.runJavaScript({
                             script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
                           })
+                          this.issave = 1
+                          // 保存笔记信息到数据库
+                          this.controllerShow.runJavaScript({script:"getHtmlContent()"})
                         })
                       }
                     }
@@ -447,6 +441,7 @@ export struct NoteContentOverViewComp {
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "NoteContentOverViewComp confirm, set continue note success")
+    NoteUtil.refreshAll()
   }
 
   @Builder MenuBuilder() {
@@ -465,6 +460,7 @@ export struct NoteContentOverViewComp {
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
             LogUtil.info(TAG, "NoteContentOverViewComp MenuBuilder, set continue note success")
+            NoteUtil.refreshAll()
           })
         }, noteItem => JSON.stringify(noteItem))
       }.listDirection(Axis.Vertical)
@@ -482,6 +478,7 @@ export struct NoteContentOverViewComp {
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
           Text(this.selectedNoteData.title)
+            .id(this.isUpdate+'')
             .fontSize(30)
             .margin({ left: 12, right: 24 })
             .onClick(() => {

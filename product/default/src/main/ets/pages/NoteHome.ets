@@ -38,7 +38,7 @@ export struct NoteHomeComp {
   @Provide('Longpress') longpress: boolean = false // 第二栏长按状态
   @Provide('ExpandStatus') expandStatus: boolean = false // 笔记本折叠展开状态
   @Provide('ChooseNote') chooseNote: boolean = true // 是否选择笔记进行打开
-  @Provide('Search') search: boolean = false // 是否处于搜索状态
+  @Provide('Search') search: boolean = AppStorage.Get('Search') // 是否处于搜索状态
   @Provide('SearchResultList') searchResultList: NoteData[] = [] // 搜索得到的笔记列表
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串
   @Provide('SelectedAll') selectedAll: boolean = false
@@ -160,7 +160,7 @@ export struct NoteHomeComp {
     let continueFromPhone = AppStorage.Get<boolean>('ContinueFromPhone')
     LogUtil.info(this.TAG, "aboutToAppear, continueFromPhone : " + continueFromPhone)
     if (continueFromPhone) {
-      this.sectionStatus = 3
+      this.sectionStatus = 1
     }
     // save continue data
     AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)

@@ -35,9 +35,7 @@ export default class MainAbility extends Ability {
             LogUtil.info(this.Tag, " getLastWindow：" + windowWidth)
             this.screenBreakPoints(windowWidth)
         })
-        AppStorage.SetOrCreate<boolean>('closeEditContentDialog', true)
-        LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason +
-            ", deviceType" + deviceInfo.deviceType)
+        LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason + ", deviceType" + deviceInfo.deviceType)
         if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
             AppStorage.SetOrCreate<boolean>('Expand', false)
             AppStorage.SetOrCreate<boolean>('Choose', true)
@@ -46,11 +44,13 @@ export default class MainAbility extends Ability {
             // 设置迁移标记
             AppStorage.SetOrCreate<boolean>('IsContinue', true)
             // 获取对端的迁移数据
+            let Search: boolean = want.parameters["Search"]
             let continueNote: string = want.parameters["ContinueNote"]
             let continueSection: number = want.parameters["ContinueSection"]
             let scrollTopPercent: number = want.parameters["ScrollTopPercent"]
             let isFocusOnSearch: boolean = want.parameters["isFocusOnSearch"]
             LogUtil.info(this.Tag, " continueSection : " + continueSection)
+            AppStorage.SetOrCreate<boolean>('Search', Search)
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
             AppStorage.SetOrCreate<number>('ContinueSection', continueSection)
             // 使用新的key保存数据，防止迁移过来的数据在使用前被本地操作覆盖
@@ -108,6 +108,7 @@ export default class MainAbility extends Ability {
     onContinue(wantParam: { [key: string]: any }) {
         LogUtil.info(this.Tag, " onContinue")
         // 获取本端的迁移数据
+        let Search = AppStorage.Get<boolean>('Search')
         let continueNote = AppStorage.Get<string>('ContinueNote')
         if (continueNote == undefined || continueNote == null) {
             LogUtil.info(this.Tag, " onContinue, continueNote is error, default [0]")
@@ -134,6 +135,7 @@ export default class MainAbility extends Ability {
         }
 
         // 保存本端的迁移数据
+        wantParam["Search"] = Search
         wantParam["ContinueNote"] = continueNote
         wantParam["ContinueSection"] = continueSection
         wantParam["ScrollTopPercent"] = scrollTopPercent

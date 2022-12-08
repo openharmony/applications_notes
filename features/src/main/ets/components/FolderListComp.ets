@@ -76,7 +76,8 @@ export struct FolderListComp {
               }
             }
           }, folderItem => folderItem.name.toString())
-        }.width('100%').height(450)
+        }.width('100%').height(500)
+        .margin({ bottom: 120 })
         .padding({ left: 12, right: 12 })
         .flexGrow(1)
       }
@@ -176,7 +177,7 @@ struct FolderItemComp {
   @Consume('SelectedColor') selectedColor: string
   @Consume('PortraitModel') portraitModel: boolean
   controllerShow: WebController
-  private isLongPress: boolean = false
+  @State isLongPress: boolean = false
   TAG = "FolderListComp"
   @StorageLink('isUpdate') isUpdate: boolean = false
   // Folder Edit Dialog

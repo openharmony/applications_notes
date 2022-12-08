@@ -73,7 +73,7 @@ RICH_EDITOR.getListStyle = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'OL') {
                 console.info('insertOrderedList');
@@ -111,7 +111,7 @@ RICH_EDITOR.setNumbers = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'OL') {
                 child.style['list-style'] = 'decimal';
@@ -142,7 +142,7 @@ RICH_EDITOR.setABC = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'OL') {
                 child.style['list-style'] = 'lower-alpha';
@@ -173,7 +173,7 @@ RICH_EDITOR.setBullets = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'UL') {
                 child.style['list-style'] = 'disc';
@@ -204,7 +204,7 @@ RICH_EDITOR.setSquare = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'UL') {
                 child.style['list-style'] = 'square';

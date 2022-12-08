@@ -84,6 +84,7 @@ export class NoteUtil {
     LogUtil.info(TAG, "setAllNotesChecked")
     this.unsetAllNotesChecked(checkedNoteArray)
     checkedNoteArray.push(...noteArray)
+    AppStorage.Set('CheckedNoteArray', checkedNoteArray)
   }
 
   /**
@@ -94,6 +95,7 @@ export class NoteUtil {
   unsetAllNotesChecked(checkedNoteArray: NoteData[]) {
     LogUtil.info(TAG, "unsetAllNotesChecked")
     checkedNoteArray.splice(0, checkedNoteArray.length)
+    AppStorage.Set('CheckedNoteArray', checkedNoteArray)
   }
 
   /**

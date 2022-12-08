@@ -56,7 +56,6 @@ export struct NoteContentCompPortrait {
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get("NewFolder")
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Provide('EditModel') editModel: boolean = false
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   private editContentFlag = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
@@ -211,9 +210,7 @@ export struct NoteContentCompPortrait {
           }
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
-            if (this.closeEditContentDialog) {
               this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
-            }
           }, 3000)
           LogUtil.info(TAG, "setInterval time_id : " + time_id)
           this.editModel = true
@@ -270,6 +267,7 @@ export struct NoteContentOverViewComp {
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, 'NoteContentOverViewComp, MenuBuilder, set continue note success')
+    NoteUtil.refreshAll()
   }
 
   @Builder MenuBuilder() {
@@ -289,6 +287,7 @@ export struct NoteContentOverViewComp {
               let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
               AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
               LogUtil.info(TAG, 'MenuBuilder, set continue note success')
+              NoteUtil.refreshAll()
             })
           }, noteItem => noteItem.uuid)
         }
@@ -308,7 +307,9 @@ export struct NoteContentOverViewComp {
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
-          Text(this.selectedNoteData.title).fontSize(30).fontWeight(FontWeight.Medium)
+          Text(this.selectedNoteData.title)
+            .id(this.isUpdate+'')
+            .fontSize(30).fontWeight(FontWeight.Medium)
             .onClick(() => {
               clearInterval(time_id)
               this.editTitleDialogCtl.open()
@@ -586,19 +587,13 @@ export struct EditNoteCompForPortrait {
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('SelectedNoteData') selectedNoteData: NoteData;
   @Consume('EditModel') editModel: boolean
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditContentDialogPortrait({ confirm: this.confirm.bind(this) }),
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
-    cancel: this.exissApp
   })
-
-  exissApp() {
-    this.closeEditContentDialog = true
-  }
 
   confirm(excuteJs: string) {
     this.controllerShow.runJavaScript({ script: excuteJs })
@@ -631,7 +626,6 @@ export struct EditNoteCompForPortrait {
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
           .onClick(() => {
-            this.closeEditContentDialog = false
             this.editContentDialogCtl.open()
           })
         Text($r("app.string.style"))

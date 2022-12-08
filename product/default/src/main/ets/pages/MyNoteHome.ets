@@ -126,7 +126,6 @@ export struct MyNoteHomeComp {
 
   onPageShow(): void {
     LogUtil.info(this.TAG, "onPageShow")
-    if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
       // continue from tablet
       let continueFromTablet = AppStorage.Get<boolean>('ContinueFromTablet')
       LogUtil.info(this.TAG, "onPageShow, continueFromTablet : " + continueFromTablet)
@@ -136,15 +135,6 @@ export struct MyNoteHomeComp {
         router.push({ uri: 'pages/NoteContentHome' })
         AppStorage.SetOrCreate<boolean>('ContinueFromTablet', false)
       }
-    } else {
-      let currentNote = AppStorage.Get<NoteData>('NewNote')
-      let needRefresh = AppStorage.Get<boolean>('needRefresh')
-      if (currentNote != null && needRefresh == true) {
-        this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + currentNote.content_text + "')" })
-        AppStorage.SetOrCreate<boolean>('needRefresh', false)
-      }
-    }
-
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
   }
 

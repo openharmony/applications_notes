@@ -54,13 +54,21 @@ export struct NoteContentComp {
   @Consume('LastSectionStatus') lastSectionStatus: number
   @Consume('Issave') issave: number
   @Consume('Search') search: boolean
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   controllerShow: WebController
   private editContentFlag = false
   @State uri1: string = ""
   private context = getContext(this)
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
   @StorageLink('isUpdate') isUpdate: boolean = false
+  @StorageLink('refreshCurrentNote')@Watch('isDataChange') refreshCurrentNote: boolean = false
+
+  isDataChange() {
+    if (!this.refreshCurrentNote) {
+      return
+    }
+    this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"})
+    this.refreshCurrentNote = false
+  }
 
   storeScrollTop(scrollTop: number) {
     if (scrollTop < 0) {
@@ -260,9 +268,7 @@ export struct NoteContentComp {
               clearInterval(timeId)
             }
             timeId = setInterval(() => {
-              if (this.closeEditContentDialog) {
                 this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
-              }
             }, 3000)
             LogUtil.info(TAG, "setInterval timeId : " + timeId)
             // save continue data
@@ -335,6 +341,7 @@ export struct NoteContentOverViewComp {
     let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
     predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
     RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+    NoteUtil.refreshAll()
   }
 
   @Builder MenuBuilder() {
@@ -362,6 +369,7 @@ export struct NoteContentOverViewComp {
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
             LogUtil.info(TAG, "NoteContentOverViewComp, MenuBuilder, set continue note success")
+            NoteUtil.refreshAll()
           })
         }, noteItem => noteItem.uuid)
       }.listDirection(Axis.Vertical)
@@ -379,6 +387,7 @@ export struct NoteContentOverViewComp {
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
           Text(this.selectedNoteData.title)
+            .id(this.isUpdate+'')
             .fontSize(30)
             .margin({ left: 0, right: 24 })
             .onClick(() => {
@@ -442,7 +451,6 @@ export struct ToolBarComp {
   @Consume('Issave') issave: number
   controllerShow: WebController
   private context = getContext(this)
-  @StorageLink('closeEditContentDialog') closeEditContentDialog: boolean = AppStorage.Link('closeEditContentDialog')
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
     alignment: DialogAlignment.Center,
@@ -481,12 +489,7 @@ export struct ToolBarComp {
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
-    cancel: this.exisApp
   })
-
-  exisApp() {
-    this.closeEditContentDialog = true
-  }
 
   confirm(excuteJs: string) {
     this.controllerShow.runJavaScript({ script: excuteJs })
@@ -527,6 +530,7 @@ export struct ToolBarComp {
           // save continue data
           AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
           LogUtil.info(TAG, "ToolBarComp, set continue section success")
+          NoteUtil.refreshAll()
         })
         .visibility(!this.selectedNoteData ? Visibility.None : this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
 
@@ -602,7 +606,6 @@ export struct ToolBarComp {
                   // 退出键盘
                   // @ts-ignore
                   inputMethod.getController().stopInputSession();
-                  this.closeEditContentDialog = false
                   this.editContentDialogCtl.open()
                 })
             }.width(42)
@@ -641,9 +644,13 @@ export struct ToolBarComp {
                             this.controllerShow.runJavaScript({
                               script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
                             })
+                            this.issave = 1
+                            // 保存笔记信息到数据库
+                            this.controllerShow.runJavaScript({script:"getHtmlContent()"})
                           })
                         }
                       }
+                      NoteUtil.refreshAll()
                     });
                 })
             }.width(42)
