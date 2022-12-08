@@ -414,7 +414,7 @@ document.body.addEventListener('paste', (event) => {
 RICH_EDITOR.getFontSizes = function () {
     document.execCommand('fontSize', false, null);
     var fontElements = window.getSelection().anchorNode.parentNode;
-    var getSize = fontElements.style.fontSize;
+    var getSize = parseInt(window.getComputedStyle(fontElements, null).fontSize)
     var str = callBackToApp.callbackGetSize(getSize);
 };
 

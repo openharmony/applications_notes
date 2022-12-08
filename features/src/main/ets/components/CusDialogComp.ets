@@ -734,6 +734,10 @@ export struct EditContentDialogPortrait {
   private circleColor: string
   private fontSize: number
 
+  aboutToAppear() {
+    this.confirm("javascript:RICH_EDITOR.getFontSizes()")
+  }
+
   build() {
     Column() {
       Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
