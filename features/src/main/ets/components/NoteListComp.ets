@@ -355,10 +355,9 @@ export struct NoteItemComp {
     LongPressGesture()
       .onAction(() => {
         if (this.longpress == false) {
-          this.isChecked = false
           this.longpress = true
           NoteUtil.setNoteChecked(this.CheckedNoteArray, this.noteItem)
-          this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem) ? true : false
+          this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)
         }
       })
     )

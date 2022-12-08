@@ -351,6 +351,9 @@ export struct ToolBarComp {
                           this.controllerShow.runJavaScript({
                             script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
                           })
+                          this.issave = 1
+                          // 保存笔记信息到数据库
+                          this.controllerShow.runJavaScript({script:"getHtmlContent"})
                         })
                       }
                     }
@@ -457,6 +460,7 @@ export struct NoteContentOverViewComp {
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
             LogUtil.info(TAG, "NoteContentOverViewComp MenuBuilder, set continue note success")
+            NoteUtil.refreshAll()
           })
         }, noteItem => JSON.stringify(noteItem))
       }.listDirection(Axis.Vertical)

@@ -60,6 +60,15 @@ export struct NoteContentComp {
   private context = getContext(this)
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
   @StorageLink('isUpdate') isUpdate: boolean = false
+  @StorageLink('refreshCurrentNote')@Watch('isDatacChange') refreshCurrentNote: boolean = false
+
+  isDataChange() {
+    if (!this.refreshCurrentNote) {
+      return
+    }
+    this.controllerShow.runJavaScript({script:"RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"})
+    this.refreshCurrentNote = false
+  }
 
   storeScrollTop(scrollTop: number) {
     if (scrollTop < 0) {
@@ -360,6 +369,7 @@ export struct NoteContentOverViewComp {
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
             LogUtil.info(TAG, "NoteContentOverViewComp, MenuBuilder, set continue note success")
+            NoteUtil.refreshAll()
           })
         }, noteItem => noteItem.uuid)
       }.listDirection(Axis.Vertical)
@@ -634,6 +644,9 @@ export struct ToolBarComp {
                             this.controllerShow.runJavaScript({
                               script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
                             })
+                            this.issave = 1
+                            // 保存笔记信息到数据库
+                            this.controllerShow.runJavaScript({script:"getHtmlContent"})
                           })
                         }
                       }

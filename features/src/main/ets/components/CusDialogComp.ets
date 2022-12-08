@@ -678,8 +678,7 @@ export struct EditTitleDialog {
           .backgroundColor($r("app.color.title_input_bg_color"))
           .width('90%')
           .onChange((value: string) => {
-            let reg = /^\S+$/
-            if (this.inputName == value && reg.test(value)) {
+            if (this.inputName == value) {
               this.isEquivalentVal = true
             } else {
               this.isEquivalentVal = false
@@ -716,9 +715,13 @@ export struct EditTitleDialog {
           .width('48%')
           .onClick(() => {
             this.editTitleDialog.close()
-            this.confirm(this.inputName)
             // @ts-ignore
             inputMethod.getController().stopInputSession();
+            if (this.inputName.replace(/\s+/g,'') == '') {
+              return
+            } else {
+              this.confirm(this.inputName)
+            }
           })
       }.width('100%')
       .margin({ top: 21, bottom: 25 })

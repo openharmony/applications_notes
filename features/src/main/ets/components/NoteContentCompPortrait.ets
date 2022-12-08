@@ -287,6 +287,7 @@ export struct NoteContentOverViewComp {
               let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
               AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
               LogUtil.info(TAG, 'MenuBuilder, set continue note success')
+              NoteUtil.refreshAll()
             })
           }, noteItem => noteItem.uuid)
         }
