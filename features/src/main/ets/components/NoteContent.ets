@@ -153,6 +153,19 @@ export struct NoteContent {
       } else {
         LogUtil.info(TAG, 'paste info22223')
       }
+    },
+    callbackGetSize: (fontSize) => {
+      if (fontSize === 16) {
+        this.selectedNoteData.slider_value = 0
+      } else if (fontSize === 18) {
+        this.selectedNoteData.slider_value = 4
+      } else if (fontSize === 24) {
+        this.selectedNoteData.slider_value = 8
+      } else if (fontSize === 32) {
+        this.selectedNoteData.slider_value = 12
+      } else if (fontSize === 48) {
+        this.selectedNoteData.slider_value = 16
+      }
     }
   }
 
@@ -172,7 +185,7 @@ export struct NoteContent {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath"],
+              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath", "callbackGetSize"],
               controller: this.controllerShow
             })
             .onPageEnd((e) => {

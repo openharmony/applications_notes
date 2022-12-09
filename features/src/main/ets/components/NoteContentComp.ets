@@ -189,10 +189,17 @@ export struct NoteContentComp {
         LogUtil.info(TAG, 'paste info22225')
       }
     },
-
-    callbackGetSize: (size) => {
-      if (size) {
-        AppStorage.Set<number>('inSetValue', parseInt(size.slice(0, -2)) - 12)
+    callbackGetSize: (fontSize) => {
+      if (fontSize === 16) {
+        this.selectedNoteData.slider_value = 0
+      } else if (fontSize === 18) {
+        this.selectedNoteData.slider_value = 4
+      } else if (fontSize === 24) {
+        this.selectedNoteData.slider_value = 8
+      } else if (fontSize === 32) {
+        this.selectedNoteData.slider_value = 12
+      } else if (fontSize === 48) {
+        this.selectedNoteData.slider_value = 16
       }
     }
   }
