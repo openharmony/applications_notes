@@ -427,3 +427,54 @@ RICH_EDITOR.insertImageHtml = function (contents) {
     img.src = contents;
     selection.getRangeAt(0).insertNode(img);
 };
+
+document.getElementById('addToDo').addEventListener('click', () => {
+    callBackToApp.addToDo()
+})
+
+document.getElementById('chooseStyle').addEventListener('click', () => {
+    callBackToApp.chooseStyle()
+})
+
+document.getElementById('openAlbum').addEventListener('click', () => {
+    callBackToApp.openAlbum()
+})
+
+function changeSizeToRk() {
+    document.getElementById('editorjs').style.fontSize = '24px';
+    document.getElementById('img1').style.fontSize = '40px';
+    document.getElementById('img1').style.fontSize = '40px';
+    document.getElementById('img2').style.fontSize = '40px';
+    document.getElementById('img2').style.fontSize = '40px';
+    document.getElementById('img3').style.fontSize = '40px';
+    document.getElementById('img3').style.fontSize = '40px';
+    document.getElementById('lable1').style.fontSize = '20px';
+    document.getElementById('lable2').style.fontSize = '20px';
+    document.getElementById('lable3').style.fontSize = '20px';
+}
+
+function changeSizeToPhone() {
+    document.getElementById('editorjs').style.fontSize = '16px';
+    document.getElementById('img1').style.fontSize = '30px';
+    document.getElementById('img1').style.fontSize = '30px';
+    document.getElementById('img2').style.fontSize = '30px';
+    document.getElementById('img2').style.fontSize = '30px';
+    document.getElementById('img3').style.fontSize = '30px';
+    document.getElementById('img3').style.fontSize = '30px';
+    document.getElementById('lable1').style.fontSize = '14px';
+    document.getElementById('lable2').style.fontSize = '14px';
+    document.getElementById('lable3').style.fontSize = '14px';
+}
+
+function changeSizeToTablet() {
+    document.getElementById('editorjs').style.fontSize = '16px';
+    document.getElementById('img1').style.fontSize = '28px';
+    document.getElementById('img1').style.fontSize = '28px';
+    document.getElementById('img2').style.fontSize = '28px';
+    document.getElementById('img2').style.fontSize = '28px';
+    document.getElementById('img3').style.fontSize = '28px';
+    document.getElementById('img3').style.fontSize = '28px';
+    document.getElementById('lable1').style.fontSize = '12px';
+    document.getElementById('lable2').style.fontSize = '12px';
+    document.getElementById('lable3').style.fontSize = '12px';
+}

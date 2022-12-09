@@ -56,10 +56,20 @@ export struct NoteContentCompPortrait {
   @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get("NewFolder")
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Provide('EditModel') editModel: boolean = false
+  @StorageLink('dpi') dpi: number = 240
   controllerShow: WebController
   private editContentFlag = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
+  editContentDialogCtl: CustomDialogController = new CustomDialogController({
+    builder: EditContentDialogPortrait({ confirm: this.confirm.bind(this) }),
+    alignment: DialogAlignment.Bottom,
+    autoCancel: true,
+    customStyle: true,
+  })
 
+  confirm(excuteJs: string) {
+    this.controllerShow.runJavaScript({ script: excuteJs })
+  }
   storeScrollTop(scrollTop: number) {
     if (scrollTop < 0) {
       return
@@ -170,6 +180,40 @@ export struct NoteContentCompPortrait {
       } else if (fontSize === 48) {
         this.selectedNoteData.slider_value = 16
       }
+    },
+    addToDo: () => {
+      // 清单
+      this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+    },
+    chooseStyle: () => {
+      this.editContentDialogCtl.open()
+    },
+    openAlbum: async () => {
+      LogUtil.info(TAG, 'startAbility start')
+      await globalThis.noteContext.startAbilityForResult({
+        parameters: { uri: "singleselect" },
+        bundleName: "com.ohos.photos",
+        abilityName: "com.ohos.photos.MainAbility",
+      }).then(v => {
+        let want = v['want'];
+        if (want != null && want != undefined) {
+          let param = want['parameters'];
+          let imageUri = ""
+          if (param != null && param != undefined) {
+            let uri = param['select-item-list'];
+            imageUri = uri;
+          }
+          LogUtil.info(TAG, "image url" + imageUri)
+          // 拷贝
+          if (imageUri != null && imageUri != "") {
+            OperationUtils.copy(imageUri).then((uriPath) => {
+              var path = "file://" + uriPath
+              LogUtil.info(TAG, 'image uri is:' + path)
+              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImage('" + path + "')" })
+            })
+          }
+        }
+      });
     }
   }
 
@@ -188,10 +232,17 @@ export struct NoteContentCompPortrait {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath", "callbackGetSize"],
+              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath", "callbackGetSize", "addToDo", "chooseStyle", "openAlbum"],
               controller: this.controllerShow
             })
             .onPageEnd((e) => {
+              if (this.dpi <= 240) {
+                this.controllerShow.runJavaScript({ script: "changeSizeToRk()" })
+              } else if (this.dpi >= 320 && this.dpi > 240) {
+                this.controllerShow.runJavaScript({ script: "changeSizeToPhone()" })
+              } else {
+                this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
+              }
               LogUtil.info(TAG, "finish loadurl")
               let self = this
               this.controllerShow.runJavaScript({
@@ -223,7 +274,7 @@ export struct NoteContentCompPortrait {
           }
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
-              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+            this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
           }, 3000)
           LogUtil.info(TAG, "setInterval time_id : " + time_id)
           this.editModel = true
@@ -234,7 +285,6 @@ export struct NoteContentCompPortrait {
       .flexShrink(1)
       .padding({ left: 24, right: 24 })
 
-      EditNoteCompForPortrait({ controllerShow: this.controllerShow })
       DeleteNoteComp()
     }
     .height(StyleConstants.PERCENTAGE_100)
@@ -321,7 +371,7 @@ export struct NoteContentOverViewComp {
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
           Text(this.selectedNoteData.title)
-            .id(this.isUpdate+'')
+            .id(this.isUpdate + '')
             .fontSize(30).fontWeight(FontWeight.Medium)
             .onClick(() => {
               clearInterval(time_id)
@@ -591,114 +641,6 @@ export struct DeleteNoteComp {
     .width(360)
     .height(56)
     .visibility(this.selectedNoteData.is_deleted == Delete.Yes ?
-    Visibility.Visible : Visibility.None)
-  }
-}
-
-@Component
-export struct EditNoteCompForPortrait {
-  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
-  @Consume('SelectedFolderData') selectedFolderData: FolderData
-  @Consume('SelectedNoteData') selectedNoteData: NoteData;
-  @Consume('EditModel') editModel: boolean
-  controllerShow: WebController
-  editContentDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: EditContentDialogPortrait({ confirm: this.confirm.bind(this) }),
-    alignment: DialogAlignment.Bottom,
-    autoCancel: true,
-    customStyle: true,
-  })
-
-  confirm(excuteJs: string) {
-    this.controllerShow.runJavaScript({ script: excuteJs })
-  }
-
-  build() {
-    Row() {
-      Column() {
-        Image($r('app.media.circle_tick1'))
-          .width(24)
-          .height(24)
-          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
-          .onClick(() => {
-            // 清单
-            this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
-          })
-        Text($r("app.string.list"))
-          .fontSize(10)
-          .fontColor($r('app.color.list_font_color'))
-          .padding({ top: 5 })
-      }
-      .height("100%")
-      .width(120)
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Center)
-
-      Column() {
-        Image($r('app.media.font_style'))
-          .width(24)
-          .height(24)
-          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
-          .onClick(() => {
-            this.editContentDialogCtl.open()
-          })
-        Text($r("app.string.style"))
-          .fontSize(10)
-          .fontColor($r('app.color.style_font_color'))
-          .padding({ top: 5 })
-      }
-      .height("100%")
-      .width(120)
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Center)
-
-      Column() {
-        Image($r('app.media.picture_white'))
-          .width(24)
-          .height(24)
-          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
-          .onClick(async () => {
-            LogUtil.info(TAG, 'startAbility start')
-            await globalThis.noteContext.startAbilityForResult({
-              parameters: { uri: "singleselect" },
-              bundleName: "com.ohos.photos",
-              abilityName: "com.ohos.photos.MainAbility",
-            }).then(v => {
-              let want = v['want'];
-              if (want != null && want != undefined) {
-                let param = want['parameters'];
-                let imageUri = ""
-                if (param != null && param != undefined) {
-                  let uri = param['select-item-list'];
-                  imageUri = uri;
-                }
-                LogUtil.info(TAG, "image url" + imageUri)
-                // 拷贝
-                if (imageUri != null && imageUri != "") {
-                  OperationUtils.copy(imageUri).then((uriPath) => {
-                    var path = "file://" + uriPath
-                    LogUtil.info(TAG, 'image uri is:' + path)
-                    this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImage('" + path + "')" })
-                  })
-                }
-              }
-            });
-          })
-
-        Text($r("app.string.photo"))
-          .fontSize(10)
-          .fontColor($r('app.color.photo_font_color'))
-          .padding({ top: 5 })
-      }
-      .height("100%")
-      .width(120)
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Center)
-    }
-    .width(360)
-    .height(56)
-    .visibility(this.selectedNoteData.is_deleted == Delete.No && this.editModel == true ?
     Visibility.Visible : Visibility.None)
   }
 }

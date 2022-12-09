@@ -205,6 +205,7 @@ export default class MainAbility extends Ability {
         let screenDpi = null
         displayClass = display.getDefaultDisplaySync()
         screenDpi = displayClass.densityDPI
+        AppStorage.SetOrCreate('dpi', screenDpi)
         let windowWidth = data / (screenDpi / 160)
         LogUtil.debug(this.Tag, " screenBreakPoints windowWidth: " + windowWidth)
         if (windowWidth >= 320 && windowWidth < 520 || windowWidth < 320) {
