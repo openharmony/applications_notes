@@ -16,24 +16,21 @@
 html {
   height: 100%;
   font-family: sans-serif;
-  -webkit-text-size-adjust: 100%;
+-webkit-text-size-adjust: 100%;
 }
 
 body {
-  overflow: scroll;
-  display: table;
-  table-layout: fixed;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   color: #333333;
   margin: 0;
-  height: 100%;
 }
 
 #editorjs {
   padding-left: 1px;
   padding-right: 24px;
   width: 100%;
+  height: 100%;
   outline: 0px solid transparent;
   background-repeat: no-repeat;
   background-position: center;
@@ -41,7 +38,7 @@ body {
   color: #182431;
   opacity: 0.9;
   font-size: 16vp;
-  height: 100%;
+  overflow: scroll;
 }
 
 #editorjs[placeholder]:empty:not(:focus):before {
@@ -66,9 +63,9 @@ body {
   background-color: #ffffff;
   border: 2px solid #182431;
   opacity: 0.6;
-  -webkit-border-radius: 50%;
-  -webkit-appearance: none;
-  -webkit-user-select: none;
+-webkit-border-radius: 50%;
+-webkit-appearance: none;
+-webkit-user-select: none;
   border-radius: 50%;
   font-size: 0.8rem;
   margin-left: 0px;
@@ -79,7 +76,7 @@ body {
   padding: 0;
   position: relative;
   display: inline-block;
-  -webkit-transition: background-color ease 0.1s;
+-webkit-transition: background-color ease 0.1s;
   transition: background-color ease 0.1s;
   vertical-align: top;
   cursor: default;
@@ -91,4 +88,36 @@ body {
   margin-left: 10px;
   color: #F88805;
   opacity: 0.4;
+}
+
+.edit-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.button-box {
+  width: 100%;
+  height: auto;
+  background-color: white;
+  display: flex;
+  justify-content: space-around;
+  padding-bottom: 6px;
+}
+
+.button-box div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-box img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
+}
+
+.button-box span {
+  font-size: 16px;
 }

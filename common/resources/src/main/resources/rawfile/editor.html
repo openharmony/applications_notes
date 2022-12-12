@@ -13,10 +13,27 @@
     href="editor_style.css">
 </head>
 <body onload="load()">
-<div
-  id="editorjs"
-  contenteditable="true">
+<div class="edit-box">
+  <div
+    id="editorjs"
+    contenteditable="true">
+  </div>
+  <div class="button-box">
+    <div id="addToDo">
+      <img id="img1" src="../base/media/todo1.svg">
+      <span id="lable1">清单</span>
+    </div>
+    <div id="chooseStyle">
+      <img id="img2" src="../base/media/styles.svg">
+      <span id="lable2">样式</span>
+    </div>
+    <div id="openAlbum">
+      <img id="img3"src="../base/media/picture_white.svg">
+      <span id="lable3">相册</span>
+    </div>
+  </div>
 </div>
+
 <script
   type="text/javascript"
   src="rich_editor.js"></script>
