@@ -455,15 +455,15 @@ function changeSizeToRk() {
 
 function changeSizeToPhone() {
     document.getElementById('editorjs').style.fontSize = '16px';
-    document.getElementById('img1').style.fontSize = '30px';
-    document.getElementById('img1').style.fontSize = '30px';
-    document.getElementById('img2').style.fontSize = '30px';
-    document.getElementById('img2').style.fontSize = '30px';
-    document.getElementById('img3').style.fontSize = '30px';
-    document.getElementById('img3').style.fontSize = '30px';
-    document.getElementById('lable1').style.fontSize = '14px';
-    document.getElementById('lable2').style.fontSize = '14px';
-    document.getElementById('lable3').style.fontSize = '14px';
+    document.getElementById('img1').style.fontSize = '24px';
+    document.getElementById('img1').style.fontSize = '24px';
+    document.getElementById('img2').style.fontSize = '24px';
+    document.getElementById('img2').style.fontSize = '24px';
+    document.getElementById('img3').style.fontSize = '24px';
+    document.getElementById('img3').style.fontSize = '24px';
+    document.getElementById('lable1').style.fontSize = '12px';
+    document.getElementById('lable2').style.fontSize = '12px';
+    document.getElementById('lable3').style.fontSize = '12px';
 }
 
 function changeSizeToTablet() {
@@ -478,3 +478,17 @@ function changeSizeToTablet() {
     document.getElementById('lable2').style.fontSize = '12px';
     document.getElementById('lable3').style.fontSize = '12px';
 }
+
+function hiddenButton() {
+    document.getElementById('buttonBox').style.display = 'none';
+}
+
+RICH_EDITOR.getFocus = function() {
+    return document.GetElementById('editorjs').focus();
+}
+
+document.getElementById('editorjs').addEventListener('click', () => {
+    if (callBackToApp.getBreakPoint() === 'sm') {
+        document.getElementById('buttonBox').style.display = 'flex';
+    }
+})

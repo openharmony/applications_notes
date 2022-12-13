@@ -52,16 +52,6 @@ export struct NoteContent {
   controllerShow: WebController
   private editContentFlag = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
-  editContentDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: EditContentDialog({ confirm: this.confirm.bind(this) }),
-    alignment: DialogAlignment.Bottom,
-    autoCancel: true,
-    customStyle: true,
-  })
-
-  confirm(excuteJs: string) {
-    this.controllerShow.runJavaScript({ script: excuteJs })
-  }
 
   storeScrollTop(scrollTop: number) {
     if (scrollTop < 0) {
@@ -177,55 +167,6 @@ export struct NoteContent {
       } else if (fontSize === 48) {
         this.selectedNoteData.slider_value = 16
       }
-    },
-    addToDo: () => {
-      // 退出键盘
-      // @ts-ignore
-      inputMethod.getController().stopInputSession();
-      // 清单
-      this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
-    },
-    chooseStyle: () => {
-      // 退出键盘
-      // @ts-ignore
-      inputMethod.getController().stopInputSession();
-      LogUtil.info(TAG, 'editContentDialogCtl start')
-      this.editContentDialogCtl.open()
-    },
-    openAlbum: async () => {
-      // 退出键盘
-      // @ts-ignore
-      inputMethod.getController().stopInputSession();
-      LogUtil.info(TAG, 'startAbility start')
-      await globalThis.noteContext.startAbilityForResult({
-        parameters: { uri: "singleselect" },
-        bundleName: "com.ohos.photos",
-        abilityName: "com.ohos.photos.MainAbility",
-      })
-        .then(v => {
-          let want = v['want'];
-          if (want != null && want != undefined) {
-            let param = want['parameters'];
-            let imageUri = ""
-            if (param != null && param != undefined) {
-              let uri = param['select-item-list'];
-              imageUri = uri;
-            }
-            // 拷贝
-            if (imageUri != null && imageUri != "") {
-              OperationUtils.copy(imageUri).then((uriPath) => {
-                var path = "file://" + uriPath
-                LogUtil.info(TAG, 'image uri is:' + path)
-                this.controllerShow.runJavaScript({
-                  script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
-                })
-                this.issave = 1
-                // 保存笔记信息到数据库
-                this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
-              })
-            }
-          }
-        });
     }
   }
 
@@ -245,7 +186,7 @@ export struct NoteContent {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath", "callbackGetSize", "addToDo", "chooseStyle", "openAlbum"],
+              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath", "callbackGetSize"],
               controller: this.controllerShow
             })
             .onPageEnd((e) => {
@@ -256,6 +197,7 @@ export struct NoteContent {
               } else {
                 this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
               }
+              this.controllerShow.runJavaScript({ script: "hiddenButton()" })
               LogUtil.info(TAG, "finish loadurl")
               if (this.selectedNoteData) {
                 let self = this
@@ -320,6 +262,16 @@ export struct ToolBarComp {
   @Consume('Issave') issave: number
   @Consume('EditModel') editModel: boolean
   controllerShow: WebController
+  editContentDialogCtl: CustomDialogController = new CustomDialogController({
+    builder: EditContentDialog({ confirm: this.confirm.bind(this) }),
+    alignment: DialogAlignment.Bottom,
+    autoCancel: true,
+    customStyle: true,
+  })
+
+  confirm(excuteJs: string) {
+    this.controllerShow.runJavaScript({ script: excuteJs })
+  }
 
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
@@ -360,6 +312,80 @@ export struct ToolBarComp {
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       } else {
         Row({ space: StyleConstants.SPACE_6 }) {
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.circle_tick1'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                // 退出键盘
+                // @ts-ignore
+                inputMethod.getController().stopInputSession();
+                // 清单
+                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_fffffB'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.font_style'))
+              .height(24)
+              .width(24)
+              .onClick(() => {
+                // 退出键盘
+                // @ts-ignore
+                inputMethod.getController().stopInputSession();
+                LogUtil.info(TAG, 'editContentDialogCtl start')
+                this.editContentDialogCtl.open()
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_fffffB'))
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Image($r('app.media.picture_white')).height(24).width(24)
+              .onClick(async () => {
+                // 退出键盘
+                // @ts-ignore
+                inputMethod.getController().stopInputSession();
+                LogUtil.info(TAG, 'startAbility start')
+                await globalThis.noteContext.startAbilityForResult({
+                  parameters: { uri: "singleselect" },
+                  bundleName: "com.ohos.photos",
+                  abilityName: "com.ohos.photos.MainAbility",
+                })
+                  .then(v => {
+                    let want = v['want'];
+                    if (want != null && want != undefined) {
+                      let param = want['parameters'];
+                      let imageUri = ""
+                      if (param != null && param != undefined) {
+                        let uri = param['select-item-list'];
+                        imageUri = uri;
+                      }
+                      // 拷贝
+                      if (imageUri != null && imageUri != "") {
+                        OperationUtils.copy(imageUri).then((uriPath) => {
+                          var path = "file://" + uriPath
+                          LogUtil.info(TAG, 'image uri is:' + path)
+                          this.controllerShow.runJavaScript({
+                            script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
+                          })
+                          this.issave = 1
+                          // 保存笔记信息到数据库
+                          this.controllerShow.runJavaScript({script:"getHtmlContent()"})
+                        })
+                      }
+                    }
+                  });
+              })
+          }.width(42)
+          .height(42)
+          .borderRadius(8)
+          .backgroundColor($r('app.color.color_fffffB'))
+
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.undo'))
               .height(24)
