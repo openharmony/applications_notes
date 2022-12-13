@@ -70,6 +70,7 @@ export struct NoteContentCompPortrait {
   confirm(excuteJs: string) {
     this.controllerShow.runJavaScript({ script: excuteJs })
   }
+
   storeScrollTop(scrollTop: number) {
     if (scrollTop < 0) {
       return
@@ -209,11 +210,15 @@ export struct NoteContentCompPortrait {
             OperationUtils.copy(imageUri).then((uriPath) => {
               var path = "file://" + uriPath
               LogUtil.info(TAG, 'image uri is:' + path)
+              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.getFocus()" })
               this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImage('" + path + "')" })
             })
           }
         }
       });
+    },
+    getBreakPoint: () => {
+      return AppStorage.Get('breakPoint');
     }
   }
 
@@ -232,7 +237,7 @@ export struct NoteContentCompPortrait {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath", "callbackGetSize", "addToDo", "chooseStyle", "openAlbum"],
+              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath", "addToDo", "chooseStyle", "openAlbum", "callbackGetSize", "getBreakPoint"],
               controller: this.controllerShow
             })
             .onPageEnd((e) => {
