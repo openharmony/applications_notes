@@ -243,7 +243,7 @@ export struct NoteContentCompPortrait {
             .onPageEnd((e) => {
               if (this.dpi <= 240) {
                 this.controllerShow.runJavaScript({ script: "changeSizeToRk()" })
-              } else if (this.dpi >= 320 && this.dpi > 240) {
+              } else if (this.dpi <= 320 && this.dpi > 240) {
                 this.controllerShow.runJavaScript({ script: "changeSizeToPhone()" })
               } else {
                 this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
@@ -301,6 +301,7 @@ export struct NoteContentCompPortrait {
   }
 
   aboutToDisappear(): void {
+    NoteUtil.refreshAll()
     clearInterval(time_id)
     LogUtil.info(TAG, "aboutToDisappear")
   }
@@ -580,6 +581,7 @@ export struct DeleteNoteComp {
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
       RdbStoreUtil.delete(predicates_note, null)
+      NoteUtil.refreshAll()
       routePage()
     }
     AppStorage.SetOrCreate('isUpdate', false)

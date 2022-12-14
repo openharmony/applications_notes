@@ -192,7 +192,7 @@ export struct NoteContent {
             .onPageEnd((e) => {
               if (this.dpi <= 240) {
                 this.controllerShow.runJavaScript({ script: "changeSizeToRk()" })
-              } else if (this.dpi >= 320 && this.dpi > 240) {
+              } else if (this.dpi <= 320 && this.dpi > 240) {
                 this.controllerShow.runJavaScript({ script: "changeSizeToPhone()" })
               } else {
                 this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
@@ -250,6 +250,8 @@ export struct NoteContent {
   }
 
   aboutToDisappear(): void {
+    NoteUtil.refreshAll()
+    AppStorage.Set("refreshCurrentNote",true)
     clearInterval(timeID)
     LogUtil.info(TAG, "aboutToDisappear")
   }
@@ -287,6 +289,7 @@ export struct ToolBarComp {
             LogUtil.info(TAG, "zoom, clearInterval timeID : " + timeID)
             clearInterval(timeID)
           }
+          AppStorage.Set("refreshCurrentNote",true)
           router.back()
           NoteUtil.refreshAll()
         })
