@@ -230,7 +230,7 @@ export struct NoteContentComp {
             .onPageEnd((e) => {
               if (this.dpi <= 240) {
                 this.controllerShow.runJavaScript({ script: "changeSizeToRk()" })
-              } else if (this.dpi >= 320 && this.dpi > 240) {
+              } else if (this.dpi <= 320 && this.dpi > 240) {
                 this.controllerShow.runJavaScript({ script: "changeSizeToPhone()" })
               } else {
                 this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
