@@ -32,12 +32,12 @@ export struct MyNoteHomeComp {
   private controllerShow: WebController = new WebController()
   private context = getContext(this)
   TAG = "MyNoteHomeComp_Tablet"
+  @StorageLink('breakPoint') @Watch('onBreakPointChange') breakPoints: string = 'lg'
 
-  @StorageLink('breakPoint')@Watch('onBreakPointChange') breakPoints: string = 'lg'
-  onBreakPointChange(){
-    if(this.breakPoints == 'sm' || this.breakPoints == 'md'){
+  onBreakPointChange() {
+    if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
       this.portraitModel = true
-    }else{
+    } else {
       this.portraitModel = false
     }
   }
@@ -60,9 +60,9 @@ export struct MyNoteHomeComp {
   aboutToAppear(): void {
     LogUtil.info(this.TAG, "aboutToAppear")
     this.breakPoints = AppStorage.Get('breakPoint')
-    if(this.breakPoints == 'sm' || this.breakPoints == 'md'){
+    if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
       this.portraitModel = true
-    }else{
+    } else {
       this.portraitModel = false
     }
     if (this.context == undefined || this.context == null) {
@@ -126,15 +126,15 @@ export struct MyNoteHomeComp {
 
   onPageShow(): void {
     LogUtil.info(this.TAG, "onPageShow")
-      // continue from tablet
-      let continueFromTablet = AppStorage.Get<boolean>('ContinueFromTablet')
-      LogUtil.info(this.TAG, "onPageShow, continueFromTablet : " + continueFromTablet)
-      let noteContentHomeExist = AppStorage.Get<boolean>('NoteContentHomeExist')
-      LogUtil.info(this.TAG, "onPageShow, noteContentHomeExist : " + noteContentHomeExist)
-      if (continueFromTablet && !noteContentHomeExist) {
-        router.push({ uri: 'pages/NoteContentHome' })
-        AppStorage.SetOrCreate<boolean>('ContinueFromTablet', false)
-      }
+    // continue from tablet
+    let continueFromTablet = AppStorage.Get<boolean>('ContinueFromTablet')
+    LogUtil.info(this.TAG, "onPageShow, continueFromTablet : " + continueFromTablet)
+    let noteContentHomeExist = AppStorage.Get<boolean>('NoteContentHomeExist')
+    LogUtil.info(this.TAG, "onPageShow, noteContentHomeExist : " + noteContentHomeExist)
+    if (continueFromTablet && !noteContentHomeExist) {
+      router.push({ uri: 'pages/NoteContentHome' })
+      AppStorage.SetOrCreate<boolean>('ContinueFromTablet', false)
+    }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
   }
 

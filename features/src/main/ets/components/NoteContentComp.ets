@@ -235,7 +235,9 @@ export struct NoteContentComp {
               } else {
                 this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
               }
-              this.controllerShow.runJavaScript({ script: "hiddenButton()" })
+              if (AppStorage.Get('breakPoint') !== 'sm') {
+                this.controllerShow.runJavaScript({ script: "hiddenButton()" })
+              }
               LogUtil.info(TAG, "finish loadurl")
               if (this.selectedNoteData) {
                 let self = this
@@ -473,16 +475,6 @@ export struct ToolBarComp {
     autoCancel: false,
     customStyle: true,
   })
-  editContentDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: EditContentDialog({ confirm: this.confirm.bind(this) }),
-    alignment: DialogAlignment.Bottom,
-    autoCancel: true,
-    customStyle: true,
-  })
-
-  confirm(excuteJs: string) {
-    this.controllerShow.runJavaScript({ script: excuteJs })
-  }
 
   onDeleteConfirm() {
     if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
@@ -508,6 +500,17 @@ export struct ToolBarComp {
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "NoteContentOverViewComp, set continue note success")
     AppStorage.SetOrCreate('isUpdate', true)
+  }
+
+  editContentDialogCtl: CustomDialogController = new CustomDialogController({
+    builder: EditContentDialog({ confirm: this.confirm.bind(this) }),
+    alignment: DialogAlignment.Bottom,
+    autoCancel: true,
+    customStyle: true,
+  })
+
+  confirm(excuteJs: string) {
+    this.controllerShow.runJavaScript({ script: excuteJs })
   }
 
   build() {
@@ -661,7 +664,7 @@ export struct ToolBarComp {
                             })
                             this.issave = 1
                             // 保存笔记信息到数据库
-                            this.controllerShow.runJavaScript({script:"getHtmlContent()"})
+                            this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
                           })
                         }
                       }

@@ -60,7 +60,7 @@ export struct NoteHomePortraitComp {
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
 
       //Folder list display area
-      Row(){
+      Row() {
         Stack() {
           FolderListBackGround()
           FolderListComp()
@@ -81,11 +81,11 @@ export struct NoteHomePortraitComp {
     .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)
   }
 
-  aboutToAppear(): void{
+  aboutToAppear(): void {
     LogUtil.info(this.TAG, "aboutToAppear")
   }
 
-  aboutToDisappear(): void{
+  aboutToDisappear(): void {
     LogUtil.info(this.TAG, "aboutToDisappear")
   }
 }
