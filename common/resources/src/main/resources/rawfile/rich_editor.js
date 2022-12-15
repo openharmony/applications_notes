@@ -428,6 +428,13 @@ RICH_EDITOR.insertImageHtml = function (contents) {
     selection.getRangeAt(0).insertNode(img);
 };
 
+document.getElementById('addToDo').addEventListener('click', (e) => {
+    console.info(`lsq: e is ${JSON.stringify(e)}`)
+    if (e.id !== 'editorjs') {
+        e.preventDefault()
+    }
+})
+
 document.getElementById('addToDo').addEventListener('click', () => {
     callBackToApp.addToDo()
 })
@@ -442,12 +449,12 @@ document.getElementById('openAlbum').addEventListener('click', () => {
 
 function changeSizeToRk() {
     document.getElementById('editorjs').style.fontSize = '24px';
-    document.getElementById('img1').style.fontSize = '40px';
-    document.getElementById('img1').style.fontSize = '40px';
-    document.getElementById('img2').style.fontSize = '40px';
-    document.getElementById('img2').style.fontSize = '40px';
-    document.getElementById('img3').style.fontSize = '40px';
-    document.getElementById('img3').style.fontSize = '40px';
+    document.getElementById('img1').style.width = '40px';
+    document.getElementById('img1').style.height = '40px';
+    document.getElementById('img2').style.width = '40px';
+    document.getElementById('img2').style.height = '40px';
+    document.getElementById('img3').style.width = '40px';
+    document.getElementById('img3').style.height = '40px';
     document.getElementById('lable1').style.fontSize = '20px';
     document.getElementById('lable2').style.fontSize = '20px';
     document.getElementById('lable3').style.fontSize = '20px';
@@ -455,12 +462,12 @@ function changeSizeToRk() {
 
 function changeSizeToPhone() {
     document.getElementById('editorjs').style.fontSize = '16px';
-    document.getElementById('img1').style.fontSize = '24px';
-    document.getElementById('img1').style.fontSize = '24px';
-    document.getElementById('img2').style.fontSize = '24px';
-    document.getElementById('img2').style.fontSize = '24px';
-    document.getElementById('img3').style.fontSize = '24px';
-    document.getElementById('img3').style.fontSize = '24px';
+    document.getElementById('img1').style.width = '24px';
+    document.getElementById('img1').style.height = '24px';
+    document.getElementById('img2').style.width = '24px';
+    document.getElementById('img2').style.height = '24px';
+    document.getElementById('img3').style.width = '24px';
+    document.getElementById('img3').style.height = '24px';
     document.getElementById('lable1').style.fontSize = '12px';
     document.getElementById('lable2').style.fontSize = '12px';
     document.getElementById('lable3').style.fontSize = '12px';
@@ -468,12 +475,12 @@ function changeSizeToPhone() {
 
 function changeSizeToTablet() {
     document.getElementById('editorjs').style.fontSize = '16px';
-    document.getElementById('img1').style.fontSize = '28px';
-    document.getElementById('img1').style.fontSize = '28px';
-    document.getElementById('img2').style.fontSize = '28px';
-    document.getElementById('img2').style.fontSize = '28px';
-    document.getElementById('img3').style.fontSize = '28px';
-    document.getElementById('img3').style.fontSize = '28px';
+    document.getElementById('img1').style.width = '28px';
+    document.getElementById('img1').style.height = '28px';
+    document.getElementById('img2').style.width = '28px';
+    document.getElementById('img2').style.height = '28px';
+    document.getElementById('img3').style.width = '28px';
+    document.getElementById('img3').style.height = '28px';
     document.getElementById('lable1').style.fontSize = '12px';
     document.getElementById('lable2').style.fontSize = '12px';
     document.getElementById('lable3').style.fontSize = '12px';
@@ -484,7 +491,7 @@ function hiddenButton() {
 }
 
 RICH_EDITOR.getFocus = function() {
-    return document.GetElementById('editorjs').focus();
+    return document.getElementById('editorjs').focus();
 }
 
 document.getElementById('editorjs').addEventListener('click', () => {

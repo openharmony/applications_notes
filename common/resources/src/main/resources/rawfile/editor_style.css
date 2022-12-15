@@ -37,7 +37,7 @@ body {
   background-size: cover;
   color: #182431;
   opacity: 0.9;
-  font-size: 16vp;
+  font-size: 24px;
   overflow: scroll;
   user-select: none;
 }
