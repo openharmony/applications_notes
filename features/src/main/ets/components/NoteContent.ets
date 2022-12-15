@@ -197,7 +197,9 @@ export struct NoteContent {
               } else {
                 this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
               }
-              this.controllerShow.runJavaScript({ script: "hiddenButton()" })
+              if (AppStorage.Get('breakPoint') !== 'sm') {
+                this.controllerShow.runJavaScript({ script: "hiddenButton()" })
+              }
               LogUtil.info(TAG, "finish loadurl")
               if (this.selectedNoteData) {
                 let self = this
@@ -251,7 +253,7 @@ export struct NoteContent {
 
   aboutToDisappear(): void {
     NoteUtil.refreshAll()
-    AppStorage.Set("refreshCurrentNote",true)
+    AppStorage.Set("refreshCurrentNote", true)
     clearInterval(timeID)
     LogUtil.info(TAG, "aboutToDisappear")
   }
@@ -289,7 +291,7 @@ export struct ToolBarComp {
             LogUtil.info(TAG, "zoom, clearInterval timeID : " + timeID)
             clearInterval(timeID)
           }
-          AppStorage.Set("refreshCurrentNote",true)
+          AppStorage.Set("refreshCurrentNote", true)
           router.back()
           NoteUtil.refreshAll()
         })
@@ -378,7 +380,7 @@ export struct ToolBarComp {
                           })
                           this.issave = 1
                           // 保存笔记信息到数据库
-                          this.controllerShow.runJavaScript({script:"getHtmlContent()"})
+                          this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
                         })
                       }
                     }

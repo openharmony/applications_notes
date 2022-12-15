@@ -44,7 +44,7 @@
       {
         "name": "ohos.permission.DISTRIBUTED_DATASYNC",
         "reason": "$string:distributed_dataSync_permission"
-      }
+      },
     ],
     "deliveryWithInstall": true,
     "installationFree": false,

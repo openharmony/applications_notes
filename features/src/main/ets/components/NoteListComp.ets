@@ -141,7 +141,7 @@ struct NoteOverViewComp {
           alignItems: ItemAlign.Start
         }) {
           Text(FolderUtil.getFolderText(this.selectedFolderData))
-            .id(this.isUpdate+'')
+            .id(this.isUpdate + '')
             .maxLines(1)
             .fontSize(30)
             .fontColor($r("app.color.all_notes_font_color"))
@@ -149,7 +149,7 @@ struct NoteOverViewComp {
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
             Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
-              .id(this.isUpdate+'')
+              .id(this.isUpdate + '')
               .maxLines(1)
               .fontSize(14)
               .fontColor($r("app.color.num_of_notes_font_color"))
@@ -217,11 +217,11 @@ export struct NoteItemComp {
   @Consume('selectedAll') selectedAll: boolean
   @Consume('PortraitModel') portraitModel: boolean
   @State isChecked: boolean = undefined
-  @Consume('Longpress')@Watch('isLongPress') longpress: boolean
+  @Consume('Longpress') @Watch('isLongPress') longpress: boolean
   @StorageLink('isUpdate') isUpdate: boolean = false
 
-  isLongPress(){
-    if(this.longpress){
+  isLongPress() {
+    if (this.longpress) {
       this.isChecked = false
     }
   }
@@ -238,7 +238,7 @@ export struct NoteItemComp {
         Column({ space: 2 }) {
           Row({ space: 8 }) {
             Image($r("app.media.verticalBar"))
-              .id(this.isUpdate+'')
+              .id(this.isUpdate + '')
               .height(16)
               .width(4)
               .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.Get('AllFolderArray'), this.noteItem.folder_uuid))
@@ -250,7 +250,7 @@ export struct NoteItemComp {
 
           Row({ space: 4 }) {
             Text(DateUtil.formateDateForNoteTitle(new Date(this.noteItem.modified_time)))
-              .id(this.isUpdate+'')
+              .id(this.isUpdate + '')
               .maxLines(1)
               .fontSize(14)
               .fontColor($r("app.color.list_modified_time_font_color"))
@@ -272,7 +272,7 @@ export struct NoteItemComp {
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Stack({ alignContent: Alignment.Center }) {
           Image(this.noteItem.content_img)
-            .id(this.isUpdate+'')
+            .id(this.isUpdate + '')
             .height(47)
             .width(47)
             .borderRadius(12)
@@ -288,7 +288,7 @@ export struct NoteItemComp {
             .width(24)
             .height(24)
             .visibility(this.updateAndGetChecked() ? Visibility.Visible : Visibility.None)
-            .id(this.isUpdate+'')
+            .id(this.isUpdate + '')
         }.width(24)
         .height(24)
         .visibility(this.longpress ? Visibility.Visible : Visibility.None)
@@ -425,7 +425,7 @@ export struct NoteItemListComp {
       Flex() {
         SearchComp()
       }
-      .id(this.isUpdate+'')
+      .id(this.isUpdate + '')
       .width("100%")
       .padding({ left: 24, right: 24, bottom: 12 })
       .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
@@ -454,7 +454,7 @@ export struct NoteItemListComp {
                     .fontColor($r("app.color.Empty_page_font_color"))
                 }
               }
-              .id(this.isUpdate+'')
+              .id(this.isUpdate + '')
               .width('100%')
               .height('100%')
               .padding({ bottom: 120 })
@@ -474,7 +474,7 @@ export struct NoteItemListComp {
                 }
               }, noteItem => JSON.stringify(noteItem))
             }
-            .id(this.isUpdate+'')
+            .id(this.isUpdate + '')
             .margin((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? {
                                                                                                                      bottom: 0
                                                                                                                    } : {
@@ -758,7 +758,7 @@ export struct SearchComp {
           this.search = false
           // 退出键盘
           // @ts-ignore
-          inputMethod.getController().stopInputSession()
+          inputMethod.getController().stopInputSession();
           AppStorage.SetOrCreate<boolean>('Search', this.search)
         })
 

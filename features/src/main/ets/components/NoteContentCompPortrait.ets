@@ -210,7 +210,7 @@ export struct NoteContentCompPortrait {
             OperationUtils.copy(imageUri).then((uriPath) => {
               var path = "file://" + uriPath
               LogUtil.info(TAG, 'image uri is:' + path)
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.getFocus()" })
+              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.getFocus()" })
               this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImage('" + path + "')" })
             })
           }
@@ -301,8 +301,8 @@ export struct NoteContentCompPortrait {
   }
 
   aboutToDisappear(): void {
-    NoteUtil.refreshAll()
     clearInterval(time_id)
+    NoteUtil.refreshAll()
     LogUtil.info(TAG, "aboutToDisappear")
   }
 }

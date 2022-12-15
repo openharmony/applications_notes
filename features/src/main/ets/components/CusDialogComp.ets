@@ -33,7 +33,7 @@ export struct NewOrEditFolderDialog {
   private editFolderUuid: string = ""
   private dialogType: number = 0 // 0表示新建文件夹  1表示修改文件夹
   @State isExisted: boolean = false
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
+  @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = AppStorage.Link('AllFolderArray')
   @Consume('SelectedColor') selectedColor: string
 
   build() {
@@ -136,7 +136,7 @@ export struct NewOrEditFolderDialog {
     .margin({ bottom: 16, left: 12, right: 12 })
   }
 
-  aboutToAppear(): void{
+  aboutToAppear(): void {
     var currentFolder: FolderData = FolderUtil.getFolderData(this.AllFolderArray, this.editFolderUuid) // 获取当前选中的文件夹
     if (currentFolder == null) {
       return
@@ -179,9 +179,9 @@ struct ColorCircleComp {
 
 @CustomDialog
 export struct DeleteDialog {
-  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[]  = []
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[]  = AppStorage.Link('AllNoteArray')
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = AppStorage.Link('AllFolderArray')
+  @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
+  @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
+  @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = AppStorage.Link('AllFolderArray')
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   private multiSelect: boolean = false
@@ -271,7 +271,7 @@ export struct DeleteDialog {
 @Component
 struct NoteDataMoveItemComp {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
+  @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
   private folderItem: FolderData
   dividerShow: boolean = true
 
@@ -326,7 +326,7 @@ export struct NoteDataMoveDialog {
   noteDataMoveDialogCtl: CustomDialogController
   onConfirm: (folderUuid: string) => void
   NoteDataMoveArray: FolderData[]
-  @StorageLink('AllFolderArray') AllFolderArray: FolderData[]  = []
+  @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
 
   aboutToAppear() {
     this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
@@ -659,8 +659,7 @@ export struct EditTitleDialog {
   editTitleDialog: CustomDialogController
   confirm: (newTitle: string) => void
   @State inputName: string = ""
-  @State isEquivalentVal: boolean= true
-
+  @State isEquivalentVal: boolean = true
 
   build() {
     Column() {
@@ -717,7 +716,7 @@ export struct EditTitleDialog {
             this.editTitleDialog.close()
             // @ts-ignore
             inputMethod.getController().stopInputSession();
-            if (this.inputName.replace(/\s+/g,'') == '') {
+            if (this.inputName.replace(/\s+/g, '') == '') {
               return
             } else {
               this.confirm(this.inputName)

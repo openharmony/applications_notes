@@ -200,6 +200,7 @@ export default {
           let title = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.Title))
           let uuid = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.Uuid))
           let folder_uuid = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.FolderUuid))
+          // 暂时备忘录二次白屏问题，后续数据库解决
           let content_text = '';
           let content_img = '';
           try {
