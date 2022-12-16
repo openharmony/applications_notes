@@ -437,6 +437,7 @@ document.getElementById('chooseStyle').addEventListener('click', () => {
 })
 
 document.getElementById('openAlbum').addEventListener('click', () => {
+    RICH_EDITOR.getFocus()
     callBackToApp.openAlbum()
 })
 
