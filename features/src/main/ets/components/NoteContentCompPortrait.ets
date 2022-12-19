@@ -228,10 +228,10 @@ export struct NoteContentCompPortrait {
         alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
-          NoteContentOverViewComp()
         }
 
         Column() {
+          NoteContentOverViewComp()
           Web({ src: $rawfile('editor.html'), controller: this.controllerShow })
             .javaScriptAccess(true)
             .javaScriptProxy({
@@ -272,6 +272,7 @@ export struct NoteContentCompPortrait {
               this.storeScrollTop(event.yOffset)
             })
         }
+        .enabled(this.selectedNoteData && this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .flexShrink(1)
         .onClick(() => {
           if (time_id) {
