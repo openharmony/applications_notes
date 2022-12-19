@@ -99,7 +99,6 @@ export struct NewOrEditFolderDialog {
           .width('48%')
           .onClick(() => {
             this.newOrEditFolderDialogCtl.close()
-            // @ts-ignore
             inputMethod.getController().stopInputSession();
           })
         Divider()
@@ -123,7 +122,6 @@ export struct NewOrEditFolderDialog {
           .onClick(() => {
             this.newOrEditFolderDialogCtl.close()
             this.confirm(this.selectedColor, this.inputName)
-            // @ts-ignore
             inputMethod.getController().stopInputSession();
           })
       }.width('100%')
@@ -697,7 +695,6 @@ export struct EditTitleDialog {
           .width('48%')
           .onClick(() => {
             this.editTitleDialog.close()
-            // @ts-ignore
             inputMethod.getController().stopInputSession();
           })
         Divider()
@@ -714,7 +711,6 @@ export struct EditTitleDialog {
           .width('48%')
           .onClick(() => {
             this.editTitleDialog.close()
-            // @ts-ignore
             inputMethod.getController().stopInputSession();
             if (this.inputName.replace(/\s+/g, '') == '') {
               return

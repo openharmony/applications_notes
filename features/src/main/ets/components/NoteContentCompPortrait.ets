@@ -228,10 +228,10 @@ export struct NoteContentCompPortrait {
         alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
+          NoteContentOverViewComp()
         }
 
         Column() {
-          NoteContentOverViewComp()
           Web({ src: $rawfile('editor.html'), controller: this.controllerShow })
             .javaScriptAccess(true)
             .javaScriptProxy({
@@ -272,7 +272,6 @@ export struct NoteContentCompPortrait {
               this.storeScrollTop(event.yOffset)
             })
         }
-        .enabled(this.selectedNoteData && this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .flexShrink(1)
         .onClick(() => {
           if (time_id) {
@@ -464,7 +463,6 @@ export struct ToolBarComp {
         .width(24)
         .responseRegion({ width: 54, height: 54 })
         .onClick(() => {
-          inputMethod.getController().stopInputSession()
           this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
           // 清除定时器
           if (time_id != undefined) {
@@ -534,7 +532,6 @@ export struct ToolBarComp {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.tick_thin')).height(24).width(24)
               .onClick(() => {
-                inputMethod.getController().stopInputSession()
                 // 保存笔记信息到数据库
                 this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
                 this.editModel = false

@@ -60,23 +60,13 @@ export struct NoteHomePortraitComp {
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
 
       //Folder list display area
-      Row() {
-        Stack() {
-          FolderListBackGround()
-          FolderListComp()
-        }
-        .width(200)
-        .height(StyleConstants.PERCENTAGE_100)
-        .visibility(this.expandStatus == false ? Visibility.None : Visibility.Visible)
-
-        Column() {
-        }
-        .height("100%")
-        .width("100%")
-        .backgroundColor("#18181A")
-        .opacity(0.2)
-        .visibility(this.expandStatus ? Visibility.Visible : Visibility.None)
+      Stack() {
+        FolderListBackGround()
+        FolderListComp()
       }
+      .width(200)
+      .height(StyleConstants.PERCENTAGE_100)
+      .visibility(this.expandStatus == false ? Visibility.None : Visibility.Visible)
     }
     .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)
   }
