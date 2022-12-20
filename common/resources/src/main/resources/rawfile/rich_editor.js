@@ -428,7 +428,7 @@ RICH_EDITOR.insertImageHtml = function (contents) {
     selection.getRangeAt(0).insertNode(img);
 };
 
-document.getElementById('addToDo').addEventListener('click', (e) => {
+document.addEventListener('click', (e) => {
     console.info(`lsq: e is ${JSON.stringify(e)}`)
     if (e.id !== 'editorjs') {
         e.preventDefault()
@@ -444,7 +444,6 @@ document.getElementById('chooseStyle').addEventListener('click', () => {
 })
 
 document.getElementById('openAlbum').addEventListener('click', () => {
-    RICH_EDITOR.getFocus()
     callBackToApp.openAlbum()
 })
 

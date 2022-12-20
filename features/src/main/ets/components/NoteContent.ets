@@ -252,8 +252,8 @@ export struct NoteContent {
   }
 
   aboutToDisappear(): void {
-    NoteUtil.refreshAll()
     AppStorage.Set("refreshCurrentNote", true)
+    NoteUtil.refreshAll()
     clearInterval(timeID)
     LogUtil.info(TAG, "aboutToDisappear")
   }
