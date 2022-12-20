@@ -62,6 +62,7 @@ export struct NoteContentComp {
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
   @StorageLink('isUpdate') isUpdate: boolean = false
   @StorageLink('refreshCurrentNote') @Watch('isDataChange') refreshCurrentNote: boolean = false
+  @Consume('AsideWidth') asideWidth: number
 
   isDataChange() {
     if (!this.refreshCurrentNote) {
@@ -278,6 +279,7 @@ export struct NoteContentComp {
           LogUtil.info(TAG, "isContinue : " + isContinue)
           // 点击第三屏进入全屏编辑模式
           if (this.sectionStatus != 1 || isContinue) {
+            this.asideWidth = 0
             this.lastSectionStatus = this.sectionStatus
             this.sectionStatus = 1
             this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
@@ -475,6 +477,7 @@ export struct ToolBarComp {
     autoCancel: false,
     customStyle: true,
   })
+  @Consume('AsideWidth') asideWidth: number
 
   onDeleteConfirm() {
     if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
@@ -523,9 +526,11 @@ export struct ToolBarComp {
           if (this.sectionStatus != 1) {
             this.lastSectionStatus = this.sectionStatus
             this.sectionStatus = 1
+            this.asideWidth = 0
             this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
           } else {
             if (this.lastSectionStatus != undefined) {
+              this.asideWidth = 200
               // 切换为小屏预览模式
               this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
               this.sectionStatus = this.lastSectionStatus
