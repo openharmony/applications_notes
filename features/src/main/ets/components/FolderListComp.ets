@@ -40,6 +40,7 @@ export struct FolderListComp {
   @StorageLink('breakPoint') breakPoints: string = 'lg'
   controllerShow: WebController
   TAG = "FolderListComp"
+  @Consume('AsideWidth') asideWidth: number
 
   build() {
     Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.SpaceBetween }) {
@@ -51,8 +52,11 @@ export struct FolderListComp {
             .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
             .onClick(() => {
               if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
-                this.expandStatus = !this.expandStatus
+                animateTo({ duration: 200 }, () => {
+                  this.expandStatus = !this.expandStatus
+                })
               } else {
+                this.asideWidth = 0
                 this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
                 // save continue data
                 AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
@@ -76,7 +80,9 @@ export struct FolderListComp {
               }
             }
           }, folderItem => folderItem.name.toString())
-        }.width('100%').height(500)
+        }
+        .width('100%')
+        .height(500)
         .margin({ bottom: 120 })
         .padding({ left: 12, right: 12 })
         .flexGrow(1)
@@ -99,6 +105,8 @@ export struct FolderListComp {
       .padding({ left: 12, right: 12, bottom: 24 })
     }
     .height("100%")
+    .backgroundColor($r('app.color.folder_color_d6d6d6'))
+    .backgroundBlurStyle(BlurStyle.Thick)
   }
 
   aboutToAppear(): void {
@@ -503,18 +511,5 @@ struct FolderItemComp {
       })
     )
     )
-  }
-}
-
-
-@Component
-export struct FolderListBackGround {
-  build() {
-    Column() {
-    }
-    .width("100%")
-    .height("100%")
-    .backgroundColor($r('app.color.folder_color_d6d6d6'))
-    .backgroundBlurStyle(BlurStyle.Thick)
   }
 }

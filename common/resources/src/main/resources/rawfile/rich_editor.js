@@ -448,7 +448,6 @@ document.getElementById('openAlbum').addEventListener('click', () => {
 })
 
 function changeSizeToRk() {
-    document.getElementById('editorjs').style.fontSize = '24px';
     document.getElementById('img1').style.width = '40px';
     document.getElementById('img1').style.height = '40px';
     document.getElementById('img2').style.width = '40px';
@@ -461,7 +460,6 @@ function changeSizeToRk() {
 }
 
 function changeSizeToPhone() {
-    document.getElementById('editorjs').style.fontSize = '16px';
     document.getElementById('img1').style.width = '24px';
     document.getElementById('img1').style.height = '24px';
     document.getElementById('img2').style.width = '24px';
@@ -474,7 +472,6 @@ function changeSizeToPhone() {
 }
 
 function changeSizeToTablet() {
-    document.getElementById('editorjs').style.fontSize = '16px';
     document.getElementById('img1').style.width = '28px';
     document.getElementById('img1').style.height = '28px';
     document.getElementById('img2').style.width = '28px';

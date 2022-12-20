@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { FolderListComp, FolderListBackGround } from '@ohos/component/src/main/ets/components/FolderListComp'
+import { FolderListComp } from '@ohos/component/src/main/ets/components/FolderListComp'
 import { NoteListComp } from '@ohos/component/src/main/ets/components/NoteListComp'
 import { NoteContentCompPortrait } from '@ohos/component/src/main/ets/components/NoteContentCompPortrait'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
@@ -46,10 +46,10 @@ export struct NoteHomePortraitComp {
   @Provide('SelectedAll') selectedAll: boolean = false;
   @Provide('EditModel') editModel: boolean = false
   TAG = "NoteHomePortraitComp_Phone"
+  @Provide('AsideWidth') asideWidth: number = 200
 
   build() {
     Stack({ alignContent: Alignment.Start }) {
-
       // Note list display area
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
         NoteListComp()
@@ -59,14 +59,24 @@ export struct NoteHomePortraitComp {
       .enabled(this.expandStatus ? false : true)
       .backgroundColor($r("app.color.notelist_bgcolor_f1f3f5"))
 
+      // 蒙层
+      if (this.expandStatus) {
+        Column()
+          .width('100%')
+          .height('100%')
+          .position({ x: 0, y: 0 })
+          .backgroundColor(Color.Black)
+          .opacity(0.2)
+          .transition({ opacity: 0 })
+      }
       //Folder list display area
-      Stack() {
-        FolderListBackGround()
+      Column() {
         FolderListComp()
       }
       .width(200)
       .height(StyleConstants.PERCENTAGE_100)
-      .visibility(this.expandStatus == false ? Visibility.None : Visibility.Visible)
+      .position({ x: 0, y: 0 })
+      .translate({ x: this.expandStatus ? 0 : '-200', y: 0 })
     }
     .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)
   }

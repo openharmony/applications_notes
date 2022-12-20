@@ -57,10 +57,10 @@ export struct NoteListComp {
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('Search') search: boolean
   controllerShow: WebController
+  @Consume('AsideWidth') asideWidth: number
 
   build() {
     Flex({ direction: FlexDirection.Column }) {
-
       Flex({ direction: FlexDirection.Column }) {
         NoteOverViewComp({ controllerShow: this.controllerShow })
         Column() {
@@ -106,6 +106,7 @@ struct NoteOverViewComp {
   controllerShow: WebController
   @State noteNumber: any = undefined
   @StorageLink('isUpdate') isUpdate: boolean = false
+  @Consume('AsideWidth') asideWidth: number
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -124,8 +125,11 @@ struct NoteOverViewComp {
             .visibility(this.breakPoints == 'lg' && this.sectionStatus == 3 ? Visibility.None : Visibility.Visible)
             .onClick(() => {
               if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
-                this.expandStatus = !this.expandStatus
+                animateTo({ duration: 200 }, () => {
+                  this.expandStatus = !this.expandStatus
+                })
               } else {
+                this.asideWidth = 200
                 this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
                 // save continue data
                 AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)

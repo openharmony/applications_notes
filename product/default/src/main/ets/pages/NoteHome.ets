@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { FolderListComp, FolderListBackGround } from '@ohos/component/src/main/ets/components/FolderListComp'
+import { FolderListComp } from '@ohos/component/src/main/ets/components/FolderListComp'
 import { NoteListComp } from '@ohos/component/src/main/ets/components/NoteListComp'
 import { NoteContentComp } from '@ohos/component/src/main/ets/components/NoteContentComp'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
@@ -47,6 +47,7 @@ export struct NoteHomeComp {
   @StorageLink('breakPoint') breakPoints: string = 'lg'
   controllerShow: WebController
   TAG = "NoteHomeComp_Tablet"
+  @Provide('AsideWidth') asideWidth: number = 200
 
   build() {
     Flex({ justifyContent: FlexAlign.Start }) {
@@ -57,11 +58,9 @@ export struct NoteHomeComp {
         }
         .flexShrink(0)
         .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
-        .width(200)
+        .width(this.asideWidth)
         .height(StyleConstants.PERCENTAGE_100)
-        .visibility(
-            LayoutUtil.getWidthWeightMessage(this.sectionStatus)
-              .folderListVisibility == 0 ? Visibility.None : Visibility.Visible)
+        .animation({ duration: 200 })
         .enabled(this.search ? false : true)
 
         // Note list display area
@@ -133,14 +132,23 @@ export struct NoteHomeComp {
             .enabled(this.longpress || this.search && this.inputKeyword.length == 0 ? false : true)
           }
 
+          // 蒙层
+          if (this.expandStatus) {
+            Column()
+              .width('100%')
+              .height('100%')
+              .position({ x: 0, y: 0 })
+              .backgroundColor(Color.Black)
+              .opacity(0.2)
+              .transition({ opacity: 0 })
+          }
           //Folder list display area
-          Stack() {
-            FolderListBackGround()
+          Column() {
             FolderListComp()
           }
           .width(200)
           .height(StyleConstants.PERCENTAGE_100)
-          .visibility(this.expandStatus == false ? Visibility.None : Visibility.Visible)
+          .translate({ x: this.expandStatus ? 0 : '-200', y: 0 })
         }
         .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)
       }
