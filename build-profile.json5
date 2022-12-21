@@ -23,6 +23,20 @@
         "name": "default",
         "signingConfig": "default"
       }
+    ],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "material": {
+          "certpath": "signature/auto_ohos.cer",
+          "storePassword": "0000001B946B8B37FE78F7989A1F27FD05791EB4408D23F8CC2FE98A432A38A1E6F2F9706B27AC9F214087",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B384FC5BDB45F5AA9074BDAAA763114B5EAEFD5E1437D5565A6D0042A32C51FDA3047C28FDD440B",
+          "profile": "signature/note.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "signature/auto_ohos.p12"
+        }
+      }
     ]
   },
   "modules": [
