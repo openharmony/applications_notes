@@ -184,6 +184,10 @@ export class NoteUtil {
     for (let index = 0; index < allNoteDataArray.length; ) {
       if (allNoteDataArray[index].is_deleted == Delete.Yes && new Date().getTime() - allNoteDataArray[index].deleted_time > StyleConstants.DELETE_DEADLINE) {
         LogUtil.info(TAG, "Delete Note, uuid " + allNoteDataArray[index].uuid + " delete time " + allNoteDataArray[index].deleted_time)
+        // delete note from db
+        let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+        predicates_note.equalTo(NoteTableColumn.Uuid, allNoteDataArray[index].uuid)
+        RdbStoreUtil.delete(predicates_note, null)
         allNoteDataArray.splice(index, 1);
       }
       index++
