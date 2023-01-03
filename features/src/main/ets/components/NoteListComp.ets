@@ -507,6 +507,7 @@ export struct NoteItemListComp {
     }
     .onClick(() => {
       this.search = false
+      inputMethod.getController().stopInputSession()
       AppStorage.SetOrCreate<boolean>('Search', this.search)
     })
   }
