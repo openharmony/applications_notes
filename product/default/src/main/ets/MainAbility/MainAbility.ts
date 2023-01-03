@@ -30,10 +30,14 @@ export default class MainAbility extends Ability {
 
     onCreate(want, launchParam) {
         // @ts-ignore
-        window.getLastWindow(this.context,(err,data)=>{
-            let windowWidth = data.getWindowProperties().windowRect.width
-            LogUtil.info(this.Tag, " getLastWindow：" + windowWidth)
-            this.screenBreakPoints(windowWidth)
+        window.getLastWindow(this.context, (err, data) => {
+            if (data && data.getWindowProperties()) {
+                let windowWidth = data.getWindowProperties().windowRect.width
+                LogUtil.info(this.Tag, " getLastWindow：" + windowWidth)
+                this.screenBreakPoints(windowWidth)
+            } else {
+                LogUtil.info(this.Tag, "getWindowProperties error:" + JSON.stringify(err))
+            }
         })
         LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason + ", deviceType" + deviceInfo.deviceType)
         if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
@@ -200,7 +204,7 @@ export default class MainAbility extends Ability {
         }
     }
 
-    screenBreakPoints(data){
+    screenBreakPoints(data) {
         let displayClass = null
         let screenDpi = null
         displayClass = display.getDefaultDisplaySync()
