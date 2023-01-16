@@ -22,6 +22,7 @@ import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import inputMethod from '@ohos.inputmethod';
 import router from '@system.router';
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 
 @Entry
 @Component
@@ -85,7 +86,10 @@ export struct MyNoteHomeComp {
     }
     LogUtil.info(this.TAG, 'permissions need to require from user')
     let context: any = getContext(this);
-    context.requestPermissionsFromUser(permissionList).then((data) => {
+    let AtManager = abilityAccessCtrl.createAtManager();
+    //requestPermissionsFromUser会判断权限的授权状态来决定是否唤起弹窗
+    // @ts-ignore
+    AtManager.requestPermissionsFromUser(context, ["ohos.permission.MANAGE_DISPOSED_APP_STATUS"]).then((data) => {
       LogUtil.info(this.TAG, 'data permissions : ' + data.permissions)
       LogUtil.info(this.TAG, 'data result: ' + data.authResults)
       let sum = 0
@@ -93,7 +97,7 @@ export struct MyNoteHomeComp {
         sum += data.authResults[i]
       }
       LogUtil.info(this.TAG, 'request permissions sum: ' + sum)
-    }, (err) => {
+    }).catch((err) => {
       LogUtil.warn(this.TAG, 'failed to requestPermissionsFromUser : ' + err.code);
     })
 

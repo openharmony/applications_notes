@@ -121,7 +121,11 @@ export struct NewOrEditFolderDialog {
           .width('48%')
           .onClick(() => {
             this.newOrEditFolderDialogCtl.close()
-            this.confirm(this.selectedColor, this.inputName)
+            if (this.inputName.replace(/\s+/g, '') == '') {
+              return
+            } else {
+              this.confirm(this.selectedColor, this.inputName)
+            }
             inputMethod.getController().stopInputSession();
           })
       }.width('100%')

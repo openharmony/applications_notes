@@ -430,7 +430,8 @@ RICH_EDITOR.insertImageHtml = function (contents) {
 
 document.addEventListener('click', (e) => {
     console.info(`lsq: e is ${JSON.stringify(e)}`)
-    if (e.id !== 'editorjs') {
+    var parent = document.getElementById('editorjs');
+    if (parent.id !== 'editorjs') {
         e.preventDefault()
     }
 })
