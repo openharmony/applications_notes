@@ -760,6 +760,7 @@ export struct SearchComp {
         .margin({ right: this.search ? 16 : 0 })
         .visibility(this.search ? Visibility.Visible : Visibility.None)
         .onClick(() => {
+          focusControl.requestFocus('searchFocus')
           this.search = false
           // 退出键盘
           // @ts-ignore
@@ -769,6 +770,9 @@ export struct SearchComp {
 
       Flex({ justifyContent: FlexAlign.Start }) {
         Image($r('app.media.search')).width(20).height(20)
+          .focusable(true)
+          .key('searchFocus')
+          .defaultFocus(true)
         TextInput({ placeholder: $r('app.string.searchNote'), text: this.text })
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
