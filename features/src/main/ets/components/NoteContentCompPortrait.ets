@@ -190,6 +190,22 @@ export struct NoteContentCompPortrait {
       this.editContentDialogCtl.open()
     },
     openAlbum: async () => {
+      let permissionList: Array<string> = [
+        "ohos.permission.READ_MEDIA",
+        "ohos.permission.WRITE_MEDIA",
+      ]
+      let context: any = getContext(this);
+      await context.requestPermissionsFromUser(permissionList).then((data) => {
+        LogUtil.info(TAG, 'data permissions : ' + data.permissions)
+        LogUtil.info(TAG, 'data result: ' + data.authResults)
+        let sum = 0
+        for (let i = 0; i < data.authResults.length; i++) {
+          sum += data.authResults[i]
+        }
+        LogUtil.info(TAG, 'request permissions sum: ' + sum)
+      }).catch((err) => {
+        LogUtil.warn(TAG, 'failed to requestPermissionsFromUser : ' + err.code);
+      })
       LogUtil.info(TAG, 'startAbility start')
       await globalThis.noteContext.startAbilityForResult({
         parameters: { uri: "singleselect" },
