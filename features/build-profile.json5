@@ -13,14 +13,21 @@
  * limitations under the License.
  */
 
+
 {
-  "module": {
-    "name": "utils",
-    "type": "har",
-    "deviceTypes": [
-      "default",
-      "tablet"
-    ],
-    "uiSyntax": "ets"
-  }
+  "apiType": 'stageMode',
+  "buildOption": {
+  },
+  "entryModules": [
+    "phone",
+    "tablet"
+  ],
+  "targets": [
+    {
+      "name": "default"
+    },
+    {
+      "name": "ohosTest",
+    }
+  ]
 }
