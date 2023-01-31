@@ -73,7 +73,7 @@ RICH_EDITOR.getListStyle = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'OL') {
                 console.info('insertOrderedList');
@@ -111,7 +111,7 @@ RICH_EDITOR.setNumbers = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'OL') {
                 child.style['list-style'] = 'decimal';
@@ -142,7 +142,7 @@ RICH_EDITOR.setABC = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'OL') {
                 child.style['list-style'] = 'lower-alpha';
@@ -173,7 +173,7 @@ RICH_EDITOR.setBullets = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'UL') {
                 child.style['list-style'] = 'disc';
@@ -204,7 +204,7 @@ RICH_EDITOR.setSquare = function () {
     }
     var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
     try {
-        var child = range.commonAncestorContainer.parentNode;
+        var child = range.commonAncestorContainer;
         for (var i = 0; i < 10; i++) {
             if (child.nodeName === 'UL') {
                 child.style['list-style'] = 'square';
@@ -414,7 +414,7 @@ document.body.addEventListener('paste', (event) => {
 RICH_EDITOR.getFontSizes = function () {
     document.execCommand('fontSize', false, null);
     var fontElements = window.getSelection().anchorNode.parentNode;
-    var getSize = fontElements.style.fontSize;
+    var getSize = parseInt(window.getComputedStyle(fontElements, null).fontSize)
     var str = callBackToApp.callbackGetSize(getSize);
 };
 
@@ -427,3 +427,73 @@ RICH_EDITOR.insertImageHtml = function (contents) {
     img.src = contents;
     selection.getRangeAt(0).insertNode(img);
 };
+
+document.addEventListener('click', (e) => {
+    console.info(`lsq: e is ${JSON.stringify(e)}`)
+    var parent = document.getElementById('editorjs');
+    if (parent.id !== 'editorjs') {
+        e.preventDefault()
+    }
+})
+
+document.getElementById('addToDo').addEventListener('click', () => {
+    callBackToApp.addToDo()
+})
+
+document.getElementById('chooseStyle').addEventListener('click', () => {
+    callBackToApp.chooseStyle()
+})
+
+document.getElementById('openAlbum').addEventListener('click', () => {
+    callBackToApp.openAlbum()
+})
+
+function changeSizeToRk() {
+    document.getElementById('img1').style.width = '40px';
+    document.getElementById('img1').style.height = '40px';
+    document.getElementById('img2').style.width = '40px';
+    document.getElementById('img2').style.height = '40px';
+    document.getElementById('img3').style.width = '40px';
+    document.getElementById('img3').style.height = '40px';
+    document.getElementById('lable1').style.fontSize = '20px';
+    document.getElementById('lable2').style.fontSize = '20px';
+    document.getElementById('lable3').style.fontSize = '20px';
+}
+
+function changeSizeToPhone() {
+    document.getElementById('img1').style.width = '24px';
+    document.getElementById('img1').style.height = '24px';
+    document.getElementById('img2').style.width = '24px';
+    document.getElementById('img2').style.height = '24px';
+    document.getElementById('img3').style.width = '24px';
+    document.getElementById('img3').style.height = '24px';
+    document.getElementById('lable1').style.fontSize = '12px';
+    document.getElementById('lable2').style.fontSize = '12px';
+    document.getElementById('lable3').style.fontSize = '12px';
+}
+
+function changeSizeToTablet() {
+    document.getElementById('img1').style.width = '28px';
+    document.getElementById('img1').style.height = '28px';
+    document.getElementById('img2').style.width = '28px';
+    document.getElementById('img2').style.height = '28px';
+    document.getElementById('img3').style.width = '28px';
+    document.getElementById('img3').style.height = '28px';
+    document.getElementById('lable1').style.fontSize = '12px';
+    document.getElementById('lable2').style.fontSize = '12px';
+    document.getElementById('lable3').style.fontSize = '12px';
+}
+
+function hiddenButton() {
+    document.getElementById('buttonBox').style.display = 'none';
+}
+
+RICH_EDITOR.getFocus = function() {
+    return document.getElementById('editorjs').focus();
+}
+
+document.getElementById('editorjs').addEventListener('click', () => {
+    if (callBackToApp.getBreakPoint() === 'sm') {
+        document.getElementById('buttonBox').style.display = 'flex';
+    }
+})

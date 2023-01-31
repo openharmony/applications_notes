@@ -2,7 +2,7 @@
 	"license": "ISC",
 	"types": "",
 	"devDependencies": {},
-	"name": "@ohos/utils",
+	"name": "@ohos/component",
 	"description": "a npm package which contains arkUI2.0 page",
 	"ohos": {
 		"org": ""
@@ -11,6 +11,7 @@
 	"repository": {},
 	"version": "1.0.0",
 	"dependencies": {
-		"@ohos/source": "file:../resources"
+		"@ohos/utils": "file:../common/utils",
+		"@ohos/source": "file:../common/resources"
 	}
 }
