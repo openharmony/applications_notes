@@ -394,6 +394,8 @@ export struct NoteItemListComp {
   }
 
   aboutToAppear() {
+    LogUtil.info(TAG, "inputKeyWord:" + this.inputKeyword)
+    this.inputKeyword = ''
     this.dateList = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
   }
 
