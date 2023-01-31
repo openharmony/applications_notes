@@ -36,6 +36,7 @@ import router from '@system.router'
 import inputMethod from '@ohos.inputmethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import rs from '@ohos.resourceManager'
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 
 var time_id: number
 
@@ -195,7 +196,9 @@ export struct NoteContentCompPortrait {
         "ohos.permission.WRITE_MEDIA",
       ]
       let context: any = getContext(this);
-      await context.requestPermissionsFromUser(permissionList).then((data) => {
+      let AtManager = abilityAccessCtrl.createAtManager();
+      // @ts-ignore
+      await AtManager.requestPermissionsFromUser(context, permissionList).then((data) => {
         LogUtil.info(TAG, 'data permissions : ' + data.permissions)
         LogUtil.info(TAG, 'data result: ' + data.authResults)
         let sum = 0

@@ -70,8 +70,25 @@ export struct MyNoteHomeComp {
       LogUtil.warn(this.TAG, "context is error")
       return
     }
-
+    let permissionList: Array<string> = [
+      "ohos.permission.DISTRIBUTED_DATASYNC"
+    ]
+    LogUtil.info(this.TAG, 'permissions need to require from user')
     let context: any = getContext(this);
+    let AtManager = abilityAccessCtrl.createAtManager();
+    //requestPermissionsFromUser会判断权限的授权状态来决定是否唤起弹窗
+    // @ts-ignore
+    AtManager.requestPermissionsFromUser(context, ["ohos.permission.MANAGE_DISPOSED_APP_STATUS"]).then((data) => {
+      LogUtil.info(this.TAG, 'data permissions : ' + data.permissions)
+      LogUtil.info(this.TAG, 'data result: ' + data.authResults)
+      let sum = 0
+      for (let i = 0; i < data.authResults.length; i++) {
+        sum += data.authResults[i]
+      }
+      LogUtil.info(this.TAG, 'request permissions sum: ' + sum)
+    }).catch((err) => {
+      LogUtil.warn(this.TAG, 'failed to requestPermissionsFromUser : ' + err.code);
+    })
     let dbExist = false;
     let dbPath = context.databaseDir + "/db/note.db"
     try {
