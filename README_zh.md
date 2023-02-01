@@ -1,12 +1,10 @@
 # 备忘录部件
-## 简介
+
+## 1. 项目介绍
+
 备忘录应用是OpenHarmony中预置的应用，为用户提供文本编辑以及保存功能。
 
-**架构图**
-
-![](./figures/note.png)
-
-## 目录
+## 2. 目录结构
 ```
 /applications/standard/note
 ├─common
@@ -47,10 +45,20 @@
                 └─resources                       # 资源文件
 ```
 
+### 整体架构
 
-## 编译构建/使用方法
+![](./figures/note.png)
+
+## 3. 签名打包
+
 ### 签名
+
+#### 签名文件的获取
+
+1.生成签名文件可参考https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/security/hapsigntool-overview.md
+
 #### 签名文件的配置
+
 打开项目工程，选择 File → Project Structure
 
 ![](./figures/signature_1.png)
@@ -74,15 +82,13 @@
    ![](./figures/ds_ohosbuild_output_dir_release.png)
 
 
+## 4. 安装、调试
 
 ### 应用安装
 
 将设备通过调试线链接电脑，IDE上显示已链接设备，点击开始按钮即可安装并拉起应用：
 
 ![](./figures/install.png)
-
-
-
 
 ### 应用调试
 

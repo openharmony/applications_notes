@@ -38,6 +38,7 @@ export class NoteUtil {
   setNoteChecked(checkedNoteArray: NoteData[], noteItem: NoteData) {
     LogUtil.info(TAG, "setNoteChecked")
     checkedNoteArray.push(noteItem)
+    AppStorage.Set('CheckedNoteArray',checkedNoteArray)
   }
 
   /**
@@ -52,6 +53,7 @@ export class NoteUtil {
     })
     LogUtil.info(TAG, "index " + index.toString() + noteItem.uuid)
     index == -1 ? null : checkedNoteArray.splice(index, 1)
+    AppStorage.Set('CheckedNoteArray',checkedNoteArray)
   }
 
   /**
@@ -82,6 +84,7 @@ export class NoteUtil {
     LogUtil.info(TAG, "setAllNotesChecked")
     this.unsetAllNotesChecked(checkedNoteArray)
     checkedNoteArray.push(...noteArray)
+    AppStorage.Set('CheckedNoteArray', checkedNoteArray)
   }
 
   /**
@@ -92,6 +95,7 @@ export class NoteUtil {
   unsetAllNotesChecked(checkedNoteArray: NoteData[]) {
     LogUtil.info(TAG, "unsetAllNotesChecked")
     checkedNoteArray.splice(0, checkedNoteArray.length)
+    AppStorage.Set('CheckedNoteArray', checkedNoteArray)
   }
 
   /**
@@ -180,6 +184,10 @@ export class NoteUtil {
     for (let index = 0; index < allNoteDataArray.length; ) {
       if (allNoteDataArray[index].is_deleted == Delete.Yes && new Date().getTime() - allNoteDataArray[index].deleted_time > StyleConstants.DELETE_DEADLINE) {
         LogUtil.info(TAG, "Delete Note, uuid " + allNoteDataArray[index].uuid + " delete time " + allNoteDataArray[index].deleted_time)
+        // delete note from db
+        let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+        predicates_note.equalTo(NoteTableColumn.Uuid, allNoteDataArray[index].uuid)
+        RdbStoreUtil.delete(predicates_note, null)
         allNoteDataArray.splice(index, 1);
       }
       index++
@@ -271,6 +279,11 @@ export class NoteUtil {
       return true
     }
     return false
+  }
+
+  refreshAll() {
+    let isRefresh = AppStorage.Get('isUpdate')
+    AppStorage.Set('isUpdate',!isRefresh)
   }
 }
 

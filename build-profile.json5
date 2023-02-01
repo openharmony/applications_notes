@@ -13,32 +13,24 @@
  * limitations under the License.
  */
 
+
 {
   "app": {
     "compileSdkVersion": 9,
-    "compatibleSdkVersion": 9,
+    "compatibleSdkVersion": 8,
     "products": [
       {
         "name": "default",
+        "signingConfig": "default"
       }
+    ],
+    "signingConfigs": [
     ]
   },
   "modules": [
     {
-      "name": "phone",
-      "srcPath": "./product/phone",
-      "targets": [
-        {
-          "name": "default",
-          "applyToProducts": [
-            "default"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "tablet",
-      "srcPath": "./product/tablet",
+      "name": "default",
+      "srcPath": "./product/default",
       "targets": [
         {
           "name": "default",
@@ -53,12 +45,12 @@
       "srcPath": "./common/utils"
     },
     {
-      "name": "component",
-      "srcPath": "./common/component"
-    },
-    {
       "name": "resources",
       "srcPath": "./common/resources"
+    },
+    {
+      "name": "component",
+      "srcPath": "./features",
     }
   ]
 }

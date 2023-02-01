@@ -4,21 +4,37 @@
   <title>
     "editorJs"
   </title>
-  <meta
-    http-equiv="Content-Type"
-    content="text/html; charset=UTF-8">
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="editor_style.css">
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" type="text/css" href="editor_style.css">
+
+
+
 </head>
 <body onload="load()">
-<div
-  id="editorjs"
-  contenteditable="true">
+<div class="edit-box">
+
+
+  <div id="editorjs" contenteditable="true"></div>
+  <div class="button-box" id="buttonBox">
+    <div id="addToDo">
+      <img id="img1" src="icon/todo1.svg">
+      <span id="lable1">清单</span>
+    </div>
+    <div id="chooseStyle">
+      <img id="img2" src="icon/styles.svg">
+      <span id="lable2">样式</span>
+    </div>
+    <div id="openAlbum">
+      <img id="img3"src="icon/picture_white.svg">
+      <span id="lable3">相册</span>
+    </div>
+  </div>
 </div>
-<script
-  type="text/javascript"
-  src="rich_editor.js"></script>
+
+
+
+<script type="text/javascript" src="rich_editor.js"></script>
 </body>
 </html>

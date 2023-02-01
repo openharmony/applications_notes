@@ -15,7 +15,7 @@
 
 {
   "module": {
-    "name": "utils",
+    "name": "component",
     "type": "har",
     "deviceTypes": [
       "default",
