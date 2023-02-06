@@ -105,8 +105,18 @@ struct NoteOverViewComp {
   @Consume('PortraitModel') portraitModel: boolean
   controllerShow: WebController
   @State noteNumber: any = undefined
-  @StorageLink('isUpdate') isUpdate: boolean = false
+  @StorageLink('isUpdate') @Watch('notesNumberChange') isUpdate: boolean = false
   @Consume('AsideWidth') asideWidth: number
+  @State isShow: boolean = false
+
+  notesNumberChange() {
+    let noteNumbers = FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+    if (noteNumbers == 0) {
+      this.isShow = false
+    } else {
+      this.isShow = true
+    }
+  }
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -163,7 +173,7 @@ struct NoteOverViewComp {
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .margin({ top: 5 })
-          .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
+          .visibility(this.isShow ? Visibility.Visible : Visibility.None)
         }.visibility(this.longpress ? Visibility.None : Visibility.Visible)
 
         Row() {
