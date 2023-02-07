@@ -37,7 +37,6 @@ body {
   background-size: cover;
   color: #182431;
   opacity: 0.9;
-  overflow: scroll;
   user-select: none;
 }
 
