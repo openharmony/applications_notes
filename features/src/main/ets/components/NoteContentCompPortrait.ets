@@ -221,7 +221,7 @@ export struct NoteContentCompPortrait {
           let imageUri = ""
           if (param != null && param != undefined) {
             let uri = param['select-item-list'];
-            imageUri = uri;
+            imageUri = uri[0];
           }
           LogUtil.info(TAG, "image url" + imageUri)
           // 拷贝

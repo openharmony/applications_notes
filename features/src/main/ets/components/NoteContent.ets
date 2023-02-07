@@ -220,7 +220,7 @@ export struct NoteContent {
             .onlineImageAccess(true)
             .fileAccess(true)
             .domStorageAccess(true)
-            .height('70%')
+            .height('88%')
             .width('100%')
             .onScroll((event) => {
               this.storeScrollTop(event.yOffset)
