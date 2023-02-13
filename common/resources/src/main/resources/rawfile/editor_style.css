@@ -38,6 +38,7 @@ body {
   color: #182431;
   opacity: 0.9;
   user-select: none;
+  overflow: scroll;
 }
 
 #editorjs[placeholder]:empty:not(:focus):before {
