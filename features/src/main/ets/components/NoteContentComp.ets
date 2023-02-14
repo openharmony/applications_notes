@@ -76,7 +76,6 @@ export struct NoteContentComp {
     if (scrollTop < 0) {
       return
     }
-    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop / this.controllerShow.getPageHeight())
   }
 
   restoreScrollTop() {
@@ -87,9 +86,6 @@ export struct NoteContentComp {
     if (scrollTopPercent < 0) {
       return
     }
-    this.controllerShow.runJavaScript({
-      script: 'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
-    })
   }
 
   restoreFocus() {

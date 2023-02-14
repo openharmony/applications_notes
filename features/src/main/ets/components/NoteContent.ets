@@ -57,7 +57,6 @@ export struct NoteContent {
     if (scrollTop < 0) {
       return
     }
-    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop / this.controllerShow.getPageHeight())
   }
 
   restoreScrollTop() {
@@ -68,9 +67,6 @@ export struct NoteContent {
     if (scrollTopPercent < 0) {
       return
     }
-    this.controllerShow.runJavaScript({
-      script: 'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
-    })
     AppStorage.Delete('remoteScrollTopPercent')
   }
 
