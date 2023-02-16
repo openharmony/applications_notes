@@ -348,6 +348,12 @@ RICH_EDITOR.getSelectedAnchorNode = function () {
     }
     return node;
 };
+
+RICH_EDITOR.cancelSelection = function () {
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+}
+
 var callBackToApp;
 function getHtmlContent() {
     console.log('getHtmlContent');
@@ -488,7 +494,7 @@ function hiddenButton() {
     document.getElementById('buttonBox').style.display = 'none';
 }
 
-RICH_EDITOR.getFocus = function() {
+RICH_EDITOR.getFocus = function () {
     return document.getElementById('editorjs').focus();
 }
 

@@ -120,6 +120,9 @@ export class FolderUtil {
   * @return string | Resource - folder text
   */
   getFolderText(folderData: FolderData): string | Resource {
+    if (folderData.uuid && folderData) {
+      return 
+    }
     LogUtil.info(TAG, "folderData.uuid " + folderData.uuid + " folderData.folder_type " + folderData.folder_type)
     return folderData.folder_type == FolderType.CusDef ? folderData.name : folderTextMap[folderData.uuid]
   }
