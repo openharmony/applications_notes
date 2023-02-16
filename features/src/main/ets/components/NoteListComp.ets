@@ -353,6 +353,9 @@ export struct NoteItemComp {
         this.controllerShow.runJavaScript({
           script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
         })
+        this.controllerShow.runJavaScript({
+          script: "RICH_EDITOR.cancelSelection()"
+        })
       }
       if (this.portraitModel == true) {
         AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)

@@ -368,7 +368,7 @@ export struct ToolBarComp {
                       let imageUri = ""
                       if (param != null && param != undefined) {
                         let uri = param['select-item-list'];
-                        imageUri = uri;
+                        imageUri = uri[0];
                       }
                       // 拷贝
                       if (imageUri != null && imageUri != "") {
