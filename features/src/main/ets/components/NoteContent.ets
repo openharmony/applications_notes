@@ -239,7 +239,6 @@ export struct NoteContent {
             })
         }
         .margin({ left: 12, right: 24, top: 16 })
-        .width(StyleConstants.PERCENTAGE_100)
       }
       .height(StyleConstants.PERCENTAGE_100)
     }
