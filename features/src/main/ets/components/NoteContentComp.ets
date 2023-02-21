@@ -229,6 +229,7 @@ export struct NoteContentComp {
               methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave", "callbackGetSize", "callbackPasteImage", "callbackImagePath"],
               controller: this.controllerShow
             })
+            .enabled(this.sectionStatus !== 1 ? false : true)
             .onPageEnd((e) => {
               if (this.dpi <= 240) {
                 this.controllerShow.runJavaScript({ script: "changeSizeToRk()" })
@@ -412,8 +413,6 @@ export struct NoteContentOverViewComp {
             .fontSize(30)
             .margin({ left: 0, right: 24 })
             .onClick(() => {
-              this.editModel = true
-              this.sectionStatus = 1
               clearInterval(timeId)
               this.editTitleDialogCtl.open()
               // save continue data
