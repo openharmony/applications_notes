@@ -245,6 +245,9 @@ var pad = 24;
 RICH_EDITOR.setIndent = function () {
     var parents = document.getElementById('editorjs');
     parents.removeAttribute('padding-left');
+    if (pad >= 408) {
+        return
+    }
     pad = pad + 24;
     parents.style.paddingLeft = pad + 'px';
 };
