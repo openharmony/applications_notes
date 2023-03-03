@@ -502,7 +502,7 @@ RICH_EDITOR.getFocus = function () {
   return document.getElementById('editorjs').focus();
 }
 
-document.getElementById('editorjs').addEventListener('click', () => {
+document.getElementById('editorjs_box').addEventListener('click', () => {
   if (callBackToApp.getBreakPoint() === 'sm') {
     document.getElementById('buttonBox').style.display = 'flex';
   }
