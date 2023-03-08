@@ -45,7 +45,7 @@ export struct NoteHomeComp {
   @Provide('EditModel') editModel: boolean = false //编辑模式：临时方案
   @Provide('Issave') issave: number = 0
   @StorageLink('breakPoint') breakPoints: string = 'lg'
-  controllerShow: WebController
+  controllerShow: WebviewController
   TAG = "NoteHomeComp_Tablet"
   @Provide('AsideWidth') asideWidth: number = 200
 

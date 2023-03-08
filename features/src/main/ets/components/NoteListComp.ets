@@ -35,7 +35,7 @@ import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/Sear
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import router from '@system.router';
 import rs from '@ohos.resourceManager'
-import inputMethod from '@ohos.inputmethod';
+import inputMethod from '@ohos.inputMethod';
 
 const TAG = "NoteListComp"
 
@@ -56,7 +56,7 @@ export struct NoteListComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = AppStorage.Link('AllFolderArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('Search') search: boolean
-  controllerShow: WebController
+  controllerShow: WebviewController
   @Consume('AsideWidth') asideWidth: number
 
   build() {
@@ -103,7 +103,7 @@ struct NoteOverViewComp {
   @Consume('ExpandStatus') expandStatus: boolean
   @Consume('Search') search: boolean
   @Consume('PortraitModel') portraitModel: boolean
-  controllerShow: WebController
+  controllerShow: WebviewController
   @State noteNumber: any = undefined
   @StorageLink('isUpdate') @Watch('notesNumberChange') isUpdate: boolean = false
   @Consume('AsideWidth') asideWidth: number
@@ -220,7 +220,7 @@ struct NoteOverViewComp {
 export struct NoteItemComp {
   public noteItem: NoteData
   public spans: any[]
-  controllerShow: WebController
+  controllerShow: WebviewController
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = AppStorage.Link('AllFolderArray')
@@ -350,12 +350,12 @@ export struct NoteItemComp {
         LogUtil.info(TAG, "NoteItemComp, set continue note success")
       }
       if (this.portraitModel == false) {
-        this.controllerShow.runJavaScript({
-          script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-        })
-        this.controllerShow.runJavaScript({
-          script: "RICH_EDITOR.cancelSelection()"
-        })
+        this.controllerShow.runJavaScript(
+          "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+        )
+        this.controllerShow.runJavaScript(
+          "RICH_EDITOR.cancelSelection()"
+        )
       }
       if (this.portraitModel == true) {
         AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
@@ -395,7 +395,7 @@ export struct NoteItemListComp {
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('PortraitModel') portraitModel: boolean
   @State dateList: NoteData[] = []
-  controllerShow: WebController
+  controllerShow: WebviewController
   @StorageLink('isUpdate') @Watch('updateList') isUpdate: boolean = false
 
   updateList() {
@@ -426,9 +426,9 @@ export struct NoteItemListComp {
           this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
         }
         if (this.portraitModel == false) {
-          this.controllerShow.runJavaScript({
-            script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-          })
+          this.controllerShow.runJavaScript(
+            "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+          )
         }
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -539,7 +539,7 @@ export struct OperateNoteComp {
   @Consume('PortraitModel') portraitModel: boolean
   @Consume('selectedAll') selectedAll: boolean
   @StorageLink('isUpdate') isUpdate: boolean = false
-  controllerShow: WebController
+  controllerShow: WebviewController
   noteDataMoveDialogCtl: CustomDialogController = new CustomDialogController({
     builder: NoteDataMoveDialog({ onConfirm: this.onMoveConfirm.bind(this) }),
     alignment: DialogAlignment.Center,
@@ -561,7 +561,7 @@ export struct OperateNoteComp {
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "onMoveConfirm, set continue note success")
     if (this.portraitModel == false) {
-      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
     }
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -600,7 +600,7 @@ export struct OperateNoteComp {
     this.longpress = false
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     if (this.portraitModel == false) {
-      this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
     }
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -715,7 +715,7 @@ export struct AddNoteComp {
   @Consume('EditModel') editModel: boolean
   @Consume('ChooseNote') chooseNote: boolean
   @Consume('PortraitModel') portraitModel: boolean
-  controllerShow: WebController
+  controllerShow: WebviewController
 
   build() {
     Image($r('app.media.addNote'))
@@ -738,9 +738,9 @@ export struct AddNoteComp {
         this.selectedNoteData = noteData
         AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
         if (this.portraitModel == false) {
-          this.controllerShow.runJavaScript({
-            script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-          })
+          this.controllerShow.runJavaScript(
+            "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+          )
         }
         if (this.portraitModel == true) {
           this.editModel = true

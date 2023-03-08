@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-import Ability from '@ohos.application.Ability'
+import UIAbility from '@ohos.app.ability.UIAbility';
 import deviceInfo from '@ohos.deviceInfo';
-import AbilityConstant from '@ohos.application.AbilityConstant'
+import AbilityConstant from '@ohos.app.ability.AbilityConstant'
 import fileio from '@ohos.fileio'
-import inputMethod from '@ohos.inputmethod';
+import inputMethod from '@ohos.inputMethod';
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import { atob } from 'js-base64'
 import display from '@ohos.display';
@@ -25,7 +25,7 @@ import window from '@ohos.window';
 
 globalThis.rdbStore = undefined
 
-export default class MainAbility extends Ability {
+export default class MainAbility extends UIAbility {
     private Tag = "MainAbility_Tablet"
 
     onCreate(want, launchParam) {

@@ -19,7 +19,7 @@ import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import { circleColorArray, fontColorArray, SysDefFolderUuid, DeleteFileType, FolderType, LogUtil } from '@ohos/utils'
-import inputMethod from '@ohos.inputmethod'
+import inputMethod from '@ohos.inputMethod'
 
 const TAG = "CusDialogComp"
 
