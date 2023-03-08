@@ -27,7 +27,7 @@ RICH_EDITOR.setHtml = function (contents) {
 };
 
 RICH_EDITOR.getHtml = function () {
-  return document.getElementById('editorjs_box').editor.innerHTML;
+  return document.getElementById('editorjs_box').innerHTML;
 };
 
 RICH_EDITOR.undo = function () {
@@ -279,8 +279,8 @@ RICH_EDITOR.insertImage = function (url) {
   var html = '<br></br><img src="' + url
   + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;'
   + 'vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
-  document.getElementById('editorjs').innerHTML += html
-  document.getElementById('editorjs').scrollIntoView(false);
+  document.getElementById('editorjs_img').innerHTML += html
+  document.getElementById('editorjs_img').scrollIntoView(false);
 };
 
 RICH_EDITOR.insertHTML = function (html) {

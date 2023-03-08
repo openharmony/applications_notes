@@ -253,6 +253,7 @@ export struct NoteContentCompPortrait {
 
         Column() {
           Web({ src: $rawfile('editor.html'), controller: this.controllerShow })
+            .overviewModeAccess(false)
             .javaScriptAccess(true)
             .javaScriptProxy({
               object: this.noteContent,
