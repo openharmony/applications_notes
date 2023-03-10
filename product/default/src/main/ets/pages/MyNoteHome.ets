@@ -20,9 +20,10 @@ import { NoteHomePortraitComp } from './NoteHomePortrait'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import inputMethod from '@ohos.inputmethod';
+import inputMethod from '@ohos.inputMethod';
 import router from '@system.router';
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+import webview from '@ohos.web.webview';
 
 @Entry
 @Component
@@ -30,7 +31,7 @@ export struct MyNoteHomeComp {
   @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
   @Provide('PortraitModel') portraitModel: boolean = true
   @Provide('RefreshFlag') refreshFlag: number = 0
-  private controllerShow: WebController = new WebController()
+  private controllerShow: WebviewController = new webview.WebviewController()
   private context = getContext(this)
   TAG = "MyNoteHomeComp_Tablet"
   @StorageLink('breakPoint') @Watch('onBreakPointChange') breakPoints: string = 'lg'

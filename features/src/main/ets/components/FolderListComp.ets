@@ -38,7 +38,7 @@ export struct FolderListComp {
   @Consume('SectionStatus') sectionStatus: number
   @Consume('ExpandStatus') expandStatus: boolean // 笔记本折叠展开状态
   @StorageLink('breakPoint') breakPoints: string = 'lg'
-  controllerShow: WebController
+  controllerShow: WebviewController
   TAG = "FolderListComp"
   @Consume('AsideWidth') asideWidth: number
 
@@ -184,7 +184,7 @@ struct FolderItemComp {
   @Consume('Longpress') longpress: boolean
   @Consume('SelectedColor') selectedColor: string
   @Consume('PortraitModel') portraitModel: boolean
-  controllerShow: WebController
+  controllerShow: WebviewController
   @State isLongPress: boolean = false
   TAG = "FolderListComp"
   @StorageLink('isUpdate') isUpdate: boolean = false
@@ -278,9 +278,9 @@ struct FolderItemComp {
       }
       // 刷新web界面
       if (this.portraitModel == false) {
-        this.controllerShow.runJavaScript({
-          script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-        })
+        this.controllerShow.runJavaScript(
+          "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+        )
       }
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -423,9 +423,9 @@ struct FolderItemComp {
             }
             // 刷新web界面
             if (this.portraitModel == false) {
-              this.controllerShow.runJavaScript({
-                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              })
+              this.controllerShow.runJavaScript(
+                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              )
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -482,9 +482,9 @@ struct FolderItemComp {
             }
             // 刷新web界面
             if (this.portraitModel == false) {
-              this.controllerShow.runJavaScript({
-                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              })
+              this.controllerShow.runJavaScript(
+                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              )
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())

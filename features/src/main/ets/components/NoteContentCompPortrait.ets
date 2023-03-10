@@ -33,7 +33,7 @@ import prompt from '@system.prompt'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import router from '@system.router'
-import inputMethod from '@ohos.inputmethod';
+import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import rs from '@ohos.resourceManager'
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
@@ -58,7 +58,7 @@ export struct NoteContentCompPortrait {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Provide('EditModel') editModel: boolean = false
   @StorageLink('dpi') dpi: number = 240
-  controllerShow: WebController
+  controllerShow: WebviewController
   private editContentFlag = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
@@ -69,7 +69,7 @@ export struct NoteContentCompPortrait {
   })
 
   confirm(excuteJs: string) {
-    this.controllerShow.runJavaScript({ script: excuteJs })
+    this.controllerShow.runJavaScript(excuteJs)
   }
 
   storeScrollTop(scrollTop: number) {
@@ -87,9 +87,9 @@ export struct NoteContentCompPortrait {
     if (scrollTopPercent < 0) {
       return
     }
-    this.controllerShow.runJavaScript({
-      script: 'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
-    })
+    this.controllerShow.runJavaScript(
+      'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
+    )
   }
 
   restoreFocus() {
@@ -165,7 +165,7 @@ export struct NoteContentCompPortrait {
           realHtml = "file://" + filePath
         }
         LogUtil.info(TAG, 'paste info11' + realHtml)
-        this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImageHtml('" + realHtml + "')" })
+        this.controllerShow.runJavaScript("javascript:RICH_EDITOR.insertImageHtml('" + realHtml + "')")
       } else {
         LogUtil.info(TAG, 'paste info22224')
       }
@@ -185,7 +185,7 @@ export struct NoteContentCompPortrait {
     },
     addToDo: () => {
       // 清单
-      this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+      this.controllerShow.runJavaScript("javascript:RICH_EDITOR.setTodo()")
     },
     chooseStyle: () => {
       this.editContentDialogCtl.open()
@@ -229,8 +229,8 @@ export struct NoteContentCompPortrait {
             OperationUtils.copy(imageUri).then((uriPath) => {
               var path = "file://" + uriPath
               LogUtil.info(TAG, 'image uri is:' + path)
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.getFocus()" })
-              this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImage('" + path + "')" })
+              this.controllerShow.runJavaScript("javascript:RICH_EDITOR.getFocus()")
+              this.controllerShow.runJavaScript("javascript:RICH_EDITOR.insertImage('" + path + "')")
             })
           }
         }
@@ -263,24 +263,24 @@ export struct NoteContentCompPortrait {
             })
             .onPageEnd((e) => {
               if (this.dpi <= 240) {
-                this.controllerShow.runJavaScript({ script: "changeSizeToRk()" })
+                this.controllerShow.runJavaScript("changeSizeToRk()")
               } else if (this.dpi <= 320 && this.dpi > 240) {
-                this.controllerShow.runJavaScript({ script: "changeSizeToPhone()" })
+                this.controllerShow.runJavaScript("changeSizeToPhone()")
               } else {
-                this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
+                this.controllerShow.runJavaScript("changeSizeToTablet()")
               }
               LogUtil.info(TAG, "finish loadurl")
               let self = this
-              this.controllerShow.runJavaScript({
-                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
-                callback: () => {
+              this.controllerShow.runJavaScript(
+                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
+                () => {
                   // wait for the image in the note to load
                   setTimeout(function () {
                     self.restoreScrollTop()
                     self.restoreFocus()
                   }, 100)
                 }
-              })
+              )
             })
             .imageAccess(true)
             .onlineImageAccess(true)
@@ -301,7 +301,7 @@ export struct NoteContentCompPortrait {
           }
           // 添加定时器：3s自动保存
           time_id = setInterval(() => {
-            this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+            this.controllerShow.runJavaScript("scheduledSaveContent()")
           }, 3000)
           LogUtil.info(TAG, "setInterval time_id : " + time_id)
           this.editModel = true
@@ -447,7 +447,7 @@ export struct ToolBarComp {
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('EditModel') editModel: boolean
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
-  controllerShow: WebController
+  controllerShow: WebviewController
 
   onDeleteConfirm() {
     if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
@@ -485,7 +485,7 @@ export struct ToolBarComp {
         .width(24)
         .responseRegion({ width: 54, height: 54 })
         .onClick(() => {
-          this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
+          this.controllerShow.runJavaScript("getHtmlContent()")
           // 清除定时器
           if (time_id != undefined) {
             LogUtil.info(TAG, "back, clearInterval time_id : " + time_id)
@@ -507,9 +507,9 @@ export struct ToolBarComp {
               RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
               if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
                 this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
-                this.controllerShow.runJavaScript({
-                  script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-                })
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                )
                 // save continue data
                 let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
                 AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -531,7 +531,7 @@ export struct ToolBarComp {
                 // 退出键盘
                 // @ts-ignore
                 inputMethod.getController().stopInputSession();
-                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.undo()" })
+                this.controllerShow.runJavaScript("javascript:RICH_EDITOR.undo()")
               })
           }.width(42)
           .height(42)
@@ -544,7 +544,7 @@ export struct ToolBarComp {
                 // 退出键盘
                 // @ts-ignore
                 inputMethod.getController().stopInputSession();
-                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.redo()" })
+                this.controllerShow.runJavaScript("javascript:RICH_EDITOR.redo()")
               })
           }.width(42)
           .height(42)
@@ -555,7 +555,7 @@ export struct ToolBarComp {
             Image($r('app.media.tick_thin')).height(24).width(24)
               .onClick(() => {
                 // 保存笔记信息到数据库
-                this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
+                this.controllerShow.runJavaScript("getHtmlContent()")
                 this.editModel = false
               })
           }.width(42)
