@@ -104,7 +104,7 @@ struct NoteOverViewComp {
   @Consume('Search') search: boolean
   @Consume('PortraitModel') portraitModel: boolean
   controllerShow: WebController
-  @State noteNumber: any = undefined
+  @State noteNumber: number = undefined
   @StorageLink('isUpdate') isUpdate: boolean = false
   @Consume('AsideWidth') asideWidth: number
 
