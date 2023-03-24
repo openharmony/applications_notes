@@ -124,6 +124,7 @@ export class FolderUtil {
       LogUtil.info(TAG, "folderData.uuid " + folderData.uuid + " folderData.folder_type " + folderData.folder_type)
       return folderData.folder_type == FolderType.CusDef ? folderData.name : folderTextMap[folderData.uuid]
     } else {
+      folderData.uuid = '';
       LogUtil.info(TAG, "folderData undefined")
     }
   }

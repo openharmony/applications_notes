@@ -374,7 +374,7 @@ struct FolderItemComp {
 
   build() {
     Flex() {
-      if (this.folderItem.folder_type == FolderType.CusDef) {
+      if (this.folderItem?.folder_type == FolderType.CusDef) {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Row() {
             Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
