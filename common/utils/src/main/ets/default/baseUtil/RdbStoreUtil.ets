@@ -190,6 +190,7 @@ export default {
           let folderData = new FolderData(id, name, uuid, color, folder_type, is_deleted, created_time, modified_time)
           folderDataArray.push(folderData)
         }
+        resultSet_folder.close();
         LogUtil.info(TAG, "folderDataArray[query] : " + folderDataArray.length)
         // query note
         let columns_note = []
@@ -220,6 +221,7 @@ export default {
           let noteData = new NoteData(id, title, uuid, folder_uuid, content_text, content_img, noteType, is_top, is_favorite, is_deleted, created_time, modified_time, deleted_time, slider_value)
           noteDataArray.push(noteData)
         }
+        resultSet_note.close();
         LogUtil.info(TAG, "noteDataArray[query] : " + noteDataArray.length)
 
         AppStorage.SetOrCreate('AllFolderArray', folderDataArray)
