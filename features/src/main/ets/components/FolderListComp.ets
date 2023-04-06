@@ -174,7 +174,7 @@ export struct NoteAndCreateComp {
 
 @Component
 struct FolderItemComp {
-  @State folderItem: FolderData = undefined
+  @State folderItem: FolderData = new FolderData(0, "", new Date().getTime() + "", "", FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime())
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []

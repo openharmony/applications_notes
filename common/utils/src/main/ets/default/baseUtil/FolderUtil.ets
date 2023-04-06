@@ -38,6 +38,7 @@ export class FolderUtil {
     })
     if (folderData == undefined) {
       LogUtil.info(TAG, "no folder get " + folderUuid)
+      folderData = new FolderData(0, "", new Date().getTime() + "", "", FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime())
     }
     return folderData
   }
