@@ -26,15 +26,6 @@ body {
   margin: 0;
 }
 
-#editorjs {
-  outline: 0px solid transparent;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  color: #182431;
-  opacity: 0.9;
-  user-select: none;
-}
 
 #editorjs_box {
   width: 100%;
@@ -59,8 +50,6 @@ body {
   background: #F88805;
   border: 1px solid #F88805;
   outline: none;
-  margin-left: 0px;
-  margin-right: 0px;
   opacity: 1;
 }
 

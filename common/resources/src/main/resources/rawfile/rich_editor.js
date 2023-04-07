@@ -15,7 +15,7 @@
 
 var RICH_EDITOR = {};
 
-RICH_EDITOR.editor = document.getElementById('editorjs');
+RICH_EDITOR.editor = document.getElementById('editorjs_box');
 
 RICH_EDITOR.setHtml = function (contents) {
   var base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
@@ -243,7 +243,7 @@ RICH_EDITOR.execFontSize = function (size, unit) {
 
 var pad = 24;
 RICH_EDITOR.setIndent = function () {
-  var parents = document.getElementById('editorjs');
+  var parents = document.getElementById('editorjs_box');
   parents.removeAttribute('padding-left');
   if (pad >= 408) {
     return
@@ -253,7 +253,7 @@ RICH_EDITOR.setIndent = function () {
 };
 
 RICH_EDITOR.setOutdent = function () {
-  var parents = document.getElementById('editorjs');
+  var parents = document.getElementById('editorjs_box');
   parents.removeAttribute('padding-left');
   if (pad === 24) {
     parents.style.paddingLeft = 24 + 'px';
@@ -279,8 +279,8 @@ RICH_EDITOR.insertImage = function (url) {
   var html = '<br></br><img src="' + url
   + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;'
   + 'vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
-  document.getElementById('editorjs_img').innerHTML += html
-  document.getElementById('editorjs_img').scrollIntoView(false);
+  document.getElementById('editorjs_box').innerHTML += html
+  document.getElementById('editorjs_box').scrollIntoView(false);
 };
 
 RICH_EDITOR.insertHTML = function (html) {
@@ -309,7 +309,7 @@ RICH_EDITOR.addTodo = function (e) {
 };
 
 RICH_EDITOR.setTodo = function () {
-  var parent = document.getElementById('editorjs');
+  var parent = document.getElementById('editorjs_box');
   var isContentEmpty = parent.innerHTML.trim().length === 0 || parent.innerHTML === '<br>';
   var html = (isContentEmpty ? '' : '<br/>')
   + '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox">'
@@ -440,8 +440,8 @@ RICH_EDITOR.insertImageHtml = function (contents) {
 
 document.addEventListener('click', (e) => {
   console.info(`lsq: e is ${JSON.stringify(e)}`)
-  var parent = document.getElementById('editorjs');
-  if (parent.id !== 'editorjs') {
+  var parent = document.getElementById('editorjs_box');
+  if (parent.id !== 'editorjs_box') {
     e.preventDefault()
   }
 })
@@ -499,7 +499,7 @@ function hiddenButton() {
 }
 
 RICH_EDITOR.getFocus = function () {
-  return document.getElementById('editorjs').focus();
+  return document.getElementById('editorjs_box').focus();
 }
 
 document.getElementById('editorjs_box').addEventListener('click', () => {
