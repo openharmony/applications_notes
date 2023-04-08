@@ -25,7 +25,6 @@ import {
   DeleteFileType
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import { NewOrEditFolderDialog, DeleteDialog } from './CusDialogComp'
-import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'

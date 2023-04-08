@@ -30,11 +30,9 @@ import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil
 import prompt from '@system.prompt'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
-import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/SearchModel'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import router from '@system.router';
-import rs from '@ohos.resourceManager'
 import inputMethod from '@ohos.inputMethod';
 
 const TAG = "NoteListComp"

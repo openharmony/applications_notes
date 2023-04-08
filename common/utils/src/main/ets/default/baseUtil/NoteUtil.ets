@@ -13,18 +13,15 @@
  * limitations under the License.
  */
 
-import {WidthWeightMessage, unSelectedNoteBgColorMap, selectedNoteBgColorMap, folderTextMap, widthWeightMessageMap
-} from '../model/NoteBaseData'
+import {unSelectedNoteBgColorMap, selectedNoteBgColorMap} from '../model/NoteBaseData'
 import FolderData from '../model/databaseModel/FolderData'
 import NoteData from '../model/databaseModel/NoteData'
 import {SysDefFolderUuid, FolderType, Favorite, Delete, TableName, NoteTableColumn,
 } from '../model/databaseModel/EnumData'
-import GlobalResourceManager from './GlobalResourceManager'
 import StyleConstants from '../constants/StyleConstants'
 import {LogUtil} from './LogUtil'
 import FolderUtil from './FolderUtil'
 import RdbStoreUtil from './RdbStoreUtil'
-import prompt from '@system.prompt'
 
 const TAG = "NoteUtil"
 

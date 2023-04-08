@@ -35,7 +35,6 @@ import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationU
 import router from '@system.router'
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
-import rs from '@ohos.resourceManager'
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 
 var time_id: number

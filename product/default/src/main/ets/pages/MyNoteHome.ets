@@ -14,12 +14,10 @@
  */
 
 import fileio from '@ohos.fileio'
-import deviceInfo from '@ohos.deviceInfo';
 import { NoteHomeComp } from './NoteHome'
 import { NoteHomePortraitComp } from './NoteHomePortrait'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
-import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import inputMethod from '@ohos.inputMethod';
 import router from '@system.router';
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';

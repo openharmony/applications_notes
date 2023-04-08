@@ -14,7 +14,6 @@
  */
 
 import {LogUtil} from './LogUtil'
-import GlobalResourceManager from './GlobalResourceManager'
 
 const TAG = "DateUtil"
 
