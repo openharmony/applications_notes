@@ -14,7 +14,6 @@
  */
 
 import { atob } from 'js-base64'
-import ohosDataRdb from '@ohos.data.rdb'
 import fileio from '@ohos.fileio'
 import { LogUtil } from './LogUtil'
 import FolderUtil from './FolderUtil'
@@ -24,6 +23,7 @@ import FolderData from '../model/databaseModel/FolderData'
 import NoteData from '../model/databaseModel/NoteData'
 import { TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid
 } from '../model/databaseModel/EnumData'
+import relationalStore from '@ohos.data.relationalStore'
 
 const TAG = "RdbStoreUtil"
 
@@ -38,7 +38,7 @@ export default {
    * create db and table
    */
   createRdbStore(context) {
-    ohosDataRdb.getRdbStore(context, SysDefData.dbInfo.db_name, SysDefData.dbInfo.db_verison)
+    relationalStore.getRdbStore(context, SysDefData.dbInfo.db_name)
       .then(async (store) => {
         LogUtil.info(TAG, "createRdbStore, store is " + store)
         globalThis.rdbStore = store
@@ -170,13 +170,13 @@ export default {
   initAppStorage(context) {
     let folderDataArray = []
     let noteDataArray = []
-    ohosDataRdb.getRdbStore(context, SysDefData.dbInfo.db_name, SysDefData.dbInfo.db_verison)
+    relationalStore.getRdbStore(context, SysDefData.dbInfo.db_name)
       .then(async (store) => {
         LogUtil.info(TAG, "initAppStorage, store is " + store)
         globalThis.rdbStore = store
         // query folder
         let columns_folder = []
-        let predicates_folder = new ohosDataRdb.RdbPredicates(TableName.FolderTable)
+        let predicates_folder = new relationalStore.RdbPredicates(TableName.FolderTable)
         let resultSet_folder = await globalThis.rdbStore.query(predicates_folder, columns_folder)
         while (resultSet_folder.goToNextRow()) {
           let id = resultSet_folder.getLong(resultSet_folder.getColumnIndex(FolderTableColumn.Id))
@@ -194,7 +194,7 @@ export default {
         LogUtil.info(TAG, "folderDataArray[query] : " + folderDataArray.length)
         // query note
         let columns_note = []
-        let predicates_note = new ohosDataRdb.RdbPredicates(TableName.NoteTable)
+        let predicates_note = new relationalStore.RdbPredicates(TableName.NoteTable)
         let resultSet_note = await globalThis.rdbStore.query(predicates_note, columns_note)
         while (resultSet_note.goToNextRow()) {
           let id = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.Id))
@@ -478,7 +478,7 @@ export default {
    * @param tableName
    */
   getRdbPredicates(tableName) {
-    return new ohosDataRdb.RdbPredicates(tableName)
+    return new relationalStore.RdbPredicates(tableName)
   },
 
   updataNoteImage(noteData: NoteData): string {
