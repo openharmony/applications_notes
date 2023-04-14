@@ -291,20 +291,20 @@ export struct NoteContentCompPortrait {
             .onScroll((event) => {
               this.storeScrollTop(event.yOffset)
             })
+            .onClick(() => {
+              if (time_id) {
+                clearInterval(time_id)
+              }
+              // 添加定时器：3s自动保存
+              time_id = setInterval(() => {
+                this.controllerShow.runJavaScript("scheduledSaveContent()")
+              }, 3000)
+              LogUtil.info(TAG, "setInterval time_id : " + time_id)
+              this.editModel = true
+            })
         }
         .enabled(this.selectedNoteData && this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
         .flexShrink(1)
-        .onClick(() => {
-          if (time_id) {
-            clearInterval(time_id)
-          }
-          // 添加定时器：3s自动保存
-          time_id = setInterval(() => {
-            this.controllerShow.runJavaScript("scheduledSaveContent()")
-          }, 3000)
-          LogUtil.info(TAG, "setInterval time_id : " + time_id)
-          this.editModel = true
-        })
         .margin({ top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
       }
