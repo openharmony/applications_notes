@@ -48,12 +48,16 @@ struct NoteContentHome {
   }
 
   onBackPress(): void {
-    LogUtil.info(this.TAG, "onBackPress")
-    this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
-    this.controllerShow.runJavaScript("getHtmlContent()")
-    if (deviceInfo.deviceType !== 'phone' && deviceInfo.deviceType !== 'default') {
-      // @ts-ignore
-      inputMethod.getController().stopInputSession();
+    try {
+      LogUtil.info(this.TAG, "onBackPress")
+      this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
+      this.controllerShow.runJavaScript("getHtmlContent()")
+      if (deviceInfo.deviceType !== 'phone' && deviceInfo.deviceType !== 'default') {
+        // @ts-ignore
+        inputMethod.getController().stopInputSession();
+      }
+    } catch (error) {
+      LogUtil.info(this.TAG, 'onBackPress error')
     }
   }
 

@@ -79,16 +79,21 @@ export struct NoteContentCompPortrait {
   }
 
   restoreScrollTop() {
-    if (!AppStorage.Has('remoteScrollTopPercent')) {
-      return
+    try {
+      if (!AppStorage.Has('remoteScrollTopPercent')) {
+        return
+      }
+      var scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')
+      if (scrollTopPercent < 0) {
+        return
+      }
+      this.controllerShow.runJavaScript(
+        'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
+      )
+    } catch (error) {
+      LogUtil.info(TAG, 'restoreScrollTop error')
     }
-    var scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')
-    if (scrollTopPercent < 0) {
-      return
-    }
-    this.controllerShow.runJavaScript(
-      'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
-    )
+
   }
 
   restoreFocus() {
@@ -261,25 +266,30 @@ export struct NoteContentCompPortrait {
               controller: this.controllerShow
             })
             .onPageEnd((e) => {
-              if (this.dpi <= 240) {
-                this.controllerShow.runJavaScript("changeSizeToRk()")
-              } else if (this.dpi <= 320 && this.dpi > 240) {
-                this.controllerShow.runJavaScript("changeSizeToPhone()")
-              } else {
-                this.controllerShow.runJavaScript("changeSizeToTablet()")
-              }
-              LogUtil.info(TAG, "finish loadurl")
-              let self = this
-              this.controllerShow.runJavaScript(
-                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
-                () => {
-                  // wait for the image in the note to load
-                  setTimeout(function () {
-                    self.restoreScrollTop()
-                    self.restoreFocus()
-                  }, 100)
+              try {
+                if (this.dpi <= 240) {
+                  this.controllerShow.runJavaScript("changeSizeToRk()")
+                } else if (this.dpi <= 320 && this.dpi > 240) {
+                  this.controllerShow.runJavaScript("changeSizeToPhone()")
+                } else {
+                  this.controllerShow.runJavaScript("changeSizeToTablet()")
                 }
-              )
+                LogUtil.info(TAG, "finish loadurl")
+                let self = this
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
+                  () => {
+                    // wait for the image in the note to load
+                    setTimeout(function () {
+                      self.restoreScrollTop()
+                      self.restoreFocus()
+                    }, 100)
+                  }
+                )
+              } catch (error) {
+                LogUtil.info(TAG, 'onPageEnd error')
+              }
+
             })
             .imageAccess(true)
             .onlineImageAccess(true)
@@ -297,7 +307,11 @@ export struct NoteContentCompPortrait {
               }
               // 添加定时器：3s自动保存
               time_id = setInterval(() => {
-                this.controllerShow.runJavaScript("scheduledSaveContent()")
+                try {
+                  this.controllerShow.runJavaScript("scheduledSaveContent()")
+                } catch (error) {
+                  LogUtil.info(TAG, 'setInterval error')
+                }
               }, 3000)
               LogUtil.info(TAG, "setInterval time_id : " + time_id)
               this.editModel = true
@@ -484,14 +498,18 @@ export struct ToolBarComp {
         .width(24)
         .responseRegion({ width: 54, height: 54 })
         .onClick(() => {
-          this.controllerShow.runJavaScript("getHtmlContent()")
-          // 清除定时器
-          if (time_id != undefined) {
-            LogUtil.info(TAG, "back, clearInterval time_id : " + time_id)
-            clearInterval(time_id)
+          try {
+            this.controllerShow.runJavaScript("getHtmlContent()")
+            // 清除定时器
+            if (time_id != undefined) {
+              LogUtil.info(TAG, "back, clearInterval time_id : " + time_id)
+              clearInterval(time_id)
+            }
+            router.back()
+            NoteUtil.refreshAll()
+          } catch (error) {
+            LogUtil.info(TAG, 'back error')
           }
-          router.back()
-          NoteUtil.refreshAll()
         })
 
       if (this.editModel == false) {
@@ -499,22 +517,26 @@ export struct ToolBarComp {
           Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') : $r('app.media.favorite_cancel'))
             .height(24).width(24)
             .onClick(() => {
-              this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
-              // update note to db
-              let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-              predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-              if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
-                this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
-                this.controllerShow.runJavaScript(
-                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-                )
-                // save continue data
-                let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-                AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-                LogUtil.info(TAG, "ToolBarComp, set continue note success")
+              try {
+                this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
+                // update note to db
+                let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+                if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
+                  this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
+                  this.controllerShow.runJavaScript(
+                    "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                  )
+                  // save continue data
+                  let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+                  AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+                  LogUtil.info(TAG, "ToolBarComp, set continue note success")
+                }
+                NoteUtil.refreshAll()
+              } catch (error) {
+                LogUtil.info(TAG, 'favorite error')
               }
-              NoteUtil.refreshAll()
             })
           Image($r('app.media.delete')).height(24).width(24)
             .onClick(() => {
@@ -527,10 +549,14 @@ export struct ToolBarComp {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.undo')).height(24).width(24)
               .onClick(() => {
-                // 退出键盘
-                // @ts-ignore
-                inputMethod.getController().stopInputSession();
-                this.controllerShow.runJavaScript("javascript:RICH_EDITOR.undo()")
+                try {
+                  // 退出键盘
+                  // @ts-ignore
+                  inputMethod.getController().stopInputSession();
+                  this.controllerShow.runJavaScript("javascript:RICH_EDITOR.undo()")
+                } catch (error) {
+                  LogUtil.info(TAG, 'undo error')
+                }
               })
           }.width(42)
           .height(42)
@@ -540,10 +566,14 @@ export struct ToolBarComp {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.todo')).height(24).width(24)
               .onClick(() => {
-                // 退出键盘
-                // @ts-ignore
-                inputMethod.getController().stopInputSession();
-                this.controllerShow.runJavaScript("javascript:RICH_EDITOR.redo()")
+                try {
+                  // 退出键盘
+                  // @ts-ignore
+                  inputMethod.getController().stopInputSession();
+                  this.controllerShow.runJavaScript("javascript:RICH_EDITOR.redo()")
+                } catch (error) {
+                  LogUtil.info(TAG, 'todo error')
+                }
               })
           }.width(42)
           .height(42)
@@ -553,9 +583,13 @@ export struct ToolBarComp {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
             Image($r('app.media.tick_thin')).height(24).width(24)
               .onClick(() => {
-                // 保存笔记信息到数据库
-                this.controllerShow.runJavaScript("getHtmlContent()")
-                this.editModel = false
+                try {
+                  // 保存笔记信息到数据库
+                  this.controllerShow.runJavaScript("getHtmlContent()")
+                  this.editModel = false
+                } catch (error) {
+                  LogUtil.info(TAG, 'tick_thin error')
+                }
               })
           }.width(42)
           .height(42)
