@@ -59,6 +59,7 @@ export struct NoteContentCompPortrait {
   @StorageLink('dpi') dpi: number = 240
   controllerShow: WebviewController
   private editContentFlag = false
+  private isClickBack: boolean = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditContentDialogPortrait({ confirm: this.confirm.bind(this) }),
@@ -308,7 +309,9 @@ export struct NoteContentCompPortrait {
               // 添加定时器：3s自动保存
               time_id = setInterval(() => {
                 try {
-                  this.controllerShow.runJavaScript("scheduledSaveContent()")
+                  if (!this.isClickBack) {
+                    this.controllerShow.runJavaScript("scheduledSaveContent()")
+                  }
                 } catch (error) {
                   LogUtil.info(TAG, 'setInterval error')
                 }
@@ -332,11 +335,16 @@ export struct NoteContentCompPortrait {
   }
 
   aboutToAppear(): void {
+    this.isClickBack = false
     LogUtil.info(TAG, "aboutToAppear")
   }
 
   aboutToDisappear(): void {
+    this.isClickBack = true
     clearInterval(time_id)
+    setTimeout(() => {
+      LogUtil.info(TAG, "wait save cotext")
+    }, 50)
     NoteUtil.refreshAll()
     LogUtil.info(TAG, "aboutToDisappear")
   }
