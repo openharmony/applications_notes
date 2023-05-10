@@ -18,7 +18,6 @@ import FolderData from '../model/databaseModel/FolderData'
 import NoteData from '../model/databaseModel/NoteData'
 import {SysDefFolderUuid, FolderType, Favorite, Delete} from '../model/databaseModel/EnumData'
 import GlobalResourceManager from './GlobalResourceManager'
-import StyleConstants from '../constants/StyleConstants'
 import {LogUtil} from './LogUtil'
 
 const TAG = "FolderUtil"
@@ -38,6 +37,7 @@ export class FolderUtil {
     })
     if (folderData == undefined) {
       LogUtil.info(TAG, "no folder get " + folderUuid)
+      folderData = new FolderData(0, "", new Date().getTime() + "", "", FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime())
     }
     return folderData
   }

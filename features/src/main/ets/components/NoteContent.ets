@@ -26,14 +26,11 @@ import {
   Delete
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
-import { EditContentDialog, DeleteDialog, EditTitleDialog } from './CusDialogComp'
+import { EditContentDialog, EditTitleDialog } from './CusDialogComp'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
-import prompt from '@system.prompt'
-import featureAbility from '@ohos.ability.featureAbility'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
-import mediaquery from '@ohos.mediaquery'
 import router from '@system.router';
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
@@ -49,7 +46,7 @@ export struct NoteContent {
   @Provide('Issave') issave: number = 0
   @Provide('EditModel') editModel: boolean = false
   @StorageLink('dpi') dpi: number = 240
-  controllerShow: WebController
+  controllerShow: WebviewController
   private editContentFlag = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
 
@@ -57,6 +54,7 @@ export struct NoteContent {
     if (scrollTop < 0) {
       return
     }
+    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop / this.controllerShow.getPageHeight())
   }
 
   restoreScrollTop() {
@@ -67,6 +65,9 @@ export struct NoteContent {
     if (scrollTopPercent < 0) {
       return
     }
+    this.controllerShow.runJavaScript(
+      'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
+    )
     AppStorage.Delete('remoteScrollTopPercent')
   }
 
@@ -146,7 +147,7 @@ export struct NoteContent {
           realHtml = "file://" + filePath
         }
         LogUtil.info(TAG, 'paste info11' + realHtml)
-        this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImageHtml('" + realHtml + "')" })
+        this.controllerShow.runJavaScript("javascript:RICH_EDITOR.insertImageHtml('" + realHtml + "')")
       } else {
         LogUtil.info(TAG, 'paste info22223')
       }
@@ -187,28 +188,28 @@ export struct NoteContent {
             })
             .onPageEnd((e) => {
               if (this.dpi <= 240) {
-                this.controllerShow.runJavaScript({ script: "changeSizeToRk()" })
+                this.controllerShow.runJavaScript("changeSizeToRk()")
               } else if (this.dpi <= 320 && this.dpi > 240) {
-                this.controllerShow.runJavaScript({ script: "changeSizeToPhone()" })
+                this.controllerShow.runJavaScript("changeSizeToPhone()")
               } else {
-                this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
+                this.controllerShow.runJavaScript("changeSizeToTablet()")
               }
               if (AppStorage.Get('breakPoint') !== 'sm') {
-                this.controllerShow.runJavaScript({ script: "hiddenButton()" })
+                this.controllerShow.runJavaScript("hiddenButton()")
               }
               LogUtil.info(TAG, "finish loadurl")
               if (this.selectedNoteData) {
                 let self = this
-                this.controllerShow.runJavaScript({
-                  script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
-                  callback: () => {
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
+                  () => {
                     // wait for the image in the note to load
                     setTimeout(function () {
                       self.restoreScrollTop()
                       self.restoreFocus()
                     }, 100)
                   }
-                })
+                )
               }
             })
             .zoomAccess(false)
@@ -216,7 +217,7 @@ export struct NoteContent {
             .onlineImageAccess(true)
             .fileAccess(true)
             .domStorageAccess(true)
-            .height('70%')
+            .height('88%')
             .width('100%')
             .onScroll((event) => {
               this.storeScrollTop(event.yOffset)
@@ -227,7 +228,7 @@ export struct NoteContent {
                 clearInterval(timeID)
               }
               timeID = setInterval(() => {
-                this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+                this.controllerShow.runJavaScript("scheduledSaveContent()")
               }, 3000)
               LogUtil.info(TAG, "setInterval timeID : " + timeID)
               this.issave = 0
@@ -235,7 +236,6 @@ export struct NoteContent {
             })
         }
         .margin({ left: 12, right: 24, top: 16 })
-        .width(StyleConstants.PERCENTAGE_100)
       }
       .height(StyleConstants.PERCENTAGE_100)
     }
@@ -261,7 +261,7 @@ export struct ToolBarComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Consume('Issave') issave: number
   @Consume('EditModel') editModel: boolean
-  controllerShow: WebController
+  controllerShow: WebviewController
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditContentDialog({ confirm: this.confirm.bind(this) }),
     alignment: DialogAlignment.Bottom,
@@ -270,7 +270,7 @@ export struct ToolBarComp {
   })
 
   confirm(excuteJs: string) {
-    this.controllerShow.runJavaScript({ script: excuteJs })
+    this.controllerShow.runJavaScript(excuteJs)
   }
 
   build() {
@@ -280,8 +280,8 @@ export struct ToolBarComp {
         .height(24)
         .width(24)
         .onClick(() => {
-          this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
-          this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
+          this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
+          this.controllerShow.runJavaScript("getHtmlContent()")
           // 清除定时器
           if (timeID != undefined) {
             LogUtil.info(TAG, "zoom, clearInterval timeID : " + timeID)
@@ -322,7 +322,7 @@ export struct ToolBarComp {
                 // @ts-ignore
                 inputMethod.getController().stopInputSession();
                 // 清单
-                this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+                this.controllerShow.runJavaScript("javascript:RICH_EDITOR.setTodo()")
               })
           }.width(42)
           .height(42)
@@ -364,19 +364,19 @@ export struct ToolBarComp {
                       let imageUri = ""
                       if (param != null && param != undefined) {
                         let uri = param['select-item-list'];
-                        imageUri = uri;
+                        imageUri = uri[0];
                       }
                       // 拷贝
                       if (imageUri != null && imageUri != "") {
                         OperationUtils.copy(imageUri).then((uriPath) => {
                           var path = "file://" + uriPath
                           LogUtil.info(TAG, 'image uri is:' + path)
-                          this.controllerShow.runJavaScript({
-                            script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
-                          })
+                          this.controllerShow.runJavaScript(
+                            "javascript:RICH_EDITOR.insertImage('" + path + "')"
+                          )
                           this.issave = 1
                           // 保存笔记信息到数据库
-                          this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
+                          this.controllerShow.runJavaScript("getHtmlContent()")
                         })
                       }
                     }
@@ -395,7 +395,7 @@ export struct ToolBarComp {
                 // 退出键盘
                 // @ts-ignore
                 inputMethod.getController().stopInputSession();
-                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
+                this.controllerShow.runJavaScript("RICH_EDITOR.undo()")
               })
           }.width(42)
           .height(42)
@@ -410,7 +410,7 @@ export struct ToolBarComp {
                 // 退出键盘
                 // @ts-ignore
                 inputMethod.getController().stopInputSession();
-                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
+                this.controllerShow.runJavaScript("RICH_EDITOR.redo()")
               })
           }.width(42)
           .height(42)
@@ -426,7 +426,7 @@ export struct ToolBarComp {
               .onClick(() => {
                 this.issave = 1
                 // 保存笔记信息到数据库
-                this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
+                this.controllerShow.runJavaScript("getHtmlContent()")
               })
           }.width(42)
           .height(42)

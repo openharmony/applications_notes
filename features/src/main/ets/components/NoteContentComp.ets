@@ -35,6 +35,7 @@ import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationU
 import mediaquery from '@ohos.mediaquery'
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 
 const TAG = "NoteContentComp"
 
@@ -55,7 +56,7 @@ export struct NoteContentComp {
   @Consume('Issave') issave: number
   @Consume('Search') search: boolean
   @StorageLink('dpi') dpi: number = 240
-  controllerShow: WebController
+  controllerShow: WebviewController
   private editContentFlag = false
   @State uri1: string = ""
   private context = getContext(this)
@@ -68,7 +69,7 @@ export struct NoteContentComp {
     if (!this.refreshCurrentNote) {
       return
     }
-    this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+    this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
     this.refreshCurrentNote = false
   }
 
@@ -76,6 +77,7 @@ export struct NoteContentComp {
     if (scrollTop < 0) {
       return
     }
+    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop / this.controllerShow.getPageHeight())
   }
 
   restoreScrollTop() {
@@ -86,6 +88,9 @@ export struct NoteContentComp {
     if (scrollTopPercent < 0) {
       return
     }
+    this.controllerShow.runJavaScript(
+      'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
+    )
   }
 
   restoreFocus() {
@@ -181,7 +186,7 @@ export struct NoteContentComp {
           realHtml = "file://" + filePath
         }
         LogUtil.info(TAG, 'paste info11-' + realHtml)
-        this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.insertImageHtml('" + realHtml + "')" })
+        this.controllerShow.runJavaScript("javascript:RICH_EDITOR.insertImageHtml('" + realHtml + "')")
         LogUtil.info(TAG, 'paste info11--' + realHtml)
       } else {
         LogUtil.info(TAG, 'paste info22225')
@@ -224,34 +229,35 @@ export struct NoteContentComp {
               methodList: ["callbackhtml", "callbackhtmlSave", "callbackScheduledSave", "callbackGetSize", "callbackPasteImage", "callbackImagePath"],
               controller: this.controllerShow
             })
+            .enabled(this.sectionStatus !== 1 ? false : true)
             .onPageEnd((e) => {
               if (this.dpi <= 240) {
-                this.controllerShow.runJavaScript({ script: "changeSizeToRk()" })
+                this.controllerShow.runJavaScript("changeSizeToRk()")
               } else if (this.dpi <= 320 && this.dpi > 240) {
-                this.controllerShow.runJavaScript({ script: "changeSizeToPhone()" })
+                this.controllerShow.runJavaScript("changeSizeToPhone()")
               } else {
-                this.controllerShow.runJavaScript({ script: "changeSizeToTablet()" })
+                this.controllerShow.runJavaScript("changeSizeToTablet()")
               }
               if (AppStorage.Get('breakPoint') !== 'sm') {
-                this.controllerShow.runJavaScript({ script: "hiddenButton()" })
+                this.controllerShow.runJavaScript("hiddenButton()")
               }
               LogUtil.info(TAG, "finish loadurl")
               if (this.selectedNoteData) {
                 let self = this
-                this.controllerShow.runJavaScript({
-                  script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
-                  callback: () => {
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
+                  () => {
                     // wait for the image in the note to load
                     setTimeout(function () {
                       self.restoreScrollTop()
                       self.restoreFocus()
                     }, 100)
                   }
-                })
+                )
               }
               // 初次加载为为小屏预览模式
               if (this.sectionStatus != 1) {
-                this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
+                this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
               }
             })
             .imageAccess(true)
@@ -278,13 +284,13 @@ export struct NoteContentComp {
             this.asideWidth = 0
             this.lastSectionStatus = this.sectionStatus
             this.sectionStatus = 1
-            this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
+            this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(true)")
             // 添加定时器：3s自动保存
             if (timeId) {
               clearInterval(timeId)
             }
             timeId = setInterval(() => {
-              this.controllerShow.runJavaScript({ script: "scheduledSaveContent()" })
+              this.controllerShow.runJavaScript("scheduledSaveContent()")
             }, 3000)
             LogUtil.info(TAG, "setInterval timeId : " + timeId)
             // save continue data
@@ -333,7 +339,7 @@ export struct NoteContentOverViewComp {
   @Consume('RefreshFlag') refreshFlag: number
   @StorageLink('isUpdate') isUpdate: boolean = false
   NoteDataMoveArray: FolderData[]
-  controllerShow: WebController
+  controllerShow: WebviewController
   editTitleDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditTitleDialog({ confirm: this.confirm.bind(this) }),
     alignment: DialogAlignment.Center,
@@ -374,9 +380,9 @@ export struct NoteContentOverViewComp {
             RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
             if (this.sectionStatus != 1) {
               this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
-              this.controllerShow.runJavaScript({
-                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              })
+              this.controllerShow.runJavaScript(
+                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              )
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             } else {
               this.selectedFolderData = FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), item.uuid)
@@ -407,8 +413,6 @@ export struct NoteContentOverViewComp {
             .fontSize(30)
             .margin({ left: 0, right: 24 })
             .onClick(() => {
-              this.editModel = true
-              this.sectionStatus = 1
               clearInterval(timeId)
               this.editTitleDialogCtl.open()
               // save continue data
@@ -465,7 +469,7 @@ export struct ToolBarComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Consume('EditModel') editModel: boolean
   @Consume('Issave') issave: number
-  controllerShow: WebController
+  controllerShow: WebviewController
   private context = getContext(this)
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
@@ -492,7 +496,7 @@ export struct ToolBarComp {
     }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')" })
+    this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
     this.chooseNote = false
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -509,7 +513,7 @@ export struct ToolBarComp {
   })
 
   confirm(excuteJs: string) {
-    this.controllerShow.runJavaScript({ script: excuteJs })
+    this.controllerShow.runJavaScript(excuteJs)
   }
 
   build() {
@@ -523,16 +527,16 @@ export struct ToolBarComp {
             this.lastSectionStatus = this.sectionStatus
             this.sectionStatus = 1
             this.asideWidth = 0
-            this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(true)" })
+            this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(true)")
           } else {
             if (this.lastSectionStatus != undefined) {
               this.asideWidth = 200
               // 切换为小屏预览模式
-              this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
+              this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
               this.sectionStatus = this.lastSectionStatus
               // 退出全屏时存库
               LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
-              this.controllerShow.runJavaScript({ script: "saveHtmlContent()" })
+              this.controllerShow.runJavaScript("saveHtmlContent()")
               //退出键盘
               // @ts-ignore
               inputMethod.getController().stopInputSession();
@@ -589,9 +593,9 @@ export struct ToolBarComp {
                 RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
 
                 this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-                this.controllerShow.runJavaScript({
-                  script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-                })
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                )
                 // save continue data
                 let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
                 AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -607,7 +611,7 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(() => {
                   // 清单
-                  this.controllerShow.runJavaScript({ script: "javascript:RICH_EDITOR.setTodo()" })
+                  this.controllerShow.runJavaScript("javascript:RICH_EDITOR.setTodo()")
                   // 退出键盘
                   // @ts-ignore
                   inputMethod.getController().stopInputSession();
@@ -642,7 +646,9 @@ export struct ToolBarComp {
                     "ohos.permission.WRITE_MEDIA",
                   ]
                   let context: any = getContext(this);
-                  await context.requestPermissionsFromUser(permissionList).then((data) => {
+                  let AtManager = abilityAccessCtrl.createAtManager();
+                  // @ts-ignore
+                  await AtManager.requestPermissionsFromUser(context, permissionList).then((data) => {
                     LogUtil.info(TAG, 'data permissions : ' + data.permissions)
                     LogUtil.info(TAG, 'data result: ' + data.authResults)
                     let sum = 0
@@ -676,12 +682,12 @@ export struct ToolBarComp {
                           OperationUtils.copy(imageUri).then((uriPath) => {
                             var path = "file://" + uriPath
                             LogUtil.info(TAG, 'image uri is:' + path)
-                            this.controllerShow.runJavaScript({
-                              script: "javascript:RICH_EDITOR.insertImage('" + path + "')"
-                            })
+                            this.controllerShow.runJavaScript(
+                              "javascript:RICH_EDITOR.insertImage('" + path + "')"
+                            )
                             this.issave = 1
                             // 保存笔记信息到数据库
-                            this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
+                            this.controllerShow.runJavaScript("getHtmlContent()")
                           })
                         }
                       }
@@ -701,7 +707,7 @@ export struct ToolBarComp {
                   // 退出键盘
                   // @ts-ignore
                   inputMethod.getController().stopInputSession();
-                  this.controllerShow.runJavaScript({ script: "RICH_EDITOR.undo()" })
+                  this.controllerShow.runJavaScript("RICH_EDITOR.undo()")
                 })
             }.width(42)
             .height(42)
@@ -716,7 +722,7 @@ export struct ToolBarComp {
                   // 退出键盘
                   // @ts-ignore
                   inputMethod.getController().stopInputSession();
-                  this.controllerShow.runJavaScript({ script: "RICH_EDITOR.redo()" })
+                  this.controllerShow.runJavaScript("RICH_EDITOR.redo()")
                 })
             }.width(42)
             .height(42)
@@ -731,7 +737,7 @@ export struct ToolBarComp {
                 .fillColor(this.issave == 0 ? Color.Black : Color.Grey)
                 .onClick(() => {
                   // 保存笔记信息到数据库
-                  this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
+                  this.controllerShow.runJavaScript("getHtmlContent()")
                   if (this.selectedNoteData.title == "标题" && this.selectedNoteData.content_text == "") {
                     LogUtil.info(TAG, "note is empty,save note failed")
                   }
@@ -756,9 +762,9 @@ export struct ToolBarComp {
                 RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
                 if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
                   this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
-                  this.controllerShow.runJavaScript({
-                    script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-                  })
+                  this.controllerShow.runJavaScript(
+                    "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                  )
                   // save continue data
                   let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
                   AppStorage.SetOrCreate<string>('ContinueNote', continueNote)

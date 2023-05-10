@@ -15,11 +15,6 @@
 
 import {LogUtil} from '../../baseUtil/LogUtil'
 import NoteData from '../../model/databaseModel/NoteData'
-import ohosDataRdb from '@ohos.data.rdb';
-import {TableName, NoteTableColumn} from '../../model/databaseModel/EnumData'
-import NoteUtil from '../../baseUtil/NoteUtil'
-import RdbStoreUtil from '../../baseUtil/RdbStoreUtil'
-import SysDefData from '../../model/databaseModel/SysDefData'
 import util from '@ohos.util'
 
 const TAG = "SearchModel"
