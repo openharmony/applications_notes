@@ -342,9 +342,6 @@ export struct NoteContentCompPortrait {
   aboutToDisappear(): void {
     this.isClickBack = true
     clearInterval(time_id)
-    setTimeout(() => {
-      LogUtil.info(TAG, "wait save cotext")
-    }, 50)
     NoteUtil.refreshAll()
     LogUtil.info(TAG, "aboutToDisappear")
   }
@@ -513,7 +510,10 @@ export struct ToolBarComp {
               LogUtil.info(TAG, "back, clearInterval time_id : " + time_id)
               clearInterval(time_id)
             }
-            router.back()
+            setTimeout(() => {
+              LogUtil.info(TAG, "wait save cotext")
+              router.back()
+            }, 50)
             NoteUtil.refreshAll()
           } catch (error) {
             LogUtil.info(TAG, 'back error')
