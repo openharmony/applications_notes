@@ -134,5 +134,8 @@ export struct MyNoteHomeComp {
     // 退出键盘
     // @ts-ignore
     inputMethod.getController().stopInputSession();
+    setTimeout(() => {
+      LogUtil.info(this.TAG, "wait save cotext")
+    }, 50)
   }
 }
