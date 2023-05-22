@@ -120,13 +120,16 @@ export class FolderUtil {
   * @return string | Resource - folder text
   */
   getFolderText(folderData: FolderData): string | Resource {
-    if (folderData && folderData.uuid) {
-      LogUtil.info(TAG, "folderData.uuid " + folderData.uuid + " folderData.folder_type " + folderData.folder_type)
-      return folderData.folder_type == FolderType.CusDef ? folderData.name : folderTextMap[folderData.uuid]
-    } else {
-      folderData.uuid = '';
+    if (folderData === undefined || folderData === null) {
       LogUtil.info(TAG, "folderData undefined")
+      return ''
     }
+    if (folderData.uuid === undefined || folderData.uuid === null) {
+      LogUtil.info(TAG, "folderData uuid undefined")
+      folderData.uuid = 'sys_def_unClassified_uuid';
+    }
+    LogUtil.info(TAG, "folderData.uuid " + folderData.uuid + " folderData.folder_type " + folderData.folder_type)
+    return folderData.folder_type == FolderType.CusDef ? folderData.name : folderTextMap[folderData.uuid]
   }
 
   /**
