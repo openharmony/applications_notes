@@ -99,6 +99,7 @@ body {
   display: none;
   justify-content: space-around;
   padding-bottom: 6px;
+  margin-bottom: 50px;
 }
 
 .button-box div {
