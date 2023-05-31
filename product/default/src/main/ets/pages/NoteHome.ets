@@ -21,10 +21,7 @@ import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import { circleColorArray } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import { SysDefFolderUuid } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import LayoutUtil from '@ohos/utils/src/main/ets/default/baseUtil/LayoutUtil'
-import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
-import mediaquery from '@ohos.mediaquery'
 
 @Entry
 @Component
@@ -45,7 +42,7 @@ export struct NoteHomeComp {
   @Provide('EditModel') editModel: boolean = false //编辑模式：临时方案
   @Provide('Issave') issave: number = 0
   @StorageLink('breakPoint') breakPoints: string = 'lg'
-  controllerShow: WebController
+  controllerShow: WebviewController
   TAG = "NoteHomeComp_Tablet"
   @Provide('AsideWidth') asideWidth: number = 200
 

@@ -25,7 +25,6 @@ import {
   DeleteFileType
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
 import { NewOrEditFolderDialog, DeleteDialog } from './CusDialogComp'
-import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
@@ -38,7 +37,7 @@ export struct FolderListComp {
   @Consume('SectionStatus') sectionStatus: number
   @Consume('ExpandStatus') expandStatus: boolean // 笔记本折叠展开状态
   @StorageLink('breakPoint') breakPoints: string = 'lg'
-  controllerShow: WebController
+  controllerShow: WebviewController
   TAG = "FolderListComp"
   @Consume('AsideWidth') asideWidth: number
 
@@ -174,7 +173,7 @@ export struct NoteAndCreateComp {
 
 @Component
 struct FolderItemComp {
-  @State folderItem: FolderData = undefined
+  @State folderItem: FolderData = new FolderData(0, "", new Date().getTime() + "", "", FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime())
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
@@ -184,7 +183,7 @@ struct FolderItemComp {
   @Consume('Longpress') longpress: boolean
   @Consume('SelectedColor') selectedColor: string
   @Consume('PortraitModel') portraitModel: boolean
-  controllerShow: WebController
+  controllerShow: WebviewController
   @State isLongPress: boolean = false
   TAG = "FolderListComp"
   @StorageLink('isUpdate') isUpdate: boolean = false
@@ -278,9 +277,9 @@ struct FolderItemComp {
       }
       // 刷新web界面
       if (this.portraitModel == false) {
-        this.controllerShow.runJavaScript({
-          script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-        })
+        this.controllerShow.runJavaScript(
+          "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+        )
       }
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -374,7 +373,7 @@ struct FolderItemComp {
 
   build() {
     Flex() {
-      if (this.folderItem.folder_type == FolderType.CusDef) {
+      if (this.folderItem?.folder_type == FolderType.CusDef) {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
           Row() {
             Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
@@ -423,9 +422,9 @@ struct FolderItemComp {
             }
             // 刷新web界面
             if (this.portraitModel == false) {
-              this.controllerShow.runJavaScript({
-                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              })
+              this.controllerShow.runJavaScript(
+                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              )
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -482,9 +481,9 @@ struct FolderItemComp {
             }
             // 刷新web界面
             if (this.portraitModel == false) {
-              this.controllerShow.runJavaScript({
-                script: "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              })
+              this.controllerShow.runJavaScript(
+                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+              )
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())

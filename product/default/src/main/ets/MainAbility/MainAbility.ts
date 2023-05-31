@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import Ability from '@ohos.app.ability.UIAbility'
+import UIAbility from '@ohos.app.ability.UIAbility';
 import deviceInfo from '@ohos.deviceInfo';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant'
 import fileio from '@ohos.fileio'
@@ -25,7 +25,7 @@ import window from '@ohos.window';
 
 globalThis.rdbStore = undefined
 
-export default class MainAbility extends Ability {
+export default class MainAbility extends UIAbility {
     private Tag = "MainAbility_Tablet"
 
     onCreate(want, launchParam) {

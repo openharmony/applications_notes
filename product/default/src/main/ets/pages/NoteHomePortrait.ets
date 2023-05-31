@@ -15,15 +15,11 @@
 
 import { FolderListComp } from '@ohos/component/src/main/ets/components/FolderListComp'
 import { NoteListComp } from '@ohos/component/src/main/ets/components/NoteListComp'
-import { NoteContentCompPortrait } from '@ohos/component/src/main/ets/components/NoteContentCompPortrait'
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import { circleColorArray } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
-import { SysDefFolderUuid } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
-import LayoutUtil from '@ohos/utils/src/main/ets/default/baseUtil/LayoutUtil'
-import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 
 @Entry
 @Component

@@ -19,12 +19,13 @@ import { NoteContent } from '@ohos/component/src/main/ets/components/NoteContent
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import inputMethod from '@ohos.inputMethod'
+import webview from '@ohos.web.webview';
 
 @Entry
 @Component
 struct NoteContentHome {
   @Provide('RefreshFlag') refreshFlag: number = 0
-  private controllerShow: WebController = new WebController()
+  private controllerShow: WebviewController = new webview.WebviewController()
   @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
   @StorageLink('breakPoint') breakPoints: string = 'lg'
   TAG = "NoteContentHome_Tablet"
@@ -47,12 +48,16 @@ struct NoteContentHome {
   }
 
   onBackPress(): void {
-    LogUtil.info(this.TAG, "onBackPress")
-    this.controllerShow.runJavaScript({ script: "RICH_EDITOR.setInputEnabled(false)" })
-    this.controllerShow.runJavaScript({ script: "getHtmlContent()" })
-    if (deviceInfo.deviceType !== 'phone' && deviceInfo.deviceType !== 'default') {
-      // @ts-ignore
-      inputMethod.getController().stopInputSession();
+    try {
+      LogUtil.info(this.TAG, "onBackPress")
+      this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
+      this.controllerShow.runJavaScript("getHtmlContent()")
+      if (deviceInfo.deviceType !== 'phone' && deviceInfo.deviceType !== 'default') {
+        // @ts-ignore
+        inputMethod.getController().stopInputSession();
+      }
+    } catch (error) {
+      LogUtil.info(this.TAG, 'onBackPress error')
     }
   }
 

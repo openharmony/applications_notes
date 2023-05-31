@@ -14,6 +14,7 @@
  */
 
 import {SysDefFolder, SysDefFolderUuid, FolderType, NoteType, Favorite, Top, Delete} from './EnumData'
+import relationalStore from '@ohos.data.relationalStore'
 
 export default {
   /**
@@ -21,7 +22,8 @@ export default {
    */
   dbInfo: {
     db_name: {
-      name: "note.db" // 数据库名称
+      name: "note.db", // 数据库名称
+      securityLevel: relationalStore.SecurityLevel.S1
     },
     db_verison: 1 // 数据库版本
   },
