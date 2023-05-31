@@ -21,7 +21,12 @@ import NoteUtil from './NoteUtil'
 import SysDefData from '../model/databaseModel/SysDefData'
 import FolderData from '../model/databaseModel/FolderData'
 import NoteData from '../model/databaseModel/NoteData'
-import { TableSql, TableName, FolderTableColumn, NoteTableColumn, SysDefFolderUuid
+import {
+  TableSql,
+  TableName,
+  FolderTableColumn,
+  NoteTableColumn,
+  SysDefFolderUuid
 } from '../model/databaseModel/EnumData'
 import relationalStore from '@ohos.data.relationalStore'
 
@@ -40,30 +45,6 @@ export default {
   createRdbStore(context) {
     relationalStore.getRdbStore(context, SysDefData.dbInfo.db_name)
       .then(async (store) => {
-        LogUtil.info(TAG, "createRdbStore, store is " + store)
-        globalThis.rdbStore = store
-        // create table
-        await globalThis.rdbStore.executeSql(TableSql.FolderTableSQL, null)
-        await globalThis.rdbStore.executeSql(TableSql.NoteTableSQL, null)
-        await globalThis.rdbStore.executeSql(TableSql.AttachmentTableSQL, null)
-        await globalThis.rdbStore.executeSql(TableSql.FormTableSQL, null)
-        LogUtil.info(TAG, "create table success")
-        // insert system defined folder
-        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_allNotes)
-        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_unClassified)
-        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_myFavorites)
-        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_recentDeletes)
-        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_personal)
-        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_life)
-        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_work)
-        LogUtil.info(TAG, "insert system defined folder success")
-        // insert system defined note and attachment
-        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note1)
-        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note2)
-        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note3)
-        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note4)
-        LogUtil.info(TAG, "insert system defined note and attachment success")
-
         // add sys-def folder and note to AppStorage
         let folderDataArray = []
         let sysDefFolderArray = [SysDefData.sys_def_allNotes, SysDefData.sys_def_unClassified,
@@ -71,8 +52,8 @@ export default {
         SysDefData.sys_def_personal, SysDefData.sys_def_life, SysDefData.sys_def_work]
         sysDefFolderArray.forEach((sysDefFolder) => {
           let folderData = new FolderData(sysDefFolder.id, sysDefFolder.name, sysDefFolder.uuid, sysDefFolder.color,
-            sysDefFolder.folder_type, sysDefFolder.is_deleted, sysDefFolder.created_time,
-            sysDefFolder.modified_time)
+          sysDefFolder.folder_type, sysDefFolder.is_deleted, sysDefFolder.created_time,
+          sysDefFolder.modified_time)
           folderDataArray.push(folderData)
         })
         LogUtil.info(TAG, "folderDataArray[sysdef] : " + folderDataArray.length)
@@ -82,8 +63,8 @@ export default {
         SysDefData.sys_def_note3, SysDefData.sys_def_note4]
         sysDefNoteArray.forEach((sysDefNote) => {
           let noteData = new NoteData(sysDefNote.id, sysDefNote.title, sysDefNote.uuid, sysDefNote.folder_uuid, sysDefNote.content_text,
-            sysDefNote.content_img, sysDefNote.note_type, sysDefNote.is_top, sysDefNote.is_favorite,
-            sysDefNote.is_deleted, sysDefNote.created_time, sysDefNote.modified_time, sysDefNote.deleted_time, sysDefNote.slider_value)
+          sysDefNote.content_img, sysDefNote.note_type, sysDefNote.is_top, sysDefNote.is_favorite,
+          sysDefNote.is_deleted, sysDefNote.created_time, sysDefNote.modified_time, sysDefNote.deleted_time, sysDefNote.slider_value)
           noteDataArray.push(noteData)
         })
         LogUtil.info(TAG, "noteDataArray[sysdef] : " + noteDataArray.length)
@@ -100,8 +81,8 @@ export default {
           let continueSection = AppStorage.Get('ContinueSection')
           let noteObj = JSON.parse(continueNote)
           let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
-            noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
-            noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value)
+          noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
+          noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value)
 
           // save img to FileDir
           LogUtil.info(TAG, "createRdbStore, save img to FileDir")
@@ -158,6 +139,29 @@ export default {
         }
         AppStorage.SetOrCreate('DBQueryFinished', 1)
         LogUtil.info(TAG, "createRdbStore, set DBQueryFinished 1")
+        LogUtil.info(TAG, "createRdbStore, store is " + store)
+        globalThis.rdbStore = store
+        // create table
+        await globalThis.rdbStore.executeSql(TableSql.FolderTableSQL, null)
+        await globalThis.rdbStore.executeSql(TableSql.NoteTableSQL, null)
+        await globalThis.rdbStore.executeSql(TableSql.AttachmentTableSQL, null)
+        await globalThis.rdbStore.executeSql(TableSql.FormTableSQL, null)
+        LogUtil.info(TAG, "create table success")
+        // insert system defined folder
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_allNotes)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_unClassified)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_myFavorites)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_recentDeletes)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_personal)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_life)
+        await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_work)
+        LogUtil.info(TAG, "insert system defined folder success")
+        // insert system defined note and attachment
+        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note1)
+        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note2)
+        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note3)
+        await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note4)
+        LogUtil.info(TAG, "insert system defined note and attachment success")
       })
       .catch((err) => {
         LogUtil.warn(TAG, "createRdbStore, error : " + err)
@@ -223,7 +227,19 @@ export default {
         }
         resultSet_note.close();
         LogUtil.info(TAG, "noteDataArray[query] : " + noteDataArray.length)
-
+        if (folderDataArray === null || folderDataArray === undefined || folderDataArray.length === 0) {
+          LogUtil.info(TAG, "folderDataArray is null")
+          let sysDefFolderArray = [SysDefData.sys_def_allNotes, SysDefData.sys_def_unClassified,
+          SysDefData.sys_def_myFavorites, SysDefData.sys_def_recentDeletes,
+          SysDefData.sys_def_personal, SysDefData.sys_def_life, SysDefData.sys_def_work]
+          sysDefFolderArray.forEach((sysDefFolder) => {
+            let folderData = new FolderData(sysDefFolder.id, sysDefFolder.name, sysDefFolder.uuid, sysDefFolder.color,
+            sysDefFolder.folder_type, sysDefFolder.is_deleted, sysDefFolder.created_time,
+            sysDefFolder.modified_time)
+            folderDataArray.push(folderData)
+          })
+          LogUtil.info(TAG, "folderDataArray[query] : " + folderDataArray.length)
+        }
         AppStorage.SetOrCreate('AllFolderArray', folderDataArray)
         AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
         LogUtil.info(TAG, "AppStorage[query] set AllFolderArray and AllNoteArray success")
@@ -237,8 +253,8 @@ export default {
 
           let noteObj = JSON.parse(continueNote)
           let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
-            noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
-            noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value)
+          noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
+          noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value)
 
           // save img to FileDir
           LogUtil.info(TAG, "initAppStorage, save img to FileDir")
@@ -301,7 +317,7 @@ export default {
       })
   },
 
-  getImgNameFromHtml(noteData: NoteData): any{
+  getImgNameFromHtml(noteData: NoteData): any {
     let newModuleName = "file://" + globalThis.noteContext.filesDir
     let imgNameArray = []
     if (noteData.content_text == undefined || noteData.content_text == null || noteData.content_text == "") {
@@ -358,7 +374,7 @@ export default {
     }
     let srcPath
     let size
-    try{
+    try {
       srcPath = globalThis.noteContext.distributedFilesDir + "/" + fileName
       LogUtil.info(TAG, "srcPath : " + srcPath)
       size = fileio.statSync(srcPath).size
