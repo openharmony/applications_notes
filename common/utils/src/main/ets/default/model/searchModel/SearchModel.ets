@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {LogUtil} from '../../baseUtil/LogUtil'
+import { LogUtil } from '../../baseUtil/LogUtil'
 import NoteData from '../../model/databaseModel/NoteData'
 import util from '@ohos.util'
 
@@ -40,7 +40,7 @@ export class SearchModel {
     noteDataArray.forEach((noteData) => {
       let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
       let contentTextValue: string
-      if (base64regex.test(noteData.content_text)) {
+      if (base64regex.test(noteData.content_text) && noteData.content_text.length > 0) {
         let Base64 = new util.Base64()
         let textDecoder = new util.TextDecoder("utf-8", { ignoreBOM: true }) // utf-8:编码格式为utf-8,ignoreBOM:是否忽略BOM标记
         let decodeStr = Base64.decodeSync(noteData.content_text)
