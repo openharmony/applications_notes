@@ -383,22 +383,24 @@ export struct NoteContentOverViewComp {
     Column() {
       Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
         List() {
-          ForEach(this.NoteDataMoveArray, (item) => {
-            ListItem() {
-              NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
-            }
-            .onClick(() => {
-              this.selectedNoteData.folder_uuid = item.uuid
-              let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-              predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-              // save continue data
-              let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-              AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-              LogUtil.info(TAG, 'MenuBuilder, set continue note success')
-              NoteUtil.refreshAll()
-            })
-          }, noteItem => noteItem.uuid)
+          if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
+            ForEach(this.NoteDataMoveArray, (item) => {
+              ListItem() {
+                NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
+              }
+              .onClick(() => {
+                this.selectedNoteData.folder_uuid = item.uuid
+                let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+                // save continue data
+                let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+                AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+                LogUtil.info(TAG, 'MenuBuilder, set continue note success')
+                NoteUtil.refreshAll()
+              })
+            }, noteItem => noteItem?.uuid)
+          }
         }
         .margin({ top: 4, bottom: 4 })
         .listDirection(Axis.Vertical)
