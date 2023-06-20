@@ -332,6 +332,10 @@ export struct NoteDataMoveDialog {
 
   aboutToAppear() {
     this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
+    if (this.AllFolderArray[1] === undefined || this.AllFolderArray[1] === null) {
+      LogUtil.info(TAG, "this AllFolderArray[1] undefined")
+      return
+    }
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
   }
 
@@ -346,15 +350,17 @@ export struct NoteDataMoveDialog {
       .width(288)
 
       List() {
-        ForEach(this.NoteDataMoveArray.slice(0, this.NoteDataMoveArray.length - 1), (item) => {
-          ListItem() {
-            NoteDataMoveItemComp({ folderItem: item })
-          }
-          .onClick(() => {
-            this.noteDataMoveDialogCtl.close()
-            this.onConfirm(item.uuid)
-          })
-        }, noteItem => noteItem.uuid)
+        if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
+          ForEach(this.NoteDataMoveArray.slice(0, this.NoteDataMoveArray.length - 1), (item) => {
+            ListItem() {
+              NoteDataMoveItemComp({ folderItem: item })
+            }
+            .onClick(() => {
+              this.noteDataMoveDialogCtl.close()
+              this.onConfirm(item.uuid)
+            })
+          }, noteItem => noteItem.uuid)
+        }
         ListItem() {
           NoteDataMoveItemComp({
             folderItem: this.NoteDataMoveArray[this.NoteDataMoveArray.length - 1],

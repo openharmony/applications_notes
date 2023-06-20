@@ -363,6 +363,10 @@ export struct NoteContentOverViewComp {
 
   aboutToAppear() {
     this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
+    if (this.AllFolderArray[1] === undefined || this.AllFolderArray[1] === null) {
+      LogUtil.info(TAG, "this AllFolderArray[1] undefined")
+      return
+    }
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
   }
 
