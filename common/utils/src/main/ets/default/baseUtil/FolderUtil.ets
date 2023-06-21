@@ -98,7 +98,14 @@ export class FolderUtil {
   * @return boolean - fottom fixed folder: deleted or favorite return true. else return false
   */
   isBottomFixedFolder(folderData: FolderData): boolean {
-    LogUtil.info(TAG, "folderDataUuid " + folderData.uuid)
+    if (folderData === undefined || folderData === null) {
+      LogUtil.info(TAG, "isBottomFixedFolder folderData undefined")
+    }
+    if (folderData.uuid === undefined || folderData.uuid === null) {
+      LogUtil.info(TAG, "isBottomFixedFolder folderData uuid undefined")
+      folderData.uuid = 'sys_def_unClassified_uuid';
+    }
+    LogUtil.info(TAG, "isBottomFixedFolder folderDataUuid " + folderData.uuid)
     return (folderData.folder_type == FolderType.FeatureDef)
   }
 
@@ -109,7 +116,14 @@ export class FolderUtil {
   * @return boolean - can be moved into notes return true. else return false
   */
   isFolderMoveIn(folderData: FolderData): boolean {
-    LogUtil.info(TAG, "folderDataUuid " + folderData.uuid)
+    if (folderData === undefined || folderData === null) {
+      LogUtil.info(TAG, "isFolderMoveIn folderData undefined")
+    }
+    if (folderData.uuid === undefined || folderData.uuid === null) {
+      LogUtil.info(TAG, "isFolderMoveIn folderData uuid undefined")
+      folderData.uuid = 'sys_def_unClassified_uuid';
+    }
+    LogUtil.info(TAG, "isFolderMoveIn folderDataUuid " + folderData.uuid)
     return (folderData.uuid == SysDefFolderUuid.UnClassified || folderData.folder_type == FolderType.CusDef)
   }
 

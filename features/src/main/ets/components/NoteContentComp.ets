@@ -349,11 +349,19 @@ export struct NoteContentOverViewComp {
 
   getArray() {
     this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
+    if (this.AllFolderArray[1] === undefined || this.AllFolderArray[1] === null) {
+      LogUtil.info(TAG, "this AllFolderArray[1] undefined")
+      return
+    }
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
   }
 
   aboutToAppear() {
     this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
+    if (this.AllFolderArray[1] === undefined || this.AllFolderArray[1] === null) {
+      LogUtil.info(TAG, "this AllFolderArray[1] undefined")
+      return
+    }
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
   }
 
@@ -369,31 +377,33 @@ export struct NoteContentOverViewComp {
   @Builder MenuBuilder() {
     Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
       List() {
-        ForEach(this.NoteDataMoveArray, (item) => {
-          ListItem() {
-            NoteDataMoveItemCompTablet({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
-          }
-          .onClick(() => {
-            this.selectedNoteData.folder_uuid = item.uuid
-            let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-            predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-            RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-            if (this.sectionStatus != 1) {
-              this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
-              this.controllerShow.runJavaScript(
-                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              )
-              this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-            } else {
-              this.selectedFolderData = FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), item.uuid)
+        if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
+          ForEach(this.NoteDataMoveArray, (item) => {
+            ListItem() {
+              NoteDataMoveItemCompTablet({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
             }
-            // save continue data
-            let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-            AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-            LogUtil.info(TAG, "NoteContentOverViewComp, MenuBuilder, set continue note success")
-            NoteUtil.refreshAll()
-          })
-        }, noteItem => noteItem.uuid)
+            .onClick(() => {
+              this.selectedNoteData.folder_uuid = item.uuid
+              let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+              predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+              if (this.sectionStatus != 1) {
+                this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                )
+                this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+              } else {
+                this.selectedFolderData = FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), item.uuid)
+              }
+              // save continue data
+              let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+              AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+              LogUtil.info(TAG, "NoteContentOverViewComp, MenuBuilder, set continue note success")
+              NoteUtil.refreshAll()
+            })
+          }, noteItem => noteItem.uuid)
+        }
       }.listDirection(Axis.Vertical)
       .edgeEffect(EdgeEffect.Spring)
       .height(this.AllFolderArray.length > 12 ? 504 : (this.AllFolderArray.length - 3) * 56)
