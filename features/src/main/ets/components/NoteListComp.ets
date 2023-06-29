@@ -320,7 +320,7 @@ export struct NoteItemComp {
     .borderRadius(24)
     .linearGradient({
       direction: GradientDirection.Right,
-      colors: this.selectedNoteData.uuid == this.noteItem.uuid ? [[0xffcdae, 0.0], [0xFfece2, 1.0]] : [[0xffffff, 0.0], [0xffffff, 1.0]]
+      colors: this.selectedNoteData?.uuid == this.noteItem.uuid ? [[0xffcdae, 0.0], [0xFfece2, 1.0]] : [[0xffffff, 0.0], [0xffffff, 1.0]]
     })
     .onClick(() => {
       if (this.search) {
