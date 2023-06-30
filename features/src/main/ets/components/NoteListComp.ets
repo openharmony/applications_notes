@@ -343,13 +343,13 @@ export struct NoteItemComp {
         this.selectedNoteData = this.noteItem
         this.chooseNote = true
         // save continue data
-        let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+        let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "NoteItemComp, set continue note success")
       }
       if (this.portraitModel == false) {
         this.controllerShow.runJavaScript(
-          "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+          "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')"
         )
         this.controllerShow.runJavaScript(
           "RICH_EDITOR.cancelSelection()"
@@ -425,11 +425,11 @@ export struct NoteItemListComp {
         }
         if (this.portraitModel == false) {
           this.controllerShow.runJavaScript(
-            "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+            "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')"
           )
         }
         // save continue data
-        let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+        let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "doSearch, set continue note success")
         this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -555,11 +555,11 @@ export struct OperateNoteComp {
     })
     this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
     // save continue data
-    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+    let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "onMoveConfirm, set continue note success")
     if (this.portraitModel == false) {
-      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
+      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')")
     }
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -598,10 +598,10 @@ export struct OperateNoteComp {
     this.longpress = false
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     if (this.portraitModel == false) {
-      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
+      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')")
     }
     // save continue data
-    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+    let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "OperateNoteComp, set continue note success")
     NoteUtil.refreshAll()
@@ -680,7 +680,8 @@ export struct OperateNoteComp {
           NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           NoteUtil.refreshAll()
         })
-      Image(this.CheckedNoteArray.length == NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length ? $r('app.media.check_all1') : $r('app.media.check_all'))
+      Image(this.CheckedNoteArray.length == NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+        .length ? $r('app.media.check_all1') : $r('app.media.check_all'))
         .width(24)
         .height(24)
         .id(this.isUpdate + '')
@@ -737,7 +738,7 @@ export struct AddNoteComp {
         AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
         if (this.portraitModel == false) {
           this.controllerShow.runJavaScript(
-            "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+            "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')"
           )
         }
         if (this.portraitModel == true) {
@@ -745,7 +746,7 @@ export struct AddNoteComp {
         }
         this.chooseNote = true
         // save continue data
-        let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+        let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
         AppStorage.SetOrCreate<FolderData>('NewFolder', this.selectedFolderData)
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "addNote, set continue note success")
@@ -782,10 +783,13 @@ export struct SearchComp {
         })
 
       Flex({ justifyContent: FlexAlign.Start }) {
-        Image($r('app.media.search')).width(20).height(20)
+        Image($r('app.media.search'))
+          .width(20)
+          .height(20)
           .focusable(true)
           .key('searchFocus')
           .defaultFocus(true)
+          .margin({ top: 4 })
         TextInput({ placeholder: $r('app.string.searchNote'), text: this.text })
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
@@ -825,7 +829,7 @@ export struct SearchComp {
       .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
       .height(40)
       .opacity(this.longpress ? 0.4 : 1)
-      .padding({ left: 6, right: 12, top: 9, bottom: 9 })
+      .padding({ left: 6, right: 12, top: 5, bottom: 5 })
       .borderRadius(20)
       .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
       .margin({ right: this.search ? 40 : 0 })
@@ -871,7 +875,7 @@ export struct OperateNoteCompForPortrait {
     })
     this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
     // save continue data
-    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+    let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "onMoveConfirm, set continue note success")
     this.longpress = false
@@ -911,7 +915,7 @@ export struct OperateNoteCompForPortrait {
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
     // save continue data
-    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+    let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "OperateNoteCompForPortrait, set continue note success")
     NoteUtil.refreshAll()
