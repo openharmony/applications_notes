@@ -110,15 +110,15 @@ export struct NoteContentCompPortrait {
 
   noteContent = {
     callbackhtml: (html) => {
-      LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
+      LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData?.uuid)
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
+      RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
+      LogUtil.info(TAG, 'update note success:' + this.selectedNoteData?.uuid)
       // save continue data
-      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+      let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(TAG, "callbackhtml, set continue note success")
     },
@@ -130,18 +130,18 @@ export struct NoteContentCompPortrait {
 
     callbackScheduledSave: (html) => {
       LogUtil.info(TAG, 'callbackScheduledSave')
-      if (this.selectedNoteData.content_text == html) {
+      if (this.selectedNoteData?.content_text == html) {
         LogUtil.info(TAG, 'callbackScheduledSave the same value return')
         return;
       }
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-      LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + this.selectedNoteData.uuid)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
+      RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
+      LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + this.selectedNoteData?.uuid)
       // save continue data
-      let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+      let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
       AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(TAG, 'callbackScheduledSave, set continue note success')
     },
@@ -253,7 +253,7 @@ export struct NoteContentCompPortrait {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
           NoteContentOverViewComp()
-            .enabled(this.selectedNoteData && this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
+            .enabled(this.selectedNoteData && this.selectedNoteData?.is_deleted == Delete.Yes ? false : true)
         }
 
         Column() {
@@ -278,7 +278,7 @@ export struct NoteContentCompPortrait {
                 LogUtil.info(TAG, "finish loadurl")
                 let self = this
                 this.controllerShow.runJavaScript(
-                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')",
                   () => {
                     // wait for the image in the note to load
                     setTimeout(function () {
@@ -320,7 +320,7 @@ export struct NoteContentCompPortrait {
               this.editModel = true
             })
         }
-        .enabled(this.selectedNoteData && this.selectedNoteData.is_deleted == Delete.Yes ? false : true)
+        .enabled(this.selectedNoteData && this.selectedNoteData?.is_deleted == Delete.Yes ? false : true)
         .flexShrink(1)
         .margin({ top: 16 })
         .width(StyleConstants.PERCENTAGE_100)
@@ -374,10 +374,10 @@ export struct NoteContentOverViewComp {
     this.selectedNoteData.title = newTitle
     this.selectedNoteData.modified_time = new Date().getTime()
     let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-    predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-    RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+    predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
+    RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
     // save continue data
-    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+    let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, 'NoteContentOverViewComp, MenuBuilder, set continue note success')
     NoteUtil.refreshAll()
@@ -390,15 +390,15 @@ export struct NoteContentOverViewComp {
           if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
             ForEach(this.NoteDataMoveArray, (item) => {
               ListItem() {
-                NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
+                NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData?.folder_uuid })
               }
               .onClick(() => {
                 this.selectedNoteData.folder_uuid = item.uuid
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
+                RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
                 // save continue data
-                let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+                let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
                 AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
                 LogUtil.info(TAG, 'MenuBuilder, set continue note success')
                 NoteUtil.refreshAll()
@@ -422,7 +422,7 @@ export struct NoteContentOverViewComp {
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
-          Text(this.selectedNoteData.title)
+          Text(this.selectedNoteData?.title)
             .id(this.isUpdate + '')
             .fontSize(30).fontWeight(FontWeight.Medium)
             .onClick(() => {
@@ -433,15 +433,15 @@ export struct NoteContentOverViewComp {
         .width(StyleConstants.PERCENTAGE_100)
 
         Row() {
-          Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData.modified_time)))
+          Text(DateUtil.formateDateForNoteContent(new Date(this.selectedNoteData?.modified_time)))
             .id(this.isUpdate + '')
             .fontSize(12)
             .padding({ top: 4, bottom: 4 })
             .fontColor($r("app.color.modified_time_font_color"))
           Row() {
-            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
+            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData?.folder_uuid)) ==
                  folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
-            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData?.folder_uuid)))
               .id(this.isUpdate + '')
               .fontColor($r('app.color.folder_color_99182431'))
               .fontSize(12)
@@ -454,11 +454,11 @@ export struct NoteContentOverViewComp {
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
           .margin({ left: 8 })
           .borderRadius(16)
-          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
+          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData?.folder_uuid, SysDefFolderUuid.AllNotes, false))
           .bindMenu(this.MenuBuilder)
         }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
       }
-      .opacity(this.selectedNoteData.is_deleted == Delete.Yes ? 0.4 : 1)
+      .opacity(this.selectedNoteData?.is_deleted == Delete.Yes ? 0.4 : 1)
       .width(StyleConstants.PERCENTAGE_100)
       .height(82)
     }
@@ -479,14 +479,14 @@ export struct ToolBarComp {
       this.selectedNoteData.deleted_time = new Date().getTime()
       // update note to db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
+      RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
       routePage()
     } else {
-      NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData.uuid)
+      NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData?.uuid)
       // delete note from db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
       RdbStoreUtil.delete(predicates_note, null)
       routePage()
     }
@@ -528,17 +528,20 @@ export struct ToolBarComp {
 
       if (this.editModel == false) {
         Row({ space: StyleConstants.SPACE_24 }) {
-          Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') : $r('app.media.favorite_cancel'))
+          Image(this.selectedNoteData?.is_favorite == Favorite.Yes ? $r('app.media.favorite') : $r('app.media.favorite_cancel'))
             .height(24).width(24)
             .onClick(() => {
               try {
-                this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
+                this.selectedNoteData.is_favorite = (this.selectedNoteData?.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-                if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
+                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
+                RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
+                if (this.selectedFolderData?.uuid === SysDefFolderUuid.MyFavorites) {
                   this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
+                  if (!this.selectedNoteData) {
+                    routePage()
+                  }
                   this.controllerShow.runJavaScript(
                     "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
                   )
@@ -557,7 +560,7 @@ export struct ToolBarComp {
               this.noteDataDeleteDialogCtl.open()
             })
         }.width(72)
-        .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
+        .visibility(this.selectedNoteData?.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       } else {
         Row({ space: StyleConstants.SPACE_6 }) {
           Button({ type: ButtonType.Normal, stateEffect: true }) {
@@ -611,7 +614,7 @@ export struct ToolBarComp {
           .backgroundColor($r('app.color.color_fffffB'))
         }
         .width(130)
-        .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
+        .visibility(this.selectedNoteData?.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
       }
     }
     .width(StyleConstants.PERCENTAGE_100)
@@ -639,14 +642,14 @@ export struct DeleteNoteComp {
       this.selectedNoteData.deleted_time = new Date().getTime()
       // update note to db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
+      RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
       routePage()
     } else {
-      NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData.uuid)
+      NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData?.uuid)
       // delete note from db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+      predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
       RdbStoreUtil.delete(predicates_note, null)
       NoteUtil.refreshAll()
       routePage()
@@ -698,8 +701,8 @@ export struct DeleteNoteComp {
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-            predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-            RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+            predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
+            RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
             NoteUtil.refreshAll()
           })
         Text($r("app.string.recover"))
@@ -714,7 +717,7 @@ export struct DeleteNoteComp {
     }
     .width(360)
     .height(56)
-    .visibility(this.selectedNoteData.is_deleted == Delete.Yes ?
+    .visibility(this.selectedNoteData?.is_deleted == Delete.Yes ?
     Visibility.Visible : Visibility.None)
   }
 }
