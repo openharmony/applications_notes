@@ -789,13 +789,11 @@ export struct SearchComp {
           .focusable(true)
           .key('searchFocus')
           .defaultFocus(true)
-          .margin({ top: 4 })
         TextInput({ placeholder: $r('app.string.searchNote'), text: this.text })
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
           .enabled(this.longpress ? false : true)
-          .padding({ left: 6, top: 1 })
-          .padding({ left: 6 })
+          .padding({ left: 6, top: 1, right: 0, bottom: 0 })
           .onEditChange((isEditing: boolean) => {
             //            this.search = isEditing
           })
@@ -829,7 +827,7 @@ export struct SearchComp {
       .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
       .height(40)
       .opacity(this.longpress ? 0.4 : 1)
-      .padding({ left: 6, right: 12, top: 5, bottom: 5 })
+      .padding({ left: 6, right: 12, top: 9, bottom: 9 })
       .borderRadius(20)
       .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
       .margin({ right: this.search ? 40 : 0 })
