@@ -23,9 +23,8 @@ export class OperationUtils {
 
     async copy(uri: string):Promise<string> {
         try {
-            let numId = this.getIdByUri(uri)
             var context = globalThis.noteContext
-            let fileAsset = await this.getFileAssetById(numId,context);
+            let fileAsset = await this.getFileAssetById(uri, context);
             if (fileAsset == null || fileAsset == undefined) {
                 LogUtil.warn(TAG, "Failed to get fileAsset")
                 return;
@@ -112,15 +111,16 @@ export class OperationUtils {
         return numId.valueOf();
     }
 
-    async getFileAssetById(id,context){
-        LogUtil.info(TAG, 'getFileAssetById', id);
+    async getFileAssetById(imagePath, context){
+        LogUtil.info(TAG, 'getFileAssetById', imagePath);
         let fetchOpt = {
-            selections : 'file_id =?',
-            selectionArgs : [`${id}`],
+            selections : '',
+            selectionArgs : [],
+            uri:imagePath
         }
 
         try {
-            let result = await MediaLibraryAccess.getFirstObject(fetchOpt,context);
+            let result = await MediaLibraryAccess.getFirstObject(fetchOpt, context);
             if (result == null) {
                 LogUtil.info(TAG, 'getFileAssetByUri fail');
                 return null;
