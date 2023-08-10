@@ -330,6 +330,7 @@ export struct NoteContentCompPortrait {
 
       DeleteNoteComp()
     }
+    .expandSafeArea([SafeAreaType.KEYBOARD, SafeAreaType.SYSTEM])
     .height(StyleConstants.PERCENTAGE_100)
     .width(StyleConstants.PERCENTAGE_100)
   }
