@@ -13,7 +13,7 @@
     "distribution-certificate": "-----BEGIN CERTIFICATE-----\nMIICFDCCAZmgAwIBAgIEfc9FYzAMBggqhkjOPQQDAwUAMGMxCzAJBgNVBAYTAkNO\nMRQwEgYDVQQKEwtPcGVuSGFybW9ueTEZMBcGA1UECxMQT3Blbkhhcm1vbnkgVGVh\nbTEjMCEGA1UEAxMaT3Blbkhhcm1vbnkgQXBwbGljYXRpb24gQ0EwHhcNMjIxMjIx\nMDM0MjA3WhcNMzIxMjE4MDM0MjA3WjBKMRUwEwYDVQQDDAxpZGVfZGVtb19hcHAx\nDTALBgNVBAsTBFVuaXQxFTATBgNVBAoTDE9yZ2FuaXphdGlvbjELMAkGA1UEBhMC\nQ04wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAATB+nRPXBTqJciFQWBaHGoEZFUs\nB2g+vVAkO2mqzvC4EvHSZXABHQ9TfmNn5G2ew2pzIvzhVhpD+4Vgt6xLhlQPo1Iw\nUDAdBgNVHQ4EFgQUc1K0TS4hsnNYulx1ZK65mBYoTSMwDgYDVR0PAQH/BAQDAgeA\nMB8GA1UdIwQYMBaAFNuGtyIW1QuhS7fdJXu58QV9oi1HMAwGCCqGSM49BAMDBQAD\nZwAwZAIwH7iB1wE7x0wAQcyqOcycLi7BTyL9hWkTkp4CSRew6xdOfPDmYuPKv/85\nQw8tj4n2AjAPbFMRSrs4cJEIix5PDGxfe89u/JtAmlvKQCmIze1ivrbiXVu3nVsA\nZ0RDZPYTSqc\u003d\n-----END CERTIFICATE-----\n",
     "bundle-name": "com.ohos.note",
     "apl": "normal",
-    "app-feature": "hos_normal_app"
+    "app-feature": "hos_system_app"
   },
   "acls": {
     "allowed-acls": [
