@@ -489,6 +489,7 @@ export struct NoteItemListComp {
                   }
                   .padding({ left: 24, right: 24, bottom: 12 })
                 }
+                .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
               }, noteItem => JSON.stringify(noteItem))
             }
             .id(this.isUpdate + '')
