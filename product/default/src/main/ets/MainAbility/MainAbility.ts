@@ -19,9 +19,9 @@ import AbilityConstant from '@ohos.app.ability.AbilityConstant'
 import fileio from '@ohos.fileio'
 import inputMethod from '@ohos.inputMethod';
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
-import { atob } from 'js-base64'
 import display from '@ohos.display';
 import window from '@ohos.window';
+import util from '@ohos.util';
 
 globalThis.rdbStore = undefined
 
@@ -169,9 +169,10 @@ export default class MainAbility extends UIAbility {
             return srcArray
         }
         let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
-        let realHtml = ""
+        let realHtml
         if (base64regex.test(html)) {
-            realHtml = atob(html)
+            let base64 = new util.Base64Helper
+            realHtml = base64.decodeSync(html)
         } else {
             realHtml = html;
         }

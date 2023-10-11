@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import { atob } from 'js-base64'
 import fileio from '@ohos.fileio'
 import { LogUtil } from './LogUtil'
 import FolderUtil from './FolderUtil'
@@ -29,6 +28,7 @@ import {
   SysDefFolderUuid
 } from '../model/databaseModel/EnumData'
 import relationalStore from '@ohos.data.relationalStore'
+import util from '@ohos.util';
 
 const TAG = "RdbStoreUtil"
 
@@ -325,9 +325,10 @@ export default {
       return imgNameArray
     }
     let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
-    let html = ""
+    let html
     if (base64regex.test(noteData.content_text)) {
-      html = atob(noteData.content_text)
+      let base64 = new util.Base64Helper
+      html = base64.decodeSync(noteData.content_text)
     } else {
       html = noteData.content_text
     }
