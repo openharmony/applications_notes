@@ -172,7 +172,7 @@ export default class MainAbility extends UIAbility {
         let realHtml
         if (base64regex.test(html)) {
             let base64 = new util.Base64Helper
-            realHtml = base64.decodeSync(html)
+            realHtml = base64.decodeSync(html).toString()
         } else {
             realHtml = html;
         }

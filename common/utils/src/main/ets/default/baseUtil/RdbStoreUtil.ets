@@ -328,7 +328,7 @@ export default {
     let html
     if (base64regex.test(noteData.content_text)) {
       let base64 = new util.Base64Helper
-      html = base64.decodeSync(noteData.content_text)
+      html = base64.decodeSync(noteData.content_text).toString()
     } else {
       html = noteData.content_text
     }
