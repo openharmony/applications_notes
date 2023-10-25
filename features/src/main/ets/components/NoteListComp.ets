@@ -794,7 +794,7 @@ export struct SearchComp {
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
           .enabled(this.longpress ? false : true)
-          .padding({ left: 6, top: 1 })
+          .padding({ left: 6, top: 0, bottom: 0, right: 0 })
           .onEditChange((isEditing: boolean) => {
             //            this.search = isEditing
           })
