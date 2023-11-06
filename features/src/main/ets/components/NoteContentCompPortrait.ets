@@ -200,7 +200,7 @@ export struct NoteContentCompPortrait {
         "ohos.permission.READ_MEDIA",
         "ohos.permission.WRITE_MEDIA",
       ]
-      let context: any = getContext(this);
+      let context: any = AppStorage.Get("context");
       let AtManager = abilityAccessCtrl.createAtManager();
       // @ts-ignore
       await AtManager.requestPermissionsFromUser(context, permissionList).then((data) => {
