@@ -29,6 +29,7 @@ export default class MainAbility extends UIAbility {
     private Tag = "MainAbility_Tablet"
 
     onCreate(want, launchParam) {
+        AppStorage.SetOrCreate('context', this.context)
         // @ts-ignore
         window.getLastWindow(this.context, (err, data) => {
             if (data && data.getWindowProperties()) {
