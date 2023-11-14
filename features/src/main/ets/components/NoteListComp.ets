@@ -32,21 +32,124 @@ import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/SearchModel'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
-import router from '@system.router';
+import router from '@ohos.router';
 import inputMethod from '@ohos.inputMethod';
 
 const TAG = "NoteListComp"
 
-async function routePage() {
+function routePage() {
   let options = {
-    uri: 'pages/NoteContentHome'
+    url: 'pages/NoteContentHome'
   }
   try {
-    await router.push(options)
+    router.pushUrl(options)
   } catch (err) {
     LogUtil.info(TAG, "fail callback")
   }
 }
+
+abstract class BasicDataSource<T> implements IDataSource {
+  private listeners: DataChangeListener[] = [];
+
+  public abstract totalCount(): number;
+
+  public getData(index: number): T | void {
+    LogUtil.info(TAG, 'getDataindex: '+index);
+  };
+
+  registerDataChangeListener(listener: DataChangeListener): void {
+    if (this.listeners.indexOf(listener) < 0) {
+      this.listeners.push(listener);
+    };
+  };
+
+  unregisterDataChangeListener(listener: DataChangeListener): void {
+    const pos = this.listeners.indexOf(listener);
+    if (pos >= 0) {
+      this.listeners.splice(pos, 1);
+    };
+  };
+
+  notifyDataReload(): void {
+    this.listeners.forEach((listener: DataChangeListener) => {
+      listener.onDataReloaded();
+    });
+  };
+
+  notifyDataAdd(index: number): void {
+    this.listeners.forEach((listener: DataChangeListener) => {
+      listener.onDataAdd(index);
+    });
+  };
+
+  notifyDataChange(index: number): void {
+    this.listeners.forEach((listener: DataChangeListener) => {
+      listener.onDataChange(index);
+    });
+  };
+
+  notifyDataDelete(index: number): void {
+    this.listeners.forEach((listener: DataChangeListener) => {
+      listener.onDataDelete(index);
+    });
+  };
+
+  notifyDataMove(from: number, to: number): void {
+    this.listeners.forEach((listener: DataChangeListener) => {
+      listener.onDataMove(from, to);
+    });
+  };
+};
+
+class noteListData extends BasicDataSource<NoteData> {
+  private noteList: Array<NoteData> = [];
+
+  public totalCount(): number {
+    return this.noteList.length;
+  };
+
+  public getData(index: number): NoteData {
+    LogUtil.info(TAG, 'getData, index=' + index);
+    return this.noteList[index];
+  };
+
+  public addData(index: number, data: NoteData): void {
+    this.noteList.splice(index, 0, data);
+    this.notifyDataAdd(index);
+  };
+
+  public pushData(data: NoteData): void {
+    this.noteList.push(data);
+    this.notifyDataAdd(this.noteList.length - 1);
+  };
+
+  // 查找列表中对象的index
+  public indexOf(data: NoteData): number {
+    LogUtil.info(TAG, `indexOf data , id = ${data.id} , name = ${data.title}`);
+    return this.noteList.indexOf(data);
+  };
+
+  // 删除列表中处于index位置的对象
+  public deleteDataByIndex(index: number): void {
+    LogUtil.info(TAG, `delete data , index = ${index}}`);
+    this.noteList.splice(index, 1);
+    this.notifyDataDelete(index);
+  };
+
+  // 删除列表中的对象
+  public deleteData(data: NoteData): void {
+    LogUtil.info(TAG, `delete data , data = ${data.id}}`);
+    let index = this.indexOf(data);
+    this.deleteDataByIndex(index);
+  };
+
+  // 修改列表中所有对象
+  public modifyAllData(data: NoteData[]): void {
+    LogUtil.info(TAG, `all data modified`);
+    this.noteList = data;
+    this.notifyDataReload();
+  }
+};
 
 // Note list component
 @Component
@@ -392,7 +495,8 @@ export struct NoteItemListComp {
   @Consume('SearchResultList') searchResultList: NoteData[]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @Consume('PortraitModel') portraitModel: boolean
-  @State dateList: NoteData[] = []
+  @State @Watch('setNoteListLazy') dateList: NoteData[] = [];
+  @State noteList: noteListData = new noteListData();
   controllerShow: WebviewController
   @StorageLink('isUpdate') @Watch('updateList') isUpdate: boolean = false
 
@@ -412,12 +516,13 @@ export struct NoteItemListComp {
 
   doSearch() {
     if (this.inputKeyword.length == 0) {
-      return
-    }
+      return;
+    };
     SearchModel.search(NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid), this.inputKeyword)
       .then((result: NoteData[]) => {
         LogUtil.info(TAG, "result size " + result.length.toString())
         this.searchResultList = result
+        this.setNoteListLazy()
         if (this.searchResultList.length != 0) {
           this.selectedNoteData = this.searchResultList[0]
         } else {
@@ -434,6 +539,12 @@ export struct NoteItemListComp {
         LogUtil.info(TAG, "doSearch, set continue note success")
         this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
       })
+  }
+
+  setNoteListLazy() {
+    let noteLazySource: NoteData[];
+    this.inputKeyword.length === 0 ? noteLazySource = this.dateList : noteLazySource = this.searchResultList;
+    this.noteList.modifyAllData(noteLazySource);
   }
 
   build() {
@@ -476,9 +587,7 @@ export struct NoteItemListComp {
               .height('100%')
               .padding({ bottom: 120 })
               .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
-
-              ForEach(this.inputKeyword.length == 0 ?
-              this.dateList : this.searchResultList, (noteItem) => {
+              LazyForEach(this.noteList, (noteItem) => {
                 ListItem() {
                   Column() {
                     NoteItemComp({
@@ -501,6 +610,7 @@ export struct NoteItemListComp {
             .layoutWeight(1)
             .listDirection(Axis.Vertical)
             .edgeEffect(EdgeEffect.Spring)
+            .cachedCount(10)
           }
           .layoutWeight(1)
           .height("100%")
@@ -667,7 +777,7 @@ export struct OperateNoteComp {
             };
             context.resourceManager.getString(resource, (error, value) => {
               if (error != null) {
-                console.log("error is " + error);
+                LogUtil.error(TAG, "error is " + error);
               } else {
                 prompt.showToast({ message: value, duration: 2000 });
               }
@@ -1023,7 +1133,7 @@ export struct OperateNoteCompForPortrait {
                 };
                 context.resourceManager.getString(resource, (error, value) => {
                   if (error != null) {
-                    console.log("error is " + error);
+                    LogUtil.error(TAG, "error is " + error);
                   } else {
                     prompt.showToast({ message: value, duration: 2000 });
                   }
