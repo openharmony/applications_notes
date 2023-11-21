@@ -173,7 +173,7 @@ struct ColorCircleComp {
       try {
         this.selectedColor = this.circleColor
       } catch (error) {
-        console.log("selectedColor error: ", error.toString());
+        LogUtil.error(TAG, "selectedColor error: ", error.toString());
       }
     })
   }

@@ -590,7 +590,7 @@ export struct ToolBarComp {
                 };
                 context.resourceManager.getString(resource, (error, value) => {
                   if (error != null) {
-                    console.log("error is " + error);
+                    LogUtil.error(TAG, "error is " + error);
                   } else {
                     prompt.showToast({ message: value, duration: 2000 });
                   }
