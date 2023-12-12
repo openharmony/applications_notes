@@ -516,6 +516,7 @@ export struct NoteItemListComp {
 
   doSearch() {
     if (this.inputKeyword.length == 0) {
+      this.setNoteListLazy()
       return;
     };
     SearchModel.search(NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid), this.inputKeyword)
