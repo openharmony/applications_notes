@@ -345,6 +345,7 @@ export struct NoteContentCompPortrait {
     clearInterval(time_id)
     NoteUtil.refreshAll()
     LogUtil.info(TAG, "aboutToDisappear")
+    this.editContentDialogCtl = null
   }
 }
 
@@ -369,6 +370,10 @@ export struct NoteContentOverViewComp {
       return
     }
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
+  }
+
+  aboutToDisappear() {
+    this.editTitleDialogCtl = null
   }
 
   confirm(newTitle: string) {
@@ -500,6 +505,10 @@ export struct ToolBarComp {
     autoCancel: false,
     customStyle: true,
   })
+
+  aboutToDisappear() {
+    this.noteDataDeleteDialogCtl = null
+  }
 
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
@@ -636,6 +645,10 @@ export struct DeleteNoteComp {
     autoCancel: false,
     customStyle: true,
   })
+
+  aboutToDisappear() {
+    this.noteDataDeleteDialogCtlBottom = null
+  }
 
   onDeleteConfirm() {
     if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
