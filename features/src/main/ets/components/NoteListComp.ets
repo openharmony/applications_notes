@@ -657,6 +657,11 @@ export struct OperateNoteComp {
     customStyle: true,
   })
 
+  aboutToDisappear() {
+    this.noteDataMoveDialogCtl = null
+    this.noteDataDeleteDialogCtl = null
+  }
+
   onMoveConfirm(folderUuid: string) {
     this.CheckedNoteArray.forEach((noteItem) => {
       noteItem.folder_uuid = folderUuid
@@ -964,6 +969,11 @@ export struct OperateNoteCompForPortrait {
     autoCancel: false,
     customStyle: true,
   })
+
+  aboutToDisappear() {
+    this.noteDataMoveDialogCtlBottom = null
+    this.noteDataDeleteDialogCtlBottom = null
+  }
 
   opacityChange() {
     if (this.CheckedNoteArray.length == 0 && this.longpress == true) {

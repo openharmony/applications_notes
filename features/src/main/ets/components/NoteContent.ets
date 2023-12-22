@@ -269,6 +269,10 @@ export struct ToolBarComp {
     customStyle: true,
   })
 
+  aboutToDisappear() {
+    this.editContentDialogCtl = null
+  }
+
   confirm(excuteJs: string) {
     this.controllerShow.runJavaScript(excuteJs)
   }
@@ -452,6 +456,10 @@ export struct NoteContentOverViewComp {
     autoCancel: false,
     customStyle: true,
   })
+
+  aboutToDisappear() {
+    this.editTitleDialogCtl = null
+  }
 
   confirm(newTitle: string) {
     this.selectedNoteData.title = newTitle

@@ -365,6 +365,10 @@ export struct NoteContentOverViewComp {
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
   }
 
+  aboutToDisappear() {
+    this.editTitleDialogCtl = null
+  }
+
   confirm(newTitle: string) {
     this.selectedNoteData.title = newTitle
     this.selectedNoteData.modified_time = new Date().getTime()
@@ -488,6 +492,11 @@ export struct ToolBarComp {
     customStyle: true,
   })
   @Consume('AsideWidth') asideWidth: number
+
+  aboutToDisappear() {
+    this.noteDataDeleteDialogCtl = null
+    this.editContentDialogCtl = null
+  }
 
   onDeleteConfirm() {
     if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
