@@ -400,13 +400,15 @@ function getImagePathFromContent(contentInfo) {
 }
 
 function scheduledSaveContent() {
-  console.info('scheduledSaveContent');
-  var htmlString = RICH_EDITOR.getHtml();
-  let imgName = getImagePathFromContent(htmlString);
-  htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
-  callBackToApp.callbackImagePath(imgName);
-  var str = callBackToApp.callbackScheduledSave(htmlString);
-  console.info('scheduledSaveContent end');
+  if (callBackToApp !== undefined) {
+    console.info('scheduledSaveContent');
+    var htmlString = RICH_EDITOR.getHtml();
+    let imgName = getImagePathFromContent(htmlString);
+    htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
+    callBackToApp.callbackImagePath(imgName);
+    var str = callBackToApp.callbackScheduledSave(htmlString);
+    console.info('scheduledSaveContent end');
+  }
 }
 
 document.body.addEventListener('paste', (event) => {
@@ -504,7 +506,5 @@ RICH_EDITOR.getFocus = function () {
 }
 
 document.getElementById('editorjs_box').addEventListener('click', () => {
-  if (callBackToApp.getBreakPoint() === 'sm') {
-    document.getElementById('buttonBox').style.display = 'flex';
-  }
+  document.getElementById('buttonBox').style.display = 'flex';
 })
