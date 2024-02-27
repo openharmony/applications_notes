@@ -38,7 +38,9 @@
             <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
                 <filteritem type="filename" name="*.json5" desc="json file"/>
                 <filteritem type="filename" name="hvigorw" desc="Build Files"/>
+                <filteritem type="filename" name="hvigorfile.js" desc="Build Files"/>
                 <filteritem type="filename" name="hvigorw.bat" desc="Build Files"/>
+                <filteritem type="filename" name="hvigor-wrapper.js" desc="Build Files"/>
                 <!--filteritem type="filename" name="*.uvwxyz" desc="Describe the reason for filtering scan results"/-->
                 <!--filteritem type="filepath" name="abcdefg/.*.uvwxyz" desc="Describe the reason for filtering scan results"/-->
                 <!--filteritem type="filepath" name="projectroot/[a-zA-Z0-9]{20,}.sh" desc="Temp files"/-->
@@ -46,7 +48,9 @@
             <filefilter name="copyrightPolicyFilter" desc="Filters for copyright header policies">
                 <filteritem type="filename" name="*.json5" desc="json file"/>
                 <filteritem type="filename" name="hvigorw" desc="Build Files"/>
+                <filteritem type="filename" name="hvigorfile.js" desc="Build Files"/>
                 <filteritem type="filename" name="hvigorw.bat" desc="Build Files"/>
+                <filteritem type="filename" name="hvigor-wrapper.js" desc="Build Files"/>
                 <!--filteritem type="filename" name="*.uvwxyz" desc="Describe the reason for filtering scan results"/-->
                 <!--filteritem type="filepath" name="abcdefg/.*.uvwxyz" desc="Describe the reason for filtering scan results"/-->
                 <!--filteritem type="filepath" name="projectroot/[a-zA-Z0-9]{20,}.sh" desc="Temp files"/-->
