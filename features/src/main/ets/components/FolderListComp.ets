@@ -135,6 +135,11 @@ export struct NoteAndCreateComp {
     customStyle: true,
   })
 
+  aboutToDisappear() {
+    this.folderCreateDialogCtl = null
+    this.folderCreateDialogCtlBottom = null
+  }
+
   onCreateConfirm(color: string, name: string) {
     let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
@@ -209,6 +214,16 @@ struct FolderItemComp {
     autoCancel: false,
     customStyle: true,
   })
+
+  aboutToDisappear() {
+    this.folderEditDialogCtl = null
+    this.folderEditDialogCtlBottom = null
+    this.folderDeleteDialogCtl = null
+    this.folderDeleteDialogCtlBottom = null
+    this.folderCreateDialogCtl = null
+    this.folderCreateDialogCtlBottom = null
+  }
+
   // Folder Edit Callback
   onEditConfirm(color: string, name: string) {
     this.folderItem.color = color
