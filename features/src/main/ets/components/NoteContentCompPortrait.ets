@@ -216,7 +216,7 @@ export struct NoteContentCompPortrait {
       })
       LogUtil.info(TAG, 'startAbility start')
       await globalThis.noteContext.startAbilityForResult({
-        parameters: { uri: "singleselect" },
+        parameters: { uri: "singleselect", filterMediaType: "FILTER_MEDIA_TYPE_IMAGE" },
         bundleName: "com.ohos.photos",
         abilityName: "com.ohos.photos.MainAbility",
       }).then(v => {
@@ -389,7 +389,8 @@ export struct NoteContentOverViewComp {
     NoteUtil.refreshAll()
   }
 
-  @Builder MenuBuilder() {
+  @Builder
+  MenuBuilder() {
     Column() {
       Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
         List() {
@@ -446,7 +447,7 @@ export struct NoteContentOverViewComp {
             .fontColor($r("app.color.modified_time_font_color"))
           Row() {
             Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData?.folder_uuid)) ==
-                 folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
+            folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
             FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData?.folder_uuid)))
               .id(this.isUpdate + '')
               .fontColor($r('app.color.folder_color_99182431'))
