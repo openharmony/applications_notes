@@ -31,15 +31,6 @@ export default class MainAbility extends UIAbility {
     onCreate(want, launchParam) {
         AppStorage.SetOrCreate('context', this.context)
         // @ts-ignore
-        window.getLastWindow(this.context, (err, data) => {
-            if (data && data.getWindowProperties()) {
-                let windowWidth = data.getWindowProperties().windowRect.width
-                LogUtil.info(this.Tag, " getLastWindow：" + windowWidth)
-                this.screenBreakPoints(windowWidth)
-            } else {
-                LogUtil.info(this.Tag, "getWindowProperties error:" + JSON.stringify(err))
-            }
-        })
         LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason + ", deviceType" + deviceInfo.deviceType)
         if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
             AppStorage.SetOrCreate<boolean>('Expand', false)
@@ -90,7 +81,15 @@ export default class MainAbility extends UIAbility {
                 LogUtil.info(this.Tag, 'windowSizeChange fail')
             }
         })
-
+        window.getLastWindow(this.context, (err, data) => {
+            if (data && data.getWindowProperties()) {
+                let windowWidth = data.getWindowProperties().windowRect.width
+                LogUtil.info(this.Tag, " getLastWindow：" + windowWidth)
+                this.screenBreakPoints(windowWidth)
+            } else {
+                LogUtil.info(this.Tag, "getWindowProperties error:" + JSON.stringify(err))
+            }
+        })
         LogUtil.info(this.Tag, " onWindowStageCreate")
         windowStage.setUIContent(this.context, "pages/MyNoteHome", null)
     }
