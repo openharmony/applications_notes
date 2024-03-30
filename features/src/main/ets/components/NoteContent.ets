@@ -302,16 +302,20 @@ export struct ToolBarComp {
           Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') : $r('app.media.favorite_cancel'))
             .height(24).width(24)
             .onClick(() => {
-              this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
-              // update note to db
-              let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-              predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-              // save continue data
-              let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-              AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-              LogUtil.info(TAG, 'ToolBarComp, set continue note success')
-              NoteUtil.refreshAll()
+              try {
+                this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
+                // update note to db
+                let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+                // save continue data
+                let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+                AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+                LogUtil.info(TAG, 'ToolBarComp, set continue note success')
+                NoteUtil.refreshAll()
+              } catch (error) {
+                LogUtil.error(TAG, 'favorite error: ' + JSON.stringify(error));
+              }
             })
         }.width(36)
         .visibility(this.selectedNoteData.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
