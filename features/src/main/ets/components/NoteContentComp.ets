@@ -773,23 +773,27 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
-                this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
-                this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-                // update note to db
-                let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
-                if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
-                  this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
-                  this.controllerShow.runJavaScript(
-                    "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-                  )
-                  // save continue data
-                  let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-                  AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-                  LogUtil.info(TAG, "ToolBarComp, set continue note success")
+                try {
+                  this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
+                  this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+                  // update note to db
+                  let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+                  predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+                  RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+                  if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
+                    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
+                    this.controllerShow.runJavaScript(
+                      "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                    )
+                    // save continue data
+                    let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+                    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+                    LogUtil.info(TAG, "ToolBarComp, set continue note success")
+                  }
+                  NoteUtil.refreshAll()
+                } catch (error) {
+                  LogUtil.error(TAG, 'favorite error: ' + JSON.stringify(error));
                 }
-                NoteUtil.refreshAll()
               })
             Image($r('app.media.delete'))
               .height(24)
