@@ -867,8 +867,8 @@ export struct AddNoteComp {
         AppStorage.SetOrCreate<FolderData>('NewFolder', this.selectedFolderData)
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "addNote, set continue note success")
-        routePage()
         AppStorage.SetOrCreate('isUpdate', true)
+        routePage()
       })
       .visibility(this.longpress || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
   }
