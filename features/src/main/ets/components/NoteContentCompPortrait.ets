@@ -320,6 +320,7 @@ export struct NoteContentCompPortrait {
               this.editModel = true
             })
         }
+        .height('100%')
         .enabled(this.selectedNoteData && this.selectedNoteData?.is_deleted == Delete.Yes ? false : true)
         .flexShrink(1)
         .margin({ top: 16 })
