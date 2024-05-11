@@ -749,7 +749,12 @@ export struct EditContentDialogPortrait {
   private fontSize: number
 
   aboutToAppear() {
-    this.confirm("javascript:RICH_EDITOR.getFontSizes()")
+    try {
+      this.confirm("javascript:RICH_EDITOR.getFontSizes()");
+      LogUtil.info(TAG, `runJavaScript success.`);
+    } catch (error) {
+      LogUtil.error(TAG, `runJavaScript failed.code:${JSON.stringify(error.code)},message:${JSON.stringify(error.message)}`);
+    }
   }
 
   build() {

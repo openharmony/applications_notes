@@ -190,7 +190,7 @@ struct FolderItemComp {
   @Consume('PortraitModel') portraitModel: boolean
   controllerShow: WebviewController
   @State isLongPress: boolean = false
-  TAG = "FolderListComp"
+  TAG = "FolderItemComp"
   @StorageLink('isUpdate') isUpdate: boolean = false
   // Folder Edit Dialog
   folderEditDialogCtl: CustomDialogController = new CustomDialogController({
@@ -292,9 +292,14 @@ struct FolderItemComp {
       }
       // 刷新web界面
       if (this.portraitModel == false) {
-        this.controllerShow.runJavaScript(
-          "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-        )
+        try {
+          this.controllerShow.runJavaScript(
+            "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+          )
+          LogUtil.info(this.TAG, `runJavaScript success.`);
+        } catch (error) {
+          LogUtil.error(this.TAG, `runJavaScript failed.code:${JSON.stringify(error.code)},message:${JSON.stringify(error.message)}`);
+        }
       }
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
