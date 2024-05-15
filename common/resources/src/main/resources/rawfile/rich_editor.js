@@ -242,7 +242,7 @@ RICH_EDITOR.execFontSize = function (size, unit) {
 };
 
 var pad = 24;
-RICH_EDITOR.setIndent = function () {
+RICH_EDITOR.setIndent = function (pad) {
   var parents = document.getElementById('editorjs_box');
   parents.removeAttribute('padding-left');
   if (pad >= 408) {
@@ -250,16 +250,19 @@ RICH_EDITOR.setIndent = function () {
   }
   pad = pad + 24;
   parents.style.paddingLeft = pad + 'px';
+  document.execCommand('indent', false, pad);
 };
 
-RICH_EDITOR.setOutdent = function () {
+RICH_EDITOR.setOutdent = function (pad) {
   var parents = document.getElementById('editorjs_box');
   parents.removeAttribute('padding-left');
   if (pad === 24) {
     parents.style.paddingLeft = 24 + 'px';
+    document.execCommand('outdent', false, pad);
   } else {
     pad = pad - 24;
     parents.style.paddingLeft = pad + 'px';
+    document.execCommand('outdent', false, pad);
   }
 };
 
