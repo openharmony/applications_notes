@@ -14,7 +14,7 @@
  */
 
 import {LogUtil} from '../baseUtil/LogUtil'
-import MediaLib from '@ohos.multimedia.mediaLibrary';
+import photoAccessHelper from '@ohos.file.photoAccessHelper';
 
 const TAG = "MediaLibraryAccess"
 export class MediaLibraryAccess {
@@ -28,7 +28,7 @@ export class MediaLibraryAccess {
       // 通过Uri拷贝图片到指定指定的包路径下
       // 1、获取本地路径
 
-      let fileResult = await MediaLib.getMediaLibrary(context).getFileAssets(fetchOpt)
+      let fileResult = await photoAccessHelper.getPhotoAccessHelper(context).getAssets(fetchOpt)
       if (fileResult != undefined) {
         album.count = fileResult.getCount();
         if (album.count <= 0) {
