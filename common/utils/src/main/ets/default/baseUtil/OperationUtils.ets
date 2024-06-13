@@ -15,6 +15,7 @@
 
 import {LogUtil} from './LogUtil'
 import {MediaLibraryAccess} from '../access/MediaLibraryAccess';
+import dataSharePredicates from '@ohos.data.dataSharePredicates';
 import fileio from '@ohos.fileio';
 
 const TAG = "OperationUtils"
@@ -113,10 +114,10 @@ export class OperationUtils {
 
     async getFileAssetById(imagePath, context){
         LogUtil.info(TAG, 'getFileAssetById', imagePath);
+        let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
         let fetchOpt = {
-            selections : '',
-            selectionArgs : [],
-            uri:imagePath
+            fetchColumns: [],
+            predicates: predicates.equalTo('uri',imagePath)
         }
 
         try {
