@@ -197,8 +197,8 @@ export struct NoteContentCompPortrait {
     },
     openAlbum: async () => {
       let permissionList: Array<string> = [
-        "ohos.permission.READ_MEDIA",
-        "ohos.permission.WRITE_MEDIA",
+        "ohos.permission.READ_IMAGEVIDEO",
+        "ohos.permission.WRITE_IMAGEVIDEO"
       ]
       let context: any = AppStorage.Get("context");
       let AtManager = abilityAccessCtrl.createAtManager();
