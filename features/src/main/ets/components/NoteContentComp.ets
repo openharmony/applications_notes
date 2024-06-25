@@ -107,6 +107,10 @@ export struct NoteContentComp {
   noteContent = {
     callbackhtml: (html) => {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
+      this.selectedNoteData.content_text = NoteUtil.contrastInitType(this.selectedNoteData.content_text);
+      if (this.selectedNoteData.content_text === html ) {
+        return;
+      };
       this.selectedNoteData.content_text = html
       this.selectedNoteData.modified_time = new Date().getTime()
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)

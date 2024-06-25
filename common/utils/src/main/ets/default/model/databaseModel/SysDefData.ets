@@ -174,7 +174,7 @@ export default {
                     '<span style="line-height:22.4px;" class="note-checkbox-txt">玉米油40g</span><br><div>' +
                     '<div><text style="line-height:22.4px;">&nbsp;1.&nbsp;&nbsp;&nbsp;添加鸡蛋、盐、糖、蛋糕粉<br>' +
                     '&nbsp;2.&nbsp;&nbsp;&nbsp;加入玉米油、牛奶，烤箱预热15分钟<br>' +
-                    '&nbsp;3.&nbsp;&nbsp;&nbsp;加入葡萄干、核桃仁，烤箱定时40分钟<br><br></text><div>',
+                    '&nbsp;3.&nbsp;&nbsp;&nbsp;加入葡萄干、核桃仁，烤箱定时40分钟<br><br></text></div></div></div>',
     "content_img": "",
     "note_type": NoteType.CusDef,
     "is_top": Top.No,
