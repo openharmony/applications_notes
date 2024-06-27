@@ -618,6 +618,7 @@ export struct ToolBarComp {
                   // 保存笔记信息到数据库
                   this.controllerShow.runJavaScript("getHtmlContent()")
                   this.editModel = false
+                  this.controllerShow.runJavaScript("javascript:RICH_EDITOR.getBlur()")
                 } catch (error) {
                   LogUtil.info(TAG, 'tick_thin error')
                 }
