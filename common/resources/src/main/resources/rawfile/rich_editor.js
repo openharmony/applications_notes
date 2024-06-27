@@ -508,6 +508,10 @@ RICH_EDITOR.getFocus = function () {
   return document.getElementById('editorjs_box').focus();
 }
 
+RICH_EDITOR.getBlur = function () {
+  return document.getElementById('editorjs_box').blur();
+}
+
 document.getElementById('editorjs_box').addEventListener('click', () => {
   document.getElementById('buttonBox').style.display = 'flex';
 })
