@@ -22,6 +22,7 @@ import StyleConstants from '../constants/StyleConstants'
 import {LogUtil} from './LogUtil'
 import FolderUtil from './FolderUtil'
 import RdbStoreUtil from './RdbStoreUtil'
+import buffer from '@ohos.buffer';
 
 const TAG = "NoteUtil"
 
@@ -282,6 +283,20 @@ export class NoteUtil {
     let isRefresh = AppStorage.Get('isUpdate')
     AppStorage.Set('isUpdate',!isRefresh)
   }
+
+  /**
+   * Format conversion
+   * @param initContent
+   */
+  contrastInitType(initContent:string):string {
+    let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    if(!base64regex.test(initContent)) {
+      const inputBuffer = buffer.from(initContent,'utf-8');
+      initContent = inputBuffer.toString('base64');
+    }
+    return initContent;
+  };
+
 }
 
 let noteUtil = new NoteUtil()
