@@ -119,7 +119,7 @@ export class FolderUtil {
     if (folderData === undefined || folderData === null) {
       LogUtil.info(TAG, "isFolderMoveIn folderData undefined")
     }
-    if (folderData.uuid === undefined || folderData.uuid === null) {
+    if (folderData!.uuid === undefined || folderData!.uuid === null) {
       LogUtil.info(TAG, "isFolderMoveIn folderData uuid undefined")
       folderData.uuid = 'sys_def_unClassified_uuid';
     }
