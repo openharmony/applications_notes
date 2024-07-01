@@ -319,7 +319,7 @@ struct NoteDataMoveItemComp {
     }
     .width(288)
     .height(56)
-    .visibility(FolderUtil.isFolderMoveIn(this.folderItem) ? Visibility.Visible : Visibility.None)
+    .visibility(FolderUtil.isFolderMoveIn(this.folderItem!) ? Visibility.Visible : Visibility.None)
   }
 }
 
