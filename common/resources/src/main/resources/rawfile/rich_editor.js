@@ -14,10 +14,14 @@
  */
 
 var RICH_EDITOR = {};
-
+let storage = window.localStorage;
 RICH_EDITOR.editor = document.getElementById('editorjs_box');
 
 RICH_EDITOR.setHtml = function (contents) {
+  let paddingLeft = storage.getItem('paddingLeft');
+  if (contents) {
+    RICH_EDITOR.editor.style.paddingLeft = paddingLeft + 'px';
+  }
   var base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
   if (base64regex.test(contents)) {
     RICH_EDITOR.editor.innerHTML = decodeURIComponent(escape(atob(contents)));
@@ -69,7 +73,7 @@ RICH_EDITOR.getListStyle = function () {
     selection = getSelection();
   }
   if (!selection) {
-    return
+    return;
   }
   var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
   try {
@@ -78,12 +82,14 @@ RICH_EDITOR.getListStyle = function () {
       if (child.nodeName === 'OL') {
         console.info('insertOrderedList');
         document.execCommand('insertOrderedList', false, null);
-        return child.style['list-style'];
+        child.style['list-style'];
+        break;
       }
       if (child.nodeName === 'UL') {
         console.info('insertUnorderedList');
         document.execCommand('insertUnorderedList', false, null);
-        return child.style['list-style'];
+        child.style['list-style'];
+        break;
       }
       if (child.parentNode) {
         child = child.parentNode;
@@ -107,7 +113,7 @@ RICH_EDITOR.setNumbers = function () {
     selection = getSelection();
   }
   if (!selection) {
-    return
+    return;
   }
   var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
   try {
@@ -138,7 +144,7 @@ RICH_EDITOR.setABC = function () {
     selection = getSelection();
   }
   if (!selection) {
-    return
+    return;
   }
   var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
   try {
@@ -169,7 +175,7 @@ RICH_EDITOR.setBullets = function () {
     selection = getSelection();
   }
   if (!selection) {
-    return
+    return;
   }
   var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
   try {
@@ -200,7 +206,7 @@ RICH_EDITOR.setSquare = function () {
     selection = getSelection();
   }
   if (!selection) {
-    return
+    return;
   }
   var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
   try {
@@ -242,27 +248,36 @@ RICH_EDITOR.execFontSize = function (size, unit) {
 };
 
 var pad = 24;
-RICH_EDITOR.setIndent = function (pad) {
+RICH_EDITOR.setIndent = function () {
   var parents = document.getElementById('editorjs_box');
   parents.removeAttribute('padding-left');
   if (pad >= 408) {
-    return
+    return;
   }
   pad = pad + 24;
   parents.style.paddingLeft = pad + 'px';
-  document.execCommand('indent', false, pad);
+  if (!storage) {
+    return;
+  }
+  storage.setItem('paddingLeft', pad);
 };
 
-RICH_EDITOR.setOutdent = function (pad) {
+RICH_EDITOR.setOutdent = function () {
   var parents = document.getElementById('editorjs_box');
   parents.removeAttribute('padding-left');
   if (pad === 24) {
     parents.style.paddingLeft = 24 + 'px';
-    document.execCommand('outdent', false, pad);
+    if (!storage) {
+      return;
+    }
+    storage.setItem('paddingLeft', pad);
   } else {
     pad = pad - 24;
     parents.style.paddingLeft = pad + 'px';
-    document.execCommand('outdent', false, pad);
+    if (!storage) {
+      return;
+    }
+    storage.setItem('paddingLeft', pad);
   }
 };
 
@@ -279,10 +294,10 @@ RICH_EDITOR.setJustifyRight = function () {
 };
 
 RICH_EDITOR.insertImage = function (url) {
-  var html = '<br></br><img src="' + url
-  + '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;'
-  + 'vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
-  document.getElementById('editorjs_box').innerHTML += html
+  var html = '<br></br><img src="' + url +
+    '" alt="picvision" style="margin:0px auto;width:90%;display:table-cell;' +
+    'vertical-align:middle;border-radius:10px;max-width:90%" /><br></br>';
+  document.getElementById('editorjs_box').innerHTML += html;
   document.getElementById('editorjs_box').scrollIntoView(false);
 };
 
@@ -303,8 +318,8 @@ RICH_EDITOR.addTodo = function (e) {
     if (node && node.nodeName === '#text') {
       node = node.parentElement;
     }
-    if (node && node.nodeName === 'SPAN' && node.previousElementSibling
-    && node.previousElementSibling.className === 'note-checkbox') {
+    if (node && node.nodeName === 'SPAN' && node.previousElementSibling &&
+      node.previousElementSibling.className === 'note-checkbox') {
       RICH_EDITOR.setTodo();
       e.preventDefault();
     }
@@ -314,10 +329,10 @@ RICH_EDITOR.addTodo = function (e) {
 RICH_EDITOR.setTodo = function () {
   var parent = document.getElementById('editorjs_box');
   var isContentEmpty = parent.innerHTML.trim().length === 0 || parent.innerHTML === '<br>';
-  var html = (isContentEmpty ? '' : '<br/>')
-  + '<span>&nbsp;</span>'
-  + '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox">'
-  + '<span class="note-checkbox-txt">&nbsp;</span>';
+  var html = (isContentEmpty ? '' : '<br/>') +
+    '<span>&nbsp;</span>' +
+    '<input name="checkbox" type="checkbox" onclick="onCheckChange(this)" class="note-checkbox">' +
+    '<span class="note-checkbox-txt">&nbsp;</span>';
   document.execCommand('insertHTML', false, html);
 };
 
@@ -359,7 +374,7 @@ RICH_EDITOR.getSelectedAnchorNode = function () {
 RICH_EDITOR.cancelSelection = function () {
   var selection = window.getSelection();
   selection.removeAllRanges();
-}
+};
 
 var callBackToApp;
 
@@ -386,7 +401,7 @@ function saveHtmlContent() {
 
 function getImagePathFromContent(contentInfo) {
   let imgReg = /<img[^>]+>/g;
-  let imgName = "";
+  let imgName = '';
   let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
   let imgArray = contentInfo.match(imgReg);
   // 取第一张图片做为标题栏后的缩略图
@@ -395,7 +410,7 @@ function getImagePathFromContent(contentInfo) {
     if (src != null && src.length > 1) {
       imgName = src[1];
       if (imgName.indexOf('shuxue.png') >= 0 || imgName.indexOf('cake.png') >= 0) {
-        imgName = "/res/" + imgName;
+        imgName = '/res/' + imgName;
       }
     }
   }
@@ -421,7 +436,7 @@ document.body.addEventListener('paste', (event) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       callBackToApp.callbackPasteImage(reader.result);
-    }
+    };
     reader.readAsDataURL(file);
     event.preventDefault();
   }
@@ -430,39 +445,41 @@ document.body.addEventListener('paste', (event) => {
 RICH_EDITOR.getFontSizes = function () {
   document.execCommand('fontSize', false, null);
   var fontElements = window.getSelection().anchorNode.parentNode;
-  var getSize = parseInt(window.getComputedStyle(fontElements, null).fontSize)
+  var getSize = parseInt(window.getComputedStyle(fontElements, null).fontSize);
   var str = callBackToApp.callbackGetSize(getSize);
 };
 
 RICH_EDITOR.insertImageHtml = function (contents) {
   let selection = window.getSelection();
-  if (!selection.rangeCount)
-  return false;
+  if (!selection.rangeCount) {
+    return false;
+  }
   selection.deleteFromDocument();
   let img = document.createElement('img');
   img.src = contents;
   selection.getRangeAt(0).insertNode(img);
+  return;
 };
 
 document.addEventListener('click', (e) => {
-  console.info(`lsq: e is ${JSON.stringify(e)}`)
+  console.info(`lsq: e is ${JSON.stringify(e)}`);
   var parent = document.getElementById('editorjs_box');
   if (parent.id !== 'editorjs_box') {
-    e.preventDefault()
+    e.preventDefault();
   }
-})
+});
 
 document.getElementById('addToDo').addEventListener('click', () => {
-  callBackToApp.addToDo()
-})
+  callBackToApp.addToDo();
+});
 
 document.getElementById('chooseStyle').addEventListener('click', () => {
-  callBackToApp.chooseStyle()
-})
+  callBackToApp.chooseStyle();
+});
 
 document.getElementById('openAlbum').addEventListener('click', () => {
-  callBackToApp.openAlbum()
-})
+  callBackToApp.openAlbum();
+});
 
 function changeSizeToRk() {
   document.getElementById('img1').style.width = '40px';
@@ -506,12 +523,12 @@ function hiddenButton() {
 
 RICH_EDITOR.getFocus = function () {
   return document.getElementById('editorjs_box').focus();
-}
+};
 
 RICH_EDITOR.getBlur = function () {
   return document.getElementById('editorjs_box').blur();
-}
+};
 
 document.getElementById('editorjs_box').addEventListener('click', () => {
   document.getElementById('buttonBox').style.display = 'flex';
-})
+});
