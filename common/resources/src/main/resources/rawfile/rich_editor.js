@@ -82,14 +82,12 @@ RICH_EDITOR.getListStyle = function () {
       if (child.nodeName === 'OL') {
         console.info('insertOrderedList');
         document.execCommand('insertOrderedList', false, null);
-        child.style['list-style'];
-        break;
+        return child.style['list-style'];
       }
       if (child.nodeName === 'UL') {
         console.info('insertUnorderedList');
         document.execCommand('insertUnorderedList', false, null);
-        child.style['list-style'];
-        break;
+        return child.style['list-style'];
       }
       if (child.parentNode) {
         child = child.parentNode;
@@ -458,7 +456,6 @@ RICH_EDITOR.insertImageHtml = function (contents) {
   let img = document.createElement('img');
   img.src = contents;
   selection.getRangeAt(0).insertNode(img);
-  return;
 };
 
 document.addEventListener('click', (e) => {
