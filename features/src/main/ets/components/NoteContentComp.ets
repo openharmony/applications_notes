@@ -519,7 +519,7 @@ export struct ToolBarComp {
     }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
+    this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text! + "')")
     this.chooseNote = false
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
