@@ -280,15 +280,15 @@ RICH_EDITOR.setOutdent = function () {
 };
 
 RICH_EDITOR.setJustifyLeft = function () {
-  document.execCommand('justifyLeft', false, null);
+  RICH_EDITOR.editor.style.textAlign = 'left';
 };
 
 RICH_EDITOR.setJustifyCenter = function () {
-  document.execCommand('justifyCenter', false, null);
+  RICH_EDITOR.editor.style.textAlign = 'center';
 };
 
 RICH_EDITOR.setJustifyRight = function () {
-  document.execCommand('justifyRight', false, null);
+  RICH_EDITOR.editor.style.textAlign = 'right';
 };
 
 RICH_EDITOR.insertImage = function (url) {
