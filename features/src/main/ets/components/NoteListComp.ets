@@ -451,12 +451,18 @@ export struct NoteItemComp {
         LogUtil.info(TAG, "NoteItemComp, set continue note success")
       }
       if (this.portraitModel == false) {
-        this.controllerShow.runJavaScript(
-          "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')"
-        )
-        this.controllerShow.runJavaScript(
-          "RICH_EDITOR.cancelSelection()"
-        )
+        try {
+          this.controllerShow.runJavaScript(
+            "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')"
+          )
+          this.controllerShow.runJavaScript(
+            "RICH_EDITOR.cancelSelection()"
+          )
+          LogUtil.info(TAG, `runJavaScript setHtml and cancelSelection success`);
+        } catch (error) {
+          LogUtil.error(TAG, `runJavaScript setHtml and cancelSelection failed.
+            code:${JSON.stringify(error.code)},message:${JSON.stringify(error.message)}`);
+        }
       }
       if (this.portraitModel == true) {
         AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
