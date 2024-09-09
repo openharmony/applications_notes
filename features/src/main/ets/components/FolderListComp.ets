@@ -442,9 +442,15 @@ struct FolderItemComp {
             }
             // 刷新web界面
             if (this.portraitModel == false) {
-              this.controllerShow.runJavaScript(
-                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              )
+              try {
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                );
+                LogUtil.info(this.TAG, `onClick runJavaScript setHtml success.`);
+              } catch (error) {
+                LogUtil.error(this.TAG, `onClick runJavaScript setHtml failed,code:${JSON.stringify(error.code)},
+                  message:${JSON.stringify(error.message)}.`);
+              }
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -501,9 +507,15 @@ struct FolderItemComp {
             }
             // 刷新web界面
             if (this.portraitModel == false) {
-              this.controllerShow.runJavaScript(
-                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              )
+              try {
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                );
+                LogUtil.info(this.TAG, `else runJavaScript setHtml success.`);
+              } catch (error) {
+                LogUtil.info(this.TAG, `else runJavaScript setHtml failed.code:${JSON.stringify(error.code)},
+                  message:${JSON.stringify(error.message)}`);
+              }
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())

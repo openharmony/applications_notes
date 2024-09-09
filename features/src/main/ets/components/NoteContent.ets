@@ -232,7 +232,13 @@ export struct NoteContent {
                 clearInterval(timeID)
               }
               timeID = setInterval(() => {
-                this.controllerShow.runJavaScript("scheduledSaveContent()")
+                try {
+                  this.controllerShow.runJavaScript("scheduledSaveContent()");
+                  LogUtil.info(TAG, `runJavaScript scheduledSaveContent success.`);
+                } catch (error) {
+                  LogUtil.info(TAG, `runJavaScript scheduledSaveContent failed.code:${JSON.stringify(error.code)},
+                    message:${JSON.stringify(error.message)}`);
+                }
               }, 3000)
               LogUtil.info(TAG, "setInterval timeID : " + timeID)
               this.issave = 0
@@ -288,8 +294,15 @@ export struct ToolBarComp {
         .height(24)
         .width(24)
         .onClick(() => {
-          this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
-          this.controllerShow.runJavaScript("getHtmlContent()")
+          try {
+            this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)");
+            this.controllerShow.runJavaScript("getHtmlContent()");
+            LogUtil.info(TAG, `runJavaScript setInputEnabled and getHtmlContent success.`);
+          } catch (error) {
+            LogUtil.info(TAG, `runJavaScript setInputEnabled and getHtmlContent fail.code:${JSON.stringify(error.code)},
+              message:${JSON.stringify(error.message)}`);
+          }
+
           // 清除定时器
           if (timeID != undefined) {
             LogUtil.info(TAG, "zoom, clearInterval timeID : " + timeID)

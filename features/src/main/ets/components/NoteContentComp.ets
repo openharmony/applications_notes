@@ -69,7 +69,13 @@ export struct NoteContentComp {
     if (!this.refreshCurrentNote) {
       return
     }
-    this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
+    try {
+      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')");
+      LogUtil.info(TAG, `runJavaScript setHtml success.`);
+    } catch (error) {
+      LogUtil.error(TAG, `runJavaScript setHtml failed.code:${JSON.stringify(error.code)},
+        message:${JSON.stringify(error.message)}`);
+    }
     this.refreshCurrentNote = false
   }
 
