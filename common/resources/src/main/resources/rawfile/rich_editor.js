@@ -280,15 +280,18 @@ RICH_EDITOR.setOutdent = function () {
 };
 
 RICH_EDITOR.setJustifyLeft = function () {
-  RICH_EDITOR.editor.style.textAlign = 'left';
+  document.execCommand('justifyLeft', false, null);
+  RICH_EDITOR.editor.setAttribute('style', 'text-align: left;');
 };
 
 RICH_EDITOR.setJustifyCenter = function () {
-  RICH_EDITOR.editor.style.textAlign = 'center';
+  document.execCommand('justifyCenter', false, null);
+  RICH_EDITOR.editor.setAttribute('style', 'text-align: center;');
 };
 
 RICH_EDITOR.setJustifyRight = function () {
-  RICH_EDITOR.editor.style.textAlign = 'right';
+  document.execCommand('justifyRight', false, null);
+  RICH_EDITOR.editor.setAttribute('style', 'text-align: right;');
 };
 
 RICH_EDITOR.insertImage = function (url) {
