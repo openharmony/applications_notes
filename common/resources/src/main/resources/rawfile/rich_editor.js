@@ -104,7 +104,9 @@ RICH_EDITOR.setNumbers = function () {
   if (listStyle === 'decimal') {
     return;
   }
+  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('insertOrderedList', false, null);
+  document.execCommand('fontSize', false, fontSize);
   var selection;
   var type;
   if (window.getSelection) {
@@ -135,7 +137,9 @@ RICH_EDITOR.setABC = function () {
   if (listStyle === 'lower-alpha') {
     return;
   }
+  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('insertOrderedList', false, null);
+  document.execCommand('fontSize', false, fontSize);
   var selection;
   var type;
   if (window.getSelection) {
@@ -166,7 +170,9 @@ RICH_EDITOR.setBullets = function () {
   if (listStyle === 'disc') {
     return;
   }
+  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('insertUnorderedList', false, null);
+  document.execCommand('fontSize', false, fontSize);
   var selection;
   var type;
   if (window.getSelection) {
@@ -197,7 +203,9 @@ RICH_EDITOR.setSquare = function () {
   if (listStyle === 'square') {
     return;
   }
+  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('insertUnorderedList', false, null);
+  document.execCommand('fontSize', false, fontSize);
   var selection;
   var type;
   if (window.getSelection) {
@@ -280,18 +288,21 @@ RICH_EDITOR.setOutdent = function () {
 };
 
 RICH_EDITOR.setJustifyLeft = function () {
+  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('justifyLeft', false, null);
-  RICH_EDITOR.editor.setAttribute('style', 'text-align: left;');
+  document.execCommand('fontSize', false, fontSize);
 };
 
 RICH_EDITOR.setJustifyCenter = function () {
+  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('justifyCenter', false, null);
-  RICH_EDITOR.editor.setAttribute('style', 'text-align: center;');
+  document.execCommand('fontSize', false, fontSize);
 };
 
 RICH_EDITOR.setJustifyRight = function () {
+  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('justifyRight', false, null);
-  RICH_EDITOR.editor.setAttribute('style', 'text-align: right;');
+  document.execCommand('fontSize', false, fontSize);
 };
 
 RICH_EDITOR.insertImage = function (url) {
