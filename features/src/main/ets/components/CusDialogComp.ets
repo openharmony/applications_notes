@@ -280,18 +280,18 @@ struct NoteDataMoveItemComp {
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
       Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
-        Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+        Image(FolderUtil.getFolderIcon(this.folderItem!.uuid))
           .objectFit(ImageFit.Fill)
           .width(24)
           .height(24)
           .flexShrink(0)
-          .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
+          .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem!.uuid, false))
       }
       .width(24)
 
       Column() {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
-          Text(FolderUtil.getFolderText(this.folderItem))
+          Text(FolderUtil.getFolderText(this.folderItem!))
             .fontSize(16)
             .textAlign(TextAlign.Center)
             .maxLines(1)
@@ -299,7 +299,7 @@ struct NoteDataMoveItemComp {
             .flexShrink(1)
             .fontWeight(FontWeight.Medium)
           Image((FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) == null
-          || FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) != this.folderItem) ? $r("app.media.foldMove_unselect") : $r("app.media.foldMove_select"))
+            || FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) != this.folderItem!) ? $r("app.media.foldMove_unselect") : $r("app.media.foldMove_select"))
             .objectFit(ImageFit.Fill)
             .width(24)
             .height(24)
