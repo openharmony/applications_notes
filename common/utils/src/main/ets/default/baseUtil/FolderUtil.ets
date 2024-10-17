@@ -121,10 +121,10 @@ export class FolderUtil {
     }
     if (folderData!.uuid === undefined || folderData!.uuid === null) {
       LogUtil.info(TAG, "isFolderMoveIn folderData uuid undefined")
-      folderData.uuid = 'sys_def_unClassified_uuid';
+      folderData!.uuid = 'sys_def_unClassified_uuid';
     }
-    LogUtil.info(TAG, "isFolderMoveIn folderDataUuid " + folderData.uuid)
-    return (folderData.uuid == SysDefFolderUuid.UnClassified || folderData.folder_type == FolderType.CusDef)
+    LogUtil.info(TAG, "isFolderMoveIn folderDataUuid " + folderData!.uuid);
+    return (folderData!.uuid == SysDefFolderUuid.UnClassified || folderData!.folder_type == FolderType.CusDef);
   }
 
   /**
