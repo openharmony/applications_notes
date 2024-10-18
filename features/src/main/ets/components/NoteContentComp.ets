@@ -36,6 +36,7 @@ import mediaquery from '@ohos.mediaquery'
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+import webview from '@ohos.web.webview';
 
 const TAG = "NoteContentComp"
 
@@ -56,7 +57,7 @@ export struct NoteContentComp {
   @Consume('Issave') issave: number
   @Consume('Search') search: boolean
   @StorageLink('dpi') dpi: number = 240
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   private editContentFlag = false
   @State uri1: string = ""
   private context = getContext(this)
@@ -493,7 +494,7 @@ export struct ToolBarComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Consume('EditModel') editModel: boolean
   @Consume('Issave') issave: number
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   private context = getContext(this)
   noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
     builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
@@ -525,7 +526,11 @@ export struct ToolBarComp {
     }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text! + "')")
+    try {
+      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text! + "')");
+    } catch (error) {
+      LogUtil.info(TAG, `setHtml error. code:${JSON.stringify(error.code)},message:${error.message}`);
+    }
     this.chooseNote = false
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())

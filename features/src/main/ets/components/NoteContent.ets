@@ -34,6 +34,7 @@ import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationU
 import router from '@system.router';
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
+import webview from '@ohos.web.webview';
 
 const TAG = "NoteContent"
 
@@ -46,7 +47,7 @@ export struct NoteContent {
   @Provide('Issave') issave: number = 0
   @Provide('EditModel') editModel: boolean = false
   @StorageLink('dpi') dpi: number = 240
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   private editContentFlag = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
 
