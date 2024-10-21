@@ -29,6 +29,7 @@ import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import webview from '@ohos.web.webview';
 
 // Folder list component
 @Component
@@ -37,7 +38,7 @@ export struct FolderListComp {
   @Consume('SectionStatus') sectionStatus: number
   @Consume('ExpandStatus') expandStatus: boolean // 笔记本折叠展开状态
   @StorageLink('breakPoint') breakPoints: string = 'lg'
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   TAG = "FolderListComp"
   @Consume('AsideWidth') asideWidth: number
 
