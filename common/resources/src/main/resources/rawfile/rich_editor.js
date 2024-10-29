@@ -288,21 +288,15 @@ RICH_EDITOR.setOutdent = function () {
 };
 
 RICH_EDITOR.setJustifyLeft = function () {
-  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('justifyLeft', false, null);
-  document.execCommand('fontSize', false, fontSize);
 };
 
 RICH_EDITOR.setJustifyCenter = function () {
-  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('justifyCenter', false, null);
-  document.execCommand('fontSize', false, fontSize);
 };
 
 RICH_EDITOR.setJustifyRight = function () {
-  let fontSize = document.queryCommandValue('fontSize');
   document.execCommand('justifyRight', false, null);
-  document.execCommand('fontSize', false, fontSize);
 };
 
 RICH_EDITOR.insertImage = function (url) {
