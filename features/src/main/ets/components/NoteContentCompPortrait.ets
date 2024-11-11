@@ -36,6 +36,7 @@ import router from '@system.router'
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+import webview from '@ohos.web.webview';
 
 var time_id: number
 
@@ -57,7 +58,7 @@ export struct NoteContentCompPortrait {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Provide('EditModel') editModel: boolean = false
   @StorageLink('dpi') dpi: number = 240
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   private editContentFlag = false
   private isClickBack: boolean = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
@@ -483,7 +484,7 @@ export struct ToolBarComp {
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('EditModel') editModel: boolean
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
 
   onDeleteConfirm() {
     if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
