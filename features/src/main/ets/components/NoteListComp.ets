@@ -34,6 +34,7 @@ import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/Sear
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import router from '@ohos.router';
 import inputMethod from '@ohos.inputMethod';
+import webview from '@ohos.web.webview';
 
 const TAG = "NoteListComp"
 
@@ -157,7 +158,7 @@ export struct NoteListComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = AppStorage.Link('AllFolderArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('Search') search: boolean
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   @Consume('AsideWidth') asideWidth: number
 
   build() {
@@ -204,7 +205,7 @@ struct NoteOverViewComp {
   @Consume('ExpandStatus') expandStatus: boolean
   @Consume('Search') search: boolean
   @Consume('PortraitModel') portraitModel: boolean
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   @State noteNumber: number = undefined
   @StorageLink('isUpdate') @Watch('notesNumberChange') isUpdate: boolean = false
   @Consume('AsideWidth') asideWidth: number
@@ -321,7 +322,7 @@ struct NoteOverViewComp {
 export struct NoteItemComp {
   public noteItem: NoteData
   public spans: any[]
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('SelectedNoteData') selectedNoteData: NoteData
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = AppStorage.Link('AllFolderArray')
@@ -503,7 +504,7 @@ export struct NoteItemListComp {
   @Consume('PortraitModel') portraitModel: boolean
   @State @Watch('setNoteListLazy') dateList: NoteData[] = [];
   @State noteList: noteListData = new noteListData();
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   @StorageLink('isUpdate') @Watch('updateList') isUpdate: boolean = false
 
   updateList() {
@@ -655,7 +656,7 @@ export struct OperateNoteComp {
   @Consume('PortraitModel') portraitModel: boolean
   @Consume('selectedAll') selectedAll: boolean
   @StorageLink('isUpdate') isUpdate: boolean = false
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   noteDataMoveDialogCtl: CustomDialogController = new CustomDialogController({
     builder: NoteDataMoveDialog({ onConfirm: this.onMoveConfirm.bind(this) }),
     alignment: DialogAlignment.Center,
@@ -837,7 +838,7 @@ export struct AddNoteComp {
   @Consume('EditModel') editModel: boolean
   @Consume('ChooseNote') chooseNote: boolean
   @Consume('PortraitModel') portraitModel: boolean
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
 
   build() {
     Image($r('app.media.addNote'))

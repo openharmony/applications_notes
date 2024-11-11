@@ -22,6 +22,7 @@ import { circleColorArray } from '@ohos/utils/src/main/ets/default/model/NoteBas
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import LayoutUtil from '@ohos/utils/src/main/ets/default/baseUtil/LayoutUtil'
+import webview from '@ohos.web.webview';
 
 @Entry
 @Component
@@ -42,7 +43,7 @@ export struct NoteHomeComp {
   @Provide('EditModel') editModel: boolean = false //编辑模式：临时方案
   @Provide('Issave') issave: number = 0
   @StorageLink('breakPoint') breakPoints: string = 'lg'
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   TAG = "NoteHomeComp_Tablet"
   @Provide('AsideWidth') asideWidth: number = 200
 
