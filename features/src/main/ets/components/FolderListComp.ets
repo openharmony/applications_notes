@@ -188,7 +188,7 @@ struct FolderItemComp {
   @Consume('Longpress') longpress: boolean
   @Consume('SelectedColor') selectedColor: string
   @Consume('PortraitModel') portraitModel: boolean
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   @State isLongPress: boolean = false
   TAG = "FolderItemComp"
   @StorageLink('isUpdate') isUpdate: boolean = false

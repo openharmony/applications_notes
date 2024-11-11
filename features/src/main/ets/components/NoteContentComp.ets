@@ -343,7 +343,7 @@ export struct NoteContentOverViewComp {
   @Consume('RefreshFlag') refreshFlag: number
   @StorageLink('isUpdate') isUpdate: boolean = false
   NoteDataMoveArray: FolderData[]
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   editTitleDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditTitleDialog({ confirm: this.confirm.bind(this) }),
     alignment: DialogAlignment.Center,

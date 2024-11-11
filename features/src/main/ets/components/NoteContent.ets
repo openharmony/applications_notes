@@ -265,7 +265,7 @@ export struct ToolBarComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Consume('Issave') issave: number
   @Consume('EditModel') editModel: boolean
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   editContentDialogCtl: CustomDialogController = new CustomDialogController({
     builder: EditContentDialog({ confirm: this.confirm.bind(this) }),
     alignment: DialogAlignment.Bottom,
