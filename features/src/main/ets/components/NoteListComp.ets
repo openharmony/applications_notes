@@ -23,8 +23,9 @@ import {
   Favorite,
   Delete,
   Top,
-  NoteType
-} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
+  NoteType,
+  FolderType
+} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData';
 import { NoteDataMoveDialog, DeleteDialog } from './CusDialogComp'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import prompt from '@system.prompt'
@@ -35,11 +36,18 @@ import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import router from '@ohos.router';
 import inputMethod from '@ohos.inputMethod';
 import webview from '@ohos.web.webview';
+import resourceManager from '@ohos.resourceManager';
+import common from '@ohos.app.ability.common';
+import { BusinessError } from '@ohos.base';
 
 const TAG = "NoteListComp"
 
+interface RouteOption {
+  url: string;
+}
+
 function routePage() {
-  let options = {
+  let options: RouteOption = {
     url: 'pages/NoteContentHome'
   }
   try {
@@ -47,6 +55,11 @@ function routePage() {
   } catch (err) {
     LogUtil.info(TAG, "fail callback")
   }
+}
+
+interface TextSpan {
+  type: 0 | 1; // 0 表示正常文本，1 表示高亮关键词
+  text: string;
 }
 
 abstract class BasicDataSource<T> implements IDataSource {
@@ -155,6 +168,7 @@ class noteListData extends BasicDataSource<NoteData> {
 // Note list component
 @Component
 export struct NoteListComp {
+  @StorageLink('topHeight') topHeight: number = 0;
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = AppStorage.Link('AllFolderArray')
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('Search') search: boolean
@@ -178,6 +192,7 @@ export struct NoteListComp {
         OperateNoteCompForPortrait()
       }
       .flexShrink(0)
+      .padding({ bottom: 90})
     }
     .height('100%')
     .width('100%')
@@ -195,8 +210,8 @@ export struct NoteListComp {
 
 @Component
 struct NoteOverViewComp {
-  @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
-  @StorageLink('breakPoint') breakPoints: string = AppStorage.Get('breakPoint')
+  @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')!;
+  @StorageLink('breakPoint') breakPoints: string = AppStorage.Get('breakPoint')!;
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('RefreshFlag') refreshFlag: number
@@ -206,7 +221,7 @@ struct NoteOverViewComp {
   @Consume('Search') search: boolean
   @Consume('PortraitModel') portraitModel: boolean
   controllerShow: webview.WebviewController = new webview.WebviewController();
-  @State noteNumber: number = undefined
+  @State noteNumber: number = 0;
   @StorageLink('isUpdate') @Watch('notesNumberChange') isUpdate: boolean = false
   @Consume('AsideWidth') asideWidth: number
   @State isShow: boolean = false
@@ -320,8 +335,8 @@ struct NoteOverViewComp {
 
 @Component
 export struct NoteItemComp {
-  public noteItem: NoteData
-  public spans: any[]
+  public noteItem: NoteData = new NoteData(0, '标题', new Date().getTime() + '', '', '', '', NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0, 0);
+  public spans: TextSpan[] = [];
   controllerShow: webview.WebviewController = new webview.WebviewController();
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('SelectedNoteData') selectedNoteData: NoteData
@@ -332,7 +347,7 @@ export struct NoteItemComp {
   @Consume('Search') search: boolean
   @Consume('selectedAll') selectedAll: boolean
   @Consume('PortraitModel') portraitModel: boolean
-  @State isChecked: boolean = undefined
+  @State isChecked: boolean = false;
   @Consume('Longpress') @Watch('isLongPress') longpress: boolean
   @StorageLink('isUpdate') isUpdate: boolean = false
 
@@ -534,7 +549,7 @@ export struct NoteItemListComp {
         if (this.searchResultList.length != 0) {
           this.selectedNoteData = this.searchResultList[0]
         } else {
-          this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+          this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
         }
         if (this.portraitModel == false) {
           this.controllerShow.runJavaScript(
@@ -595,7 +610,8 @@ export struct NoteItemListComp {
               .height('100%')
               .padding({ bottom: 120 })
               .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
-              LazyForEach(this.noteList, (noteItem) => {
+
+              LazyForEach(this.noteList, (noteItem: NoteData) => {
                 ListItem() {
                   Column() {
                     NoteItemComp({
@@ -607,7 +623,7 @@ export struct NoteItemListComp {
                   .padding({ left: 24, right: 24, bottom: 12 })
                 }
                 .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
-              }, noteItem => JSON.stringify(noteItem))
+              }, (noteItem: NoteData) => JSON.stringify(noteItem))
             }
             .id(this.isUpdate + '')
             .margin((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? {
@@ -657,8 +673,10 @@ export struct OperateNoteComp {
   @Consume('selectedAll') selectedAll: boolean
   @StorageLink('isUpdate') isUpdate: boolean = false
   controllerShow: webview.WebviewController = new webview.WebviewController();
-  noteDataMoveDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: NoteDataMoveDialog({ onConfirm: this.onMoveConfirm.bind(this) }),
+  noteDataMoveDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: NoteDataMoveDialog({ onConfirm: (folderUuid: string) => {
+      this.onMoveConfirm(folderUuid);
+    } }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
@@ -675,9 +693,9 @@ export struct OperateNoteComp {
       // update note to db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-      RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+      RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
     })
-    this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
+    this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -691,8 +709,10 @@ export struct OperateNoteComp {
     NoteUtil.refreshAll()
   }
 
-  noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), multiSelect: true }),
+  noteDataDeleteDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: DeleteDialog({ onConfirm: () => {
+      this.onDeleteConfirm();
+    }, multiSelect: true }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
@@ -706,7 +726,7 @@ export struct OperateNoteComp {
         // update note to db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
       })
     } else {
       this.CheckedNoteArray.forEach((noteItem: NoteData) => {
@@ -714,13 +734,13 @@ export struct OperateNoteComp {
         // delete note from db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.delete(predicates_note, null)
+        RdbStoreUtil.delete(predicates_note, null!);
       })
     }
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
-    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
     if (this.portraitModel == false) {
       this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')")
     }
@@ -760,7 +780,7 @@ export struct OperateNoteComp {
         .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 18 })
         .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
         .onClick(() => {
-          this.noteDataMoveDialogCtl.open()
+          this.noteDataMoveDialogCtl!.open();
         })
       Image($r('app.media.delete'))
         .width(24)
@@ -769,7 +789,7 @@ export struct OperateNoteComp {
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
         .onClick(() => {
-          this.noteDataDeleteDialogCtl.open()
+          this.noteDataDeleteDialogCtl!.open();
         })
       Image($r('app.media.recover'))
         .width(24)
@@ -782,13 +802,13 @@ export struct OperateNoteComp {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_deleted = Delete.No
             noteItem.deleted_time = 0
-            let context: any = getContext(this)
-            let resource = {
+            let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+            let resource: resourceManager.Resource = {
               bundleName: "com.ohos.note",
               moduleName: "default",
               id: $r('app.string.restore').id
             };
-            context.resourceManager.getString(resource, (error, value) => {
+            context.resourceManager.getStringValue(resource, (error: BusinessError, value: string) => {
               if (error != null) {
                 LogUtil.error(TAG, "error is " + error);
               } else {
@@ -847,7 +867,7 @@ export struct AddNoteComp {
       .margin({ right: 12 })
       .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
       .onClick(() => {
-        let noteData
+        let noteData: NoteData;
         if (this.selectedFolderData.uuid == SysDefFolderUuid.AllNotes || this.selectedFolderData.uuid == SysDefFolderUuid.MyFavorites) {
           noteData = new NoteData(0, "标题", new Date().getTime() + "", SysDefFolderUuid.UnClassified, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0, 0)
         } else {
@@ -901,7 +921,6 @@ export struct SearchComp {
           focusControl.requestFocus('searchFocus')
           this.search = false
           // 退出键盘
-          // @ts-ignore
           inputMethod.getController().stopInputSession();
           AppStorage.SetOrCreate<boolean>('Search', this.search)
         })
@@ -970,8 +989,10 @@ export struct OperateNoteCompForPortrait {
   @Consume('PortraitModel') portraitModel: boolean
   @State greyOpacity: boolean = false
   @StorageLink('isUpdate') isUpdate: boolean = false
-  noteDataMoveDialogCtlBottom: CustomDialogController = new CustomDialogController({
-    builder: NoteDataMoveDialog({ onConfirm: this.onMoveConfirm.bind(this) }),
+  noteDataMoveDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
+    builder: NoteDataMoveDialog({ onConfirm: (folderUuid: string) => {
+      this.onMoveConfirm(folderUuid);
+    } }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -998,9 +1019,9 @@ export struct OperateNoteCompForPortrait {
       // update note to db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-      RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+      RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
     })
-    this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
+    this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -1011,8 +1032,10 @@ export struct OperateNoteCompForPortrait {
     NoteUtil.refreshAll()
   }
 
-  noteDataDeleteDialogCtlBottom: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), multiSelect: true }),
+  noteDataDeleteDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
+    builder: DeleteDialog({ onConfirm: () => {
+      this.onDeleteConfirm();
+    }, multiSelect: true }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -1026,7 +1049,7 @@ export struct OperateNoteCompForPortrait {
         // update note to db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
       })
     } else {
       this.CheckedNoteArray.forEach((noteItem: NoteData) => {
@@ -1034,13 +1057,13 @@ export struct OperateNoteCompForPortrait {
         // delete note from db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.delete(predicates_note, null)
+        RdbStoreUtil.delete(predicates_note, null!);
       })
     }
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -1091,7 +1114,7 @@ export struct OperateNoteCompForPortrait {
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
           .onClick(() => {
-            this.noteDataDeleteDialogCtlBottom.open()
+            this.noteDataDeleteDialogCtlBottom!.open();
             AppStorage.SetOrCreate('isUpdate', true)
           })
         Text($r("app.string.delete"))
@@ -1115,7 +1138,7 @@ export struct OperateNoteCompForPortrait {
             .height(24)
             .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
             .onClick(() => {
-              this.noteDataMoveDialogCtlBottom.open()
+              this.noteDataMoveDialogCtlBottom!.open();
               AppStorage.SetOrCreate('isUpdate', true)
             })
           Text($r("app.string.move"))
@@ -1143,13 +1166,13 @@ export struct OperateNoteCompForPortrait {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_deleted = Delete.No
                 noteItem.deleted_time = 0
-                let context: any = getContext(this)
-                let resource = {
+                let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+                let resource: resourceManager.Resource = {
                   bundleName: "com.ohos.note",
                   moduleName: "default",
                   id: $r('app.string.restore').id
                 };
-                context.resourceManager.getString(resource, (error, value) => {
+                context.resourceManager.getStringValue(resource, (error: BusinessError, value: string) => {
                   if (error != null) {
                     LogUtil.error(TAG, "error is " + error);
                   } else {

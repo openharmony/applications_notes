@@ -14,6 +14,7 @@
  */
 
 import { NoteType, Favorite, Delete, Top } from './EnumData'
+import relationalStore from '@ohos.data.relationalStore';
 
 /**
  * 笔记类
@@ -56,7 +57,7 @@ export default class NoteData {
   /**
    * 转化为note_table表的valueBucket
    */
-  toNoteObject(): any{
+  toNoteObject(): relationalStore.ValuesBucket {
     return {
       "title": this.title,
       "uuid": this.uuid,

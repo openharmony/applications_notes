@@ -119,12 +119,12 @@ export class FolderUtil {
     if (folderData === undefined || folderData === null) {
       LogUtil.info(TAG, "isFolderMoveIn folderData undefined")
     }
-    if (folderData!.uuid === undefined || folderData!.uuid === null) {
+    if (folderData.uuid! === undefined || folderData.uuid! === null) {
       LogUtil.info(TAG, "isFolderMoveIn folderData uuid undefined")
-      folderData!.uuid = 'sys_def_unClassified_uuid';
+      folderData.uuid! == 'sys_def_unClassified_uuid';
     }
-    LogUtil.info(TAG, "isFolderMoveIn folderDataUuid " + folderData!.uuid);
-    return (folderData!.uuid == SysDefFolderUuid.UnClassified || folderData!.folder_type == FolderType.CusDef);
+    LogUtil.info(TAG, "isFolderMoveIn folderDataUuid " + folderData.uuid!);
+    return (folderData.uuid! == SysDefFolderUuid.UnClassified || folderData!.folder_type == FolderType.CusDef);
   }
 
   /**
@@ -155,18 +155,18 @@ export class FolderUtil {
   */
   getNoteCount(noteDataArray: NoteData[], folderUuid: string): number {
     let count = 0;
-    const folderTextMap = {
-      "sys_def_allNotes_uuid": (noteData) => {
-          noteData.is_deleted == Delete.No ? ++count : count
+    const folderTextMap: Record<string, (noteData: NoteData) => void> = {
+      "sys_def_allNotes_uuid": (noteData: NoteData) => {
+        noteData.is_deleted == Delete.No ? ++count : count;
       },
-      "sys_def_recentDeletes_uuid": (noteData) => {
-          noteData.is_deleted == Delete.Yes ? ++count : count
+      "sys_def_recentDeletes_uuid": (noteData: NoteData) => {
+        noteData.is_deleted == Delete.Yes ? ++count : count;
       },
-      "sys_def_myFavorites_uuid": (noteData) => {
-          noteData.is_favorite == Favorite.Yes && noteData.is_deleted == Delete.No ? ++count : count
+      "sys_def_myFavorites_uuid": (noteData: NoteData) => {
+        noteData.is_favorite == Favorite.Yes && noteData.is_deleted == Delete.No ? ++count : count;
       },
-      "sys_def_other_uuid": (noteData) => {
-          noteData.folder_uuid == folderUuid && noteData.is_deleted == Delete.No ? ++count : count
+      "sys_def_other_uuid": (noteData: NoteData) => {
+        noteData.folder_uuid == folderUuid && noteData.is_deleted == Delete.No ? ++count : count;
       },
     }
     if (folderUuid == SysDefFolderUuid.AllNotes || folderUuid == SysDefFolderUuid.RecentDeletes || folderUuid == SysDefFolderUuid.MyFavorites) {
@@ -185,12 +185,12 @@ export class FolderUtil {
   * @param selectedNoteArray - Selected note data list
   * @return FolderData - return folder when note data list belong to the same folder, else return null
   */
-  getCommonFolder(folderDataArray: FolderData[], selectedNoteArray: NoteData[]): FolderData {
+  getCommonFolder(folderDataArray: FolderData[], selectedNoteArray: NoteData[]): FolderData | null {
     if (selectedNoteArray.length == 0) {
       return null
     }
     let folderData: FolderData = this.getFolderData(folderDataArray, selectedNoteArray[0].folder_uuid)
-    let currentFolderData = null
+    let currentFolderData: string | null = null;
     selectedNoteArray.forEach((noteItem) => {
       if (folderData != this.getFolderData(folderDataArray, noteItem.folder_uuid)) {
         currentFolderData = this.getFolderData(folderDataArray, noteItem.folder_uuid).name
@@ -211,11 +211,12 @@ export class FolderUtil {
       if (folderDataArray[index].folder_type == FolderType.CusDef && folderDataArray[index].name == inputStr) {
         return true
       } else {
-        let temp = GlobalResourceManager.getStringByResource(this.getFolderText(folderDataArray[index]))
+        let temp = GlobalResourceManager.getStringByResource(this.getFolderText(folderDataArray[index]) as Resource);
         temp.then(result => {
           if (result == inputStr) {
             return true
           }
+          return false;
         })
       }
     }
