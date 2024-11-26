@@ -14,6 +14,7 @@
  */
 
 import {FolderType, Delete} from './EnumData'
+import relationalStore from '@ohos.data.relationalStore';
 
 /**
  * 文件夹类
@@ -43,7 +44,7 @@ export default class FolderData {
   /**
    * 转化为folder_table表的valueBucket
    */
-  toFolderObject(): any{
+  toFolderObject(): relationalStore.ValuesBucket {
     return {
       "name": this.name,
       "uuid": this.uuid,

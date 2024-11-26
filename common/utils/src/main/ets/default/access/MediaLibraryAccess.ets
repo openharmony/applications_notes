@@ -13,14 +13,20 @@
  * limitations under the License.
  */
 
-import {LogUtil} from '../baseUtil/LogUtil'
 import photoAccessHelper from '@ohos.file.photoAccessHelper';
+import common from '@ohos.app.ability.common';
+import { LogUtil } from '../baseUtil/LogUtil';
 
-const TAG = "MediaLibraryAccess"
+const TAG: string = 'MediaLibraryAccess';
+
+interface albumType {
+  count: number;
+  obj: photoAccessHelper.PhotoAsset | null;
+}
+
 export class MediaLibraryAccess {
-
-  static async getFirstObject(fetchOpt, context) {
-    let album = {
+  static async getFirstObject(fetchOpt: photoAccessHelper.FetchOptions, context: common.UIAbilityContext) {
+    let album: albumType = {
       count: 0,
       obj: null,
     }
@@ -51,7 +57,7 @@ export class MediaLibraryAccess {
     }
   }
 
-  static async openAsset(mode: string, fileAsset: any) {
+  static async openAsset(mode: string, fileAsset: photoAccessHelper.PhotoAsset) {
     LogUtil.info(TAG, 'openAsset start')
     let fd = await fileAsset.open(mode);
     LogUtil.info(TAG, `openAsset end. fd: ${fd}`)
@@ -64,7 +70,7 @@ export class MediaLibraryAccess {
     return fd;
   }
 
-  static async closeAsset(fd: number, fileAsset: any) {
+  static async closeAsset(fd: number, fileAsset: photoAccessHelper.PhotoAsset) {
     LogUtil.info(TAG, 'closeAsset start')
 
     if (fd <= 0) {

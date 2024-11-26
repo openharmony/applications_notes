@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import NoteData from '../model/databaseModel/NoteData'
+import NoteData from '../model/databaseModel/NoteData';
 
 export const circleColorArray: string[] = [
   "#f86d05", // 深红
@@ -36,7 +36,7 @@ export const fontColorArray: string[] = [
   "#182431", //黑色
 ]
 
-export const unSelectedNoteBgColorMap = {
+export const unSelectedNoteBgColorMap: Record<string, string> = {
   "#f86d05": "#fff8eceb",
   "#ff7500": "#f3d9c4",
   "#ffbf00": "#f3e8c4",
@@ -48,7 +48,7 @@ export const unSelectedNoteBgColorMap = {
   "#ffffff": "#ffffff"
 }
 
-export const selectedNoteBgColorMap = {
+export const selectedNoteBgColorMap: Record<string, string> = {
   "#f86d05": "#eec4b8",
   "#ff7500": "#f1d8c7",
   "#ffbf00": "#f3cdb1",
@@ -60,14 +60,14 @@ export const selectedNoteBgColorMap = {
   "#ffffff": "#19007dff"
 }
 
-export const folderTextMap = {
+export const folderTextMap: Record<string, Resource> = {
   "sys_def_allNotes_uuid": $r('app.string.allNotes'),
   "sys_def_unClassified_uuid": $r('app.string.unClassified'),
   "sys_def_myFavorites_uuid": $r('app.string.myFavorites'),
   "sys_def_recentDeletes_uuid": $r('app.string.recentDeletes'),
 }
 
-export const folderIconMap = {
+export const folderIconMap: Record<string, Resource> = {
   "sys_def_allNotes_uuid": $r('app.media.allNotes'),
   "sys_def_unClassified_uuid": $r('app.media.unClassified'),
   "sys_def_myFavorites_uuid": $r('app.media.favorite_cancel'),
@@ -101,7 +101,7 @@ let widthWeightOneSection: WidthWeightMessage = new WidthWeightMessage("0%", 0, 
 let widthWeightTwoSection = new WidthWeightMessage("0%", 0, "34%", 1, "66%", 1)
 let widthWeightThreeSection = new WidthWeightMessage("16%", 1, "34%", 1, "50%", 1)
 
-export const widthWeightMessageMap = {
+export const widthWeightMessageMap: Record<number, WidthWeightMessage> = {
   1: widthWeightOneSection,
   2: widthWeightTwoSection,
   3: widthWeightThreeSection
