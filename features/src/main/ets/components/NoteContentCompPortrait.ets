@@ -731,6 +731,7 @@ export struct DeleteNoteComp {
       .width(180)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
+      .offset({ y: -50 })
 
       Column() {
         Image($r('app.media.recover'))
@@ -769,6 +770,7 @@ export struct DeleteNoteComp {
       .width(180)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
+      .offset({ y: -50 })
     }
     .width(360)
     .height(56)
