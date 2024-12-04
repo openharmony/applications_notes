@@ -91,11 +91,11 @@ export struct FolderListComp {
 
       Column() {
         FolderItemComp({
-          folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), SysDefFolderUuid.MyFavorites),
+          folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray')!, SysDefFolderUuid.MyFavorites),
           controllerShow: this.controllerShow
         })
         FolderItemComp({
-          folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), SysDefFolderUuid.RecentDeletes),
+          folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray')!, SysDefFolderUuid.RecentDeletes),
           controllerShow: this.controllerShow
         })
       }
@@ -150,7 +150,7 @@ export struct NoteAndCreateComp {
     let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
     // insert folder to db
-    RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null!);
+    RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null);
     AppStorage.SetOrCreate('isUpdate', true)
   }
 
@@ -242,7 +242,7 @@ struct FolderItemComp {
     // update folder to db
     let predicates_folder = RdbStoreUtil.getRdbPredicates(TableName.FolderTable)
     predicates_folder.equalTo(FolderTableColumn.Uuid, this.folderItem.uuid)
-    RdbStoreUtil.update(this.folderItem.toFolderObject(), predicates_folder, null!);
+    RdbStoreUtil.update(this.folderItem.toFolderObject(), predicates_folder, null);
     this.isUpdate = true
   }
 
@@ -268,8 +268,8 @@ struct FolderItemComp {
   onDeleteConfirm() {
     let currentFolder = FolderUtil.getFolderData(this.AllFolderArray, this.folderItem.uuid)
     let index = this.AllFolderArray.indexOf(currentFolder)
-    let currentNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
-    let deleteNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), 'sys_def_recentDeletes_uuid')
+    let currentNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.folderItem.uuid);
+    let deleteNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, 'sys_def_recentDeletes_uuid');
     if (index > -1) {
       this.AllFolderArray.splice(index, 1)
       if (deleteNoteDataArray.length != 0) {
@@ -280,7 +280,7 @@ struct FolderItemComp {
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-            RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
+            RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
           }
         })
       }
@@ -292,13 +292,13 @@ struct FolderItemComp {
           // update note to db
           let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
           predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-          RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
+          RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
         })
       }
       // delete folder from db
       let predicates_folder = RdbStoreUtil.getRdbPredicates(TableName.FolderTable)
       predicates_folder.equalTo(FolderTableColumn.Uuid, this.folderItem.uuid)
-      RdbStoreUtil.delete(predicates_folder, null!);
+      RdbStoreUtil.delete(predicates_folder, null);
       // update selectedFolderData and selectedNoteData
       this.selectedFolderData = FolderUtil.getFolderData(this.AllFolderArray, SysDefFolderUuid.AllNotes)
       this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, SysDefFolderUuid.AllNotes)!;
@@ -348,7 +348,7 @@ struct FolderItemComp {
     let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
     // insert folder to db
-    RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null!);
+    RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null);
     this.isUpdate = true
   }
 
@@ -457,7 +457,7 @@ struct FolderItemComp {
             NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           } else {
             this.selectedFolderData = this.folderItem
-            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)!;
+            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.folderItem.uuid)!;
             if (!this.selectedNoteData) {
               return
             }
@@ -522,7 +522,7 @@ struct FolderItemComp {
             NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           } else {
             this.selectedFolderData = this.folderItem
-            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)!;
+            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.folderItem.uuid)!;
             if (!this.selectedNoteData) {
               return
             }

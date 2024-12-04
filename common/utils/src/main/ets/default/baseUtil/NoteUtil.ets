@@ -191,7 +191,7 @@ export class NoteUtil {
         // delete note from db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, allNoteDataArray[index].uuid)
-        RdbStoreUtil.delete(predicates_note, null!);
+        RdbStoreUtil.delete(predicates_note, null);
         allNoteDataArray.splice(index, 1);
       }
       index++
@@ -278,7 +278,7 @@ export class NoteUtil {
       LogUtil.info(TAG, "delete note:" + selectedNoteData.uuid);
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
       predicates_note.equalTo(NoteTableColumn.Uuid, selectedNoteData.uuid);
-      RdbStoreUtil.delete(predicates_note, null!);
+      RdbStoreUtil.delete(predicates_note, null);
       LogUtil.info(TAG, "delete note success:" + selectedNoteData.uuid);
       return true;
     }

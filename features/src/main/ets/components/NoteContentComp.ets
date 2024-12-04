@@ -136,7 +136,7 @@ export struct NoteContentComp {
       this.selectedNoteData.modified_time = new Date().getTime()
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
       LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -156,7 +156,7 @@ export struct NoteContentComp {
       this.selectedNoteData.modified_time = new Date().getTime()
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
       LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
       this.sectionStatus = this.lastSectionStatus
       this.sectionStatus = mediaquery.matchMediaSync('(width < 2000)').matches ? 2 : 3
@@ -178,7 +178,7 @@ export struct NoteContentComp {
       this.selectedNoteData.modified_time = new Date().getTime()
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
       LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + this.selectedNoteData.uuid)
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -401,14 +401,15 @@ export struct NoteContentOverViewComp {
     this.selectedNoteData.modified_time = new Date().getTime()
     let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
     predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-    RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+    RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
     NoteUtil.refreshAll()
   }
 
   @Builder MenuBuilder() {
     Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
       List() {
-        if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
+        if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null &&
+          this.NoteDataMoveArray.length > 0) {
           ForEach(this.NoteDataMoveArray, (item: FolderData) => {
             ListItem() {
               NoteDataMoveItemCompTablet({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
@@ -417,7 +418,7 @@ export struct NoteContentOverViewComp {
               this.selectedNoteData.folder_uuid = item.uuid
               let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
               predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+              RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
               if (this.sectionStatus != 1) {
                 this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
                 this.controllerShow.runJavaScript(
@@ -425,7 +426,7 @@ export struct NoteContentOverViewComp {
                 )
                 this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               } else {
-                this.selectedFolderData = FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), item.uuid)
+                this.selectedFolderData = FolderUtil.getFolderData(AppStorage.Get('AllFolderArray')!, item.uuid);
               }
               // save continue data
               let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -487,7 +488,7 @@ export struct NoteContentOverViewComp {
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
           .margin({ left: 8 })
           .borderRadius(16)
-          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
+          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray')!, this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
           .bindMenu(this.MenuBuilder)
         }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
       }
@@ -534,16 +535,16 @@ export struct ToolBarComp {
       // update note to db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
     } else {
       NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData.uuid)
       // delete note from db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.delete(predicates_note, null!);
+      RdbStoreUtil.delete(predicates_note, null);
     }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
+    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
     try {
       this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text! + "')");
     } catch (error) {
@@ -643,9 +644,9 @@ export struct ToolBarComp {
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
                 predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
 
-                this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
+                this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
                 this.controllerShow.runJavaScript(
                   "RICH_EDITOR.setHtml('" + this.selectedNoteData!.content_text + "')"
                 )

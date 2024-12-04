@@ -105,7 +105,7 @@ export struct NoteContent {
       this.selectedNoteData.modified_time = new Date().getTime()
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
       LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid)
       AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
       AppStorage.SetOrCreate<boolean>('needRefresh', true)
@@ -130,7 +130,7 @@ export struct NoteContent {
       this.selectedNoteData.modified_time = new Date().getTime()
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
       LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + this.selectedNoteData.uuid)
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -498,7 +498,7 @@ export struct NoteContentOverViewComp {
     this.selectedNoteData.modified_time = new Date().getTime()
     let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
     predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-    RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+    RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -517,7 +517,7 @@ export struct NoteContentOverViewComp {
             this.selectedNoteData.folder_uuid = item.uuid
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-            RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null!);
+            RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
             AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -572,7 +572,7 @@ export struct NoteContentOverViewComp {
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
           .margin({ left: 8 })
           .borderRadius(16)
-          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
+          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray')!, this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
           .bindMenu(this.MenuBuilder)
         }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
       }
