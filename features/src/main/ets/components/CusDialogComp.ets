@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,15 @@ import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/Fol
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
-import { circleColorArray, fontColorArray, SysDefFolderUuid, DeleteFileType, FolderType, LogUtil } from '@ohos/utils'
+import {
+  circleColorArray,
+  fontColorArray,
+  SysDefFolderUuid,
+  DeleteFileType,
+  FolderType,
+  Delete,
+  LogUtil
+} from '@ohos/utils';
 import inputMethod from '@ohos.inputMethod'
 
 const TAG = "CusDialogComp"
@@ -26,7 +34,8 @@ const TAG = "CusDialogComp"
 @CustomDialog
 export struct NewOrEditFolderDialog {
   newOrEditFolderDialogCtl: CustomDialogController
-  confirm: (color: string, name: string) => void
+  confirm: (color: string, name: string) => void = (color: string, name: string) => {
+  };
   @State inputName: string = ""
   private oriInputName: string = ""
   private oriSelectedColor: string = ""
@@ -47,8 +56,9 @@ export struct NewOrEditFolderDialog {
       Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
         ForEach(circleColorArray, (colorStr: string) => {
           ColorCircleComp({ circleColor: colorStr })
-        }, colorStr => colorStr)
+        }, (colorStr: string) => colorStr)
       }.margin({ bottom: 12, left: 24, right: 24 })
+
       // folder name input
       Flex({ wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
         Image($r("app.media.folder"))
@@ -107,21 +117,21 @@ export struct NewOrEditFolderDialog {
           .strokeWidth(1)
           .color($r("app.color.divider_color_e4e4e4"))
         Text($r("app.string.save"))
-          .opacity(this.inputName == ""
-                   || (this.oriSelectedColor == this.selectedColor && this.inputName == this.oriInputName && this.dialogType == 1)
-                   || (this.isExisted && this.dialogType == 0)
-                   || (this.isExisted && this.dialogType == 1 && this.inputName != this.oriInputName) ? 0.4 : 1)
-          .enabled(this.inputName == ""
-                   || (this.oriSelectedColor == this.selectedColor && this.inputName == this.oriInputName && this.dialogType == 1)
-                   || (this.isExisted && this.dialogType == 0)
-                   || (this.isExisted && this.dialogType == 1 && this.inputName != this.oriInputName) ? false : true)
+          .opacity(this.inputName == "" || (this.oriSelectedColor == this.selectedColor &&
+            this.inputName == this.oriInputName && this.dialogType == 1) ||
+            (this.isExisted && this.dialogType == 0) ||
+            (this.isExisted && this.dialogType == 1 && this.inputName != this.oriInputName) ? 0.4 : 1)
+          .enabled(this.inputName == "" || (this.oriSelectedColor == this.selectedColor &&
+            this.inputName == this.oriInputName && this.dialogType == 1) ||
+            (this.isExisted && this.dialogType == 0) || (this.isExisted && this.dialogType == 1 &&
+            this.inputName != this.oriInputName) ? false : true)
           .fontSize(18)
           .textAlign(TextAlign.Center)
           .fontColor($r("app.color.button_color_f86d05"))
           .width('48%')
           .onClick(() => {
             this.newOrEditFolderDialogCtl.close()
-            if (this.inputName.replace(/\s+/g, '') == '') {
+            if (this.inputName.replace(new RegExp('/\s+/g'), '') == '') {
               return
             } else {
               this.confirm(this.selectedColor, this.inputName)
@@ -136,10 +146,11 @@ export struct NewOrEditFolderDialog {
     .backgroundColor($r("app.color.create_folder_bg_color"))
     .alignItems(HorizontalAlign.Start)
     .margin({ bottom: 16, left: 12, right: 12 })
+    .offset({ y: -50 })
   }
 
   aboutToAppear(): void {
-    var currentFolder: FolderData = FolderUtil.getFolderData(this.AllFolderArray, this.editFolderUuid) // 获取当前选中的文件夹
+    let currentFolder: FolderData = FolderUtil.getFolderData(this.AllFolderArray, this.editFolderUuid); // 获取当前选中的文件夹
     if (currentFolder == null) {
       return
     }
@@ -148,7 +159,7 @@ export struct NewOrEditFolderDialog {
       this.oriInputName = this.inputName
       this.oriSelectedColor = currentFolder.color
     } else {
-      GlobalResourceManager.getStringByResource(FolderUtil.getFolderText(currentFolder)).then(result => {
+      GlobalResourceManager.getStringByResource(FolderUtil.getFolderText(currentFolder) as Resource).then(result => {
         this.inputName = result
         this.oriInputName = this.inputName
         this.oriSelectedColor = currentFolder.color
@@ -159,7 +170,7 @@ export struct NewOrEditFolderDialog {
 
 @Component
 struct ColorCircleComp {
-  private circleColor: string
+  private circleColor: string = '';
   @Consume('SelectedColor') selectedColor: string
 
   build() {
@@ -189,7 +200,8 @@ export struct DeleteDialog {
   private multiSelect: boolean = false
   private deleteFileType = DeleteFileType.NoteData
   noteDataDeleteDialogCtl: CustomDialogController
-  onConfirm: () => void
+  onConfirm: () => void = () => {
+  };
 
   build() {
     Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.SpaceBetween }) {
@@ -200,30 +212,35 @@ export struct DeleteDialog {
             .textAlign(TextAlign.Center)
             .maxLines(1)
         } else {
-          Text(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? $r("app.string.deleteNoteComplete") : $r("app.string.deleteNote"))
+          Text(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ?
+          $r("app.string.deleteNoteComplete") : $r("app.string.deleteNote"))
             .fontSize(14)
             .textAlign(TextAlign.Center)
             .maxLines(1)
-            .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
+            .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ?
+            Visibility.Visible : Visibility.None)
           if (this.CheckedNoteArray.length ==
           NoteUtil.getNoteDataArray(this.AllNoteArray, this.selectedFolderData.uuid).length) {
             Text($r("app.string.deleteAllNote"))
               .fontSize(14)
               .textAlign(TextAlign.Center)
               .maxLines(1)
-              .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
+              .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ?
+              Visibility.None : Visibility.Visible)
           } else if (this.CheckedNoteArray.length > 1) {
             Text($r("app.string.deletePartNote", this.CheckedNoteArray.length))
               .fontSize(14)
               .textAlign(TextAlign.Center)
               .maxLines(1)
-              .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
+              .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ?
+              Visibility.None : Visibility.Visible)
           } else {
             Text($r("app.string.deleteNote"))
               .fontSize(14)
               .textAlign(TextAlign.Center)
               .maxLines(1)
-              .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
+              .visibility(this.multiSelect == false || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ?
+              Visibility.None : Visibility.Visible)
           }
         }
       }
@@ -267,6 +284,7 @@ export struct DeleteDialog {
     .padding({ top: 24, bottom: 16, left: 16, right: 16 })
     .backgroundColor($r("app.color.delete_note_bg_color"))
     .margin({ bottom: 16, left: 12, right: 12 })
+    .offset({ y: -50 })
   }
 }
 
@@ -274,24 +292,25 @@ export struct DeleteDialog {
 struct NoteDataMoveItemComp {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
-  private folderItem: FolderData
+  private folderItem: FolderData = new FolderData(0, '', new Date().getTime() + '', '', FolderType.CusDef, Delete.No,
+    new Date().getTime(), new Date().getTime());
   dividerShow: boolean = true
 
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
       Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap }) {
-        Image(FolderUtil.getFolderIcon(this.folderItem.uuid))
+        Image(FolderUtil.getFolderIcon(this.folderItem.uuid!))
           .objectFit(ImageFit.Fill)
           .width(24)
           .height(24)
           .flexShrink(0)
-          .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, false))
+          .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid!, false))
       }
       .width(24)
 
       Column() {
         Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.SpaceBetween }) {
-          Text(FolderUtil.getFolderText(this.folderItem))
+          Text(FolderUtil.getFolderText(this.folderItem!))
             .fontSize(16)
             .textAlign(TextAlign.Center)
             .maxLines(1)
@@ -299,7 +318,8 @@ struct NoteDataMoveItemComp {
             .flexShrink(1)
             .fontWeight(FontWeight.Medium)
           Image((FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) == null
-          || FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) != this.folderItem) ? $r("app.media.foldMove_unselect") : $r("app.media.foldMove_select"))
+            || FolderUtil.getCommonFolder(this.AllFolderArray, this.CheckedNoteArray) != this.folderItem!) ?
+          $r("app.media.foldMove_unselect") : $r("app.media.foldMove_select"))
             .objectFit(ImageFit.Fill)
             .width(24)
             .height(24)
@@ -326,15 +346,16 @@ struct NoteDataMoveItemComp {
 @CustomDialog
 export struct NoteDataMoveDialog {
   noteDataMoveDialogCtl: CustomDialogController
-  onConfirm: (folderUuid: string) => void
-  NoteDataMoveArray: FolderData[]
+  onConfirm: (folderUuid: string) => void = (folderUuid: string) => {
+  };
+  NoteDataMoveArray: FolderData[] = [];
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
 
   aboutToAppear() {
     this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
     if (this.AllFolderArray[1] === undefined || this.AllFolderArray[1] === null) {
-      LogUtil.info(TAG, "this AllFolderArray[1] undefined")
-      return
+      LogUtil.info(TAG, 'this AllFolderArray[1] undefined');
+      return;
     }
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
   }
@@ -351,7 +372,7 @@ export struct NoteDataMoveDialog {
 
       List() {
         if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
-          ForEach(this.NoteDataMoveArray.slice(0, this.NoteDataMoveArray.length - 1), (item) => {
+          ForEach(this.NoteDataMoveArray.slice(0, this.NoteDataMoveArray.length - 1), (item: FolderData) => {
             ListItem() {
               NoteDataMoveItemComp({ folderItem: item })
             }
@@ -359,7 +380,7 @@ export struct NoteDataMoveDialog {
               this.noteDataMoveDialogCtl.close()
               this.onConfirm(item.uuid)
             })
-          }, noteItem => noteItem.uuid)
+          }, (noteItem: FolderData) => noteItem.uuid)
         }
         ListItem() {
           NoteDataMoveItemComp({
@@ -391,22 +412,24 @@ export struct NoteDataMoveDialog {
     .padding({ left: 24, right: 24 })
     .backgroundColor($r("app.color.choose_folder_bg_color"))
     .margin({ bottom: 16, left: 12, right: 12 })
+    .offset({ y: -50 })
   }
 }
 
-let inSetValue = AppStorage.Link('inSetValue')
+let inSetValue: string = AppStorage.Link('inSetValue');
 
 @CustomDialog
 export struct EditContentDialog {
   editContentDialogCtl: CustomDialogController
-  confirm: (excuteJs: string) => void
+  confirm: (excuteJs: string) => void = (excuteJs: string) => {
+  };
   @State selectFontColor: string = fontColorArray[0]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
-  private circleColor: string
-  private fontSize: number
+  private circleColor: string = '';
+  private fontSize: number = 0;
 
   aboutToAppear() {
-    this.confirm("javascript:RICH_EDITOR.getFontSizes()")
+    this.confirm('javascript:RICH_EDITOR.getFontSizes()');
   }
 
   build() {
@@ -608,7 +631,7 @@ export struct EditContentDialog {
                 this.selectFontColor = colorStr
                 this.confirm("javascript:RICH_EDITOR.setTextColor('" + this.selectFontColor + "')")
               })
-            }, colorStr => colorStr)
+            }, (colorStr: string) => colorStr)
           }.padding({ bottom: 11 })
         }
         .alignItems(VerticalAlign.Top)
@@ -665,7 +688,8 @@ export struct EditContentDialog {
 @CustomDialog
 export struct EditTitleDialog {
   editTitleDialog: CustomDialogController
-  confirm: (newTitle: string) => void
+  confirm: (newTitle: string) => void = (newTitle: string) => {
+  };
   @State inputName: string = ""
   @State isEquivalentVal: boolean = true
 
@@ -722,7 +746,7 @@ export struct EditTitleDialog {
           .onClick(() => {
             this.editTitleDialog.close()
             inputMethod.getController().stopInputSession();
-            if (this.inputName.replace(/\s+/g, '') == '') {
+            if (this.inputName.replace(new RegExp('/\s+/g'), '') == '') {
               return
             } else {
               this.confirm(this.inputName)
@@ -742,14 +766,20 @@ export struct EditTitleDialog {
 @CustomDialog
 export struct EditContentDialogPortrait {
   editContentDialogCtl: CustomDialogController;
-  confirm: (excuteJs: string) => void
+  confirm: (excuteJs: string) => void = (excuteJs: string) => {
+  };
   @State selectFontColor: string = fontColorArray[0]
   @Consume('SelectedNoteData') selectedNoteData: NoteData
-  private circleColor: string
-  private fontSize: number
+  private circleColor: string = '';
+  private fontSize: number = 0;
 
   aboutToAppear() {
-    this.confirm("javascript:RICH_EDITOR.getFontSizes()")
+    try {
+      this.confirm('javascript:RICH_EDITOR.getFontSizes()');
+      LogUtil.info(TAG, `runJavaScript success.`);
+    } catch (error) {
+      LogUtil.error(TAG, `runJavaScript failed.code:${JSON.stringify(error.code)},message:${JSON.stringify(error.message)}`);
+    }
   }
 
   build() {
@@ -939,7 +969,7 @@ export struct EditContentDialogPortrait {
               this.selectFontColor = colorStr
               this.confirm("javascript:RICH_EDITOR.setTextColor('" + this.selectFontColor + "')")
             })
-          }, colorStr => colorStr)
+          }, (colorStr: string) => colorStr)
         }
       }
       .height(48)
@@ -979,5 +1009,6 @@ export struct EditContentDialogPortrait {
     .height(266)
     .backgroundColor($r("app.color.color_ffffff"))
     .borderRadius(36)
+    .offset({ y: -35 })
   }
 }

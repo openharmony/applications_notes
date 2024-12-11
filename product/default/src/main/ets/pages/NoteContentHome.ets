@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@ import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import inputMethod from '@ohos.inputMethod'
 import webview from '@ohos.web.webview';
+import common from '@ohos.app.ability.common';
 
 @Entry
 @Component
@@ -53,7 +54,6 @@ struct NoteContentHome {
       this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
       this.controllerShow.runJavaScript("getHtmlContent()")
       if (deviceInfo.deviceType !== 'phone' && deviceInfo.deviceType !== 'default') {
-        // @ts-ignore
         inputMethod.getController().stopInputSession();
       }
     } catch (error) {
@@ -62,12 +62,13 @@ struct NoteContentHome {
   }
 
   aboutToAppear(): void {
-    this.breakPoints = AppStorage.Get('breakPoint')
+    let noteContext = AppStorage.Get<common.UIAbilityContext>('noteContext')!;
+    this.breakPoints = AppStorage.Get('breakPoint')!;
     LogUtil.info(this.TAG, "aboutToAppear")
     let isContinue = AppStorage.Get<boolean>('IsContinue')
     LogUtil.info(this.TAG, "aboutToAppear, isContinue : " + isContinue)
     if (isContinue) {
-      RdbStoreUtil.initAppStorage(globalThis.noteContext)
+      RdbStoreUtil.initAppStorage(noteContext);
     }
     if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
       AppStorage.SetOrCreate<boolean>('NoteContentHomeExist', true)

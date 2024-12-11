@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,48 +25,55 @@ import {
   TableName,
   FolderTableColumn,
   NoteTableColumn,
-  SysDefFolderUuid
-} from '../model/databaseModel/EnumData'
-import relationalStore from '@ohos.data.relationalStore'
+  SysDefFolderUuid,
+  FolderType,
+  Delete,
+  Favorite,
+  NoteType,
+  Top
+} from '../model/databaseModel/EnumData';
+import relationalStore from '@ohos.data.relationalStore';
 import util from '@ohos.util';
+import { BusinessError, Callback } from '@ohos.base';
+import common from '@ohos.app.ability.common';
 
-const TAG = "RdbStoreUtil"
+const TAG: string = 'RdbStoreUtil';
 
-const FileMaxSize: number = 20 * 1024 * 1024
+const FileMaxSize: number = 20 * 1024 * 1024;
+let rdbStore = AppStorage.Get<relationalStore.RdbStore>('rdbStore');
 
 /**
  * db instance
  */
-
-export default {
+class RdbStoreUtil {
   /**
    * create db and table
    */
-  createRdbStore(context) {
+  createRdbStore(context: common.UIAbilityContext) {
     try {
       relationalStore.getRdbStore(context, SysDefData.dbInfo.db_name)
         .then(async (store) => {
           // add sys-def folder and note to AppStorage
-          let folderDataArray = []
+          let folderDataArray: FolderData[] = [];
           let sysDefFolderArray = [SysDefData.sys_def_allNotes, SysDefData.sys_def_unClassified,
-          SysDefData.sys_def_myFavorites, SysDefData.sys_def_recentDeletes,
-          SysDefData.sys_def_personal, SysDefData.sys_def_life, SysDefData.sys_def_work]
+            SysDefData.sys_def_myFavorites, SysDefData.sys_def_recentDeletes,
+            SysDefData.sys_def_personal, SysDefData.sys_def_life, SysDefData.sys_def_work];
           sysDefFolderArray.forEach((sysDefFolder) => {
-            let folderData = new FolderData(sysDefFolder.id, sysDefFolder.name, sysDefFolder.uuid, sysDefFolder.color,
-              sysDefFolder.folder_type, sysDefFolder.is_deleted, sysDefFolder.created_time,
-              sysDefFolder.modified_time)
-            folderDataArray.push(folderData)
+            let folderData = new FolderData(sysDefFolder.id as number, sysDefFolder.name as string, sysDefFolder.uuid as string, sysDefFolder.color as string,
+              sysDefFolder.folder_type as FolderType, sysDefFolder.is_deleted as Delete, sysDefFolder.created_time as number,
+              sysDefFolder.modified_time as number);
+            folderDataArray.push(folderData);
           })
-          LogUtil.info(TAG, "folderDataArray[sysdef] : " + folderDataArray.length)
+          LogUtil.info(TAG, "folderDataArray[sysdef] : " + folderDataArray.length);
 
-          let noteDataArray = []
+          let noteDataArray: NoteData[] = [];
           let sysDefNoteArray = [SysDefData.sys_def_note1, SysDefData.sys_def_note2,
-          SysDefData.sys_def_note3, SysDefData.sys_def_note4]
+            SysDefData.sys_def_note3, SysDefData.sys_def_note4];
           sysDefNoteArray.forEach((sysDefNote) => {
-            let noteData = new NoteData(sysDefNote.id, sysDefNote.title, sysDefNote.uuid, sysDefNote.folder_uuid, sysDefNote.content_text,
-              sysDefNote.content_img, sysDefNote.note_type, sysDefNote.is_top, sysDefNote.is_favorite,
-              sysDefNote.is_deleted, sysDefNote.created_time, sysDefNote.modified_time, sysDefNote.deleted_time, sysDefNote.slider_value)
-            noteDataArray.push(noteData)
+            let noteData = new NoteData(sysDefNote.id as number, sysDefNote.title as string, sysDefNote.uuid as string, sysDefNote.folder_uuid as string, sysDefNote.content_text as string,
+              sysDefNote.content_img as string, sysDefNote.note_type as NoteType, sysDefNote.is_top as Top, sysDefNote.is_favorite as Favorite,
+              sysDefNote.is_deleted as Delete, sysDefNote.created_time as number, sysDefNote.modified_time as number, sysDefNote.deleted_time as number, sysDefNote.slider_value as number);
+            noteDataArray.push(noteData);
           })
           LogUtil.info(TAG, "noteDataArray[sysdef] : " + noteDataArray.length)
 
@@ -78,12 +85,12 @@ export default {
           let isContinue = AppStorage.Get<boolean>('IsContinue');
           LogUtil.info(TAG, "createRdbStore, isContinue is " + isContinue)
           if (isContinue) {
-            let continueNote: string = AppStorage.Get('ContinueNote')
-            let continueSection = AppStorage.Get('ContinueSection')
-            let noteObj = JSON.parse(continueNote)
-            let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
+            let continueNote: string = AppStorage.Get('ContinueNote')!;
+            let continueSection: number = AppStorage.Get('ContinueSection')!;
+            let noteObj: NoteData = JSON.parse(continueNote);
+            let noteData: NoteData = new NoteData(noteObj.id, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
               noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
-              noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value)
+              noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value);
 
             // save img to FileDir
             LogUtil.info(TAG, "createRdbStore, save img to FileDir")
@@ -130,8 +137,8 @@ export default {
             AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
           } else {
             LogUtil.info(TAG, "createRdbStore, IsContinue false")
-            AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
-            let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
+            AppStorage.SetOrCreate('Folder', (AppStorage.Get('AllFolderArray') as FolderData[])[0]);
+            let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, SysDefFolderUuid.AllNotes);
             AppStorage.SetOrCreate('Note', note)
             if (note) {
               AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
@@ -141,49 +148,49 @@ export default {
           AppStorage.SetOrCreate('DBQueryFinished', 1)
           LogUtil.info(TAG, "createRdbStore, set DBQueryFinished 1")
           LogUtil.info(TAG, "createRdbStore, store is " + store)
-          globalThis.rdbStore = store
+          rdbStore = store;
           // create table
-          await globalThis.rdbStore.executeSql(TableSql.FolderTableSQL, null)
-          await globalThis.rdbStore.executeSql(TableSql.NoteTableSQL, null)
-          await globalThis.rdbStore.executeSql(TableSql.AttachmentTableSQL, null)
-          await globalThis.rdbStore.executeSql(TableSql.FormTableSQL, null)
+          rdbStore.executeSql(TableSql.FolderTableSQL.toString(), null);
+          rdbStore.executeSql(TableSql.NoteTableSQL.toString(), null);
+          rdbStore.executeSql(TableSql.AttachmentTableSQL.toString(), null);
+          rdbStore.executeSql(TableSql.FormTableSQL.toString(), null);
           LogUtil.info(TAG, "create table success")
           // insert system defined folder
-          await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_allNotes)
-          await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_unClassified)
-          await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_myFavorites)
-          await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_recentDeletes)
-          await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_personal)
-          await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_life)
-          await globalThis.rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_work)
+          await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_allNotes);
+          await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_unClassified);
+          await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_myFavorites);
+          await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_recentDeletes);
+          await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_personal);
+          await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_life);
+          await rdbStore.insert(TableName.FolderTable, SysDefData.sys_def_work);
           LogUtil.info(TAG, "insert system defined folder success")
           // insert system defined note and attachment
-          await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note1)
-          await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note2)
-          await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note3)
-          await globalThis.rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note4)
+          await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note1);
+          await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note2);
+          await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note3);
+          await rdbStore.insert(TableName.NoteTable, SysDefData.sys_def_note4);
           LogUtil.info(TAG, "insert system defined note and attachment success")
         })
     } catch (err) {
       LogUtil.warn(TAG, "createRdbStore, error : " + err)
     }
-  },
+  }
 
   /**
    * query folders and notes from the database, then save them to the AppStorage.
    */
-  initAppStorage(context) {
-    let folderDataArray = []
-    let noteDataArray = []
+  initAppStorage(context: common.UIAbilityContext) {
+    let folderDataArray: FolderData[] = [];
+    let noteDataArray: NoteData[] = [];
     try {
       relationalStore.getRdbStore(context, SysDefData.dbInfo.db_name)
         .then(async (store) => {
           LogUtil.info(TAG, "initAppStorage, store is " + store)
-          globalThis.rdbStore = store
+          rdbStore = store;
           // query folder
-          let columns_folder = []
+          let columns_folder: string[] = [];
           let predicates_folder = new relationalStore.RdbPredicates(TableName.FolderTable)
-          let resultSet_folder = await globalThis.rdbStore.query(predicates_folder, columns_folder)
+          let resultSet_folder: relationalStore.ResultSet = await rdbStore.query(predicates_folder, columns_folder);
           while (resultSet_folder.goToNextRow()) {
             let id = resultSet_folder.getLong(resultSet_folder.getColumnIndex(FolderTableColumn.Id))
             let name = resultSet_folder.getString(resultSet_folder.getColumnIndex(FolderTableColumn.Name))
@@ -199,9 +206,9 @@ export default {
           resultSet_folder.close();
           LogUtil.info(TAG, "folderDataArray[query] : " + folderDataArray.length)
           // query note
-          let columns_note = []
-          let predicates_note = new relationalStore.RdbPredicates(TableName.NoteTable)
-          let resultSet_note = await globalThis.rdbStore.query(predicates_note, columns_note)
+          let columns_note: string[] = [];
+          let predicates_note = new relationalStore.RdbPredicates(TableName.NoteTable);
+          let resultSet_note: relationalStore.ResultSet = await rdbStore.query(predicates_note, columns_note);
           while (resultSet_note.goToNextRow()) {
             let id = resultSet_note.getLong(resultSet_note.getColumnIndex(NoteTableColumn.Id))
             let title = resultSet_note.getString(resultSet_note.getColumnIndex(NoteTableColumn.Title))
@@ -232,12 +239,12 @@ export default {
           if (folderDataArray === null || folderDataArray === undefined || folderDataArray.length === 0) {
             LogUtil.info(TAG, "folderDataArray is null")
             let sysDefFolderArray = [SysDefData.sys_def_allNotes, SysDefData.sys_def_unClassified,
-            SysDefData.sys_def_myFavorites, SysDefData.sys_def_recentDeletes,
-            SysDefData.sys_def_personal, SysDefData.sys_def_life, SysDefData.sys_def_work]
+              SysDefData.sys_def_myFavorites, SysDefData.sys_def_recentDeletes,
+              SysDefData.sys_def_personal, SysDefData.sys_def_life, SysDefData.sys_def_work];
             sysDefFolderArray.forEach((sysDefFolder) => {
-              let folderData = new FolderData(sysDefFolder.id, sysDefFolder.name, sysDefFolder.uuid, sysDefFolder.color,
-                sysDefFolder.folder_type, sysDefFolder.is_deleted, sysDefFolder.created_time,
-                sysDefFolder.modified_time)
+              let folderData = new FolderData(sysDefFolder.id as number, sysDefFolder.name as string, sysDefFolder.uuid as string, sysDefFolder.color as string,
+                sysDefFolder.folder_type as FolderType, sysDefFolder.is_deleted as Delete, sysDefFolder.created_time as number,
+                sysDefFolder.modified_time as number);
               folderDataArray.push(folderData)
             })
             LogUtil.info(TAG, "folderDataArray[query] : " + folderDataArray.length)
@@ -250,13 +257,13 @@ export default {
           let isContinue = AppStorage.Get<boolean>('IsContinue');
           LogUtil.info(TAG, "initAppStorage, isContinue is " + isContinue)
           if (isContinue) {
-            let continueNote: string = AppStorage.Get('ContinueNote')
-            let continueSection = AppStorage.Get('ContinueSection')
+            let continueNote: string = AppStorage.Get('ContinueNote')!;
+            let continueSection: number = AppStorage.Get('ContinueSection')!;
 
-            let noteObj = JSON.parse(continueNote)
-            let noteData = new NoteData(noteObj.uuid, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
+            let noteObj: NoteData = JSON.parse(continueNote);
+            let noteData: NoteData = new NoteData(noteObj.id, noteObj.title, noteObj.uuid, noteObj.folder_uuid,
               noteObj.content_text, noteObj.content_img, noteObj.note_type, noteObj.is_top, noteObj.is_favorite,
-              noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value)
+              noteObj.is_deleted, noteObj.created_time, noteObj.modified_time, noteObj.deleted_time, noteObj.slider_value);
 
             // save img to FileDir
             LogUtil.info(TAG, "initAppStorage, save img to FileDir")
@@ -303,8 +310,8 @@ export default {
             AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
           } else {
             LogUtil.info(TAG, "initAppStorage, IsContinue false")
-            AppStorage.SetOrCreate('Folder', AppStorage.Get('AllFolderArray')[0])
-            let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
+            AppStorage.SetOrCreate('Folder', (AppStorage.Get('AllFolderArray') as FolderData[])[0]);
+            let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, SysDefFolderUuid.AllNotes);
             AppStorage.SetOrCreate('Note', note)
             if (note) {
               AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
@@ -317,17 +324,18 @@ export default {
     } catch (err) {
       LogUtil.error(TAG, "initAppStorage, error : " + err)
     }
-  },
+  }
 
-  getImgNameFromHtml(noteData: NoteData): any {
-    let newModuleName = "file://" + globalThis.noteContext.filesDir
-    let imgNameArray = []
+  getImgNameFromHtml(noteData: NoteData): string[] {
+    let noteContext = AppStorage.Get<common.UIAbilityContext>('noteContext')!;
+    let newModuleName = 'file://' + noteContext.filesDir;
+    let imgNameArray: string[] = [];
     if (noteData.content_text == undefined || noteData.content_text == null || noteData.content_text == "") {
       LogUtil.info(TAG, "noteData.content_text is null or undefined")
       return imgNameArray
     }
-    let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
-    let html
+    let base64regex = new RegExp('/^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/');
+    let html: string = '';
     if (base64regex.test(noteData.content_text)) {
       let base64 = new util.Base64Helper
       html = base64.decodeSync(noteData.content_text).toString()
@@ -337,8 +345,8 @@ export default {
     if (html == undefined || html == null || html == "") {
       return imgNameArray
     }
-    let imgReg = /<img[^>]+>/g
-    let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
+    let imgReg = new RegExp('/<img[^>]+>/g');
+    let srcReg = new RegExp('/src=[\'\"]?([^\'\"]*)[\'\"]?/i');
     let imgArray = html.match(imgReg)
     if (imgArray != null) {
       let hasFirstImg: boolean = false
@@ -361,12 +369,12 @@ export default {
       }
     }
     return imgNameArray
-  },
+  }
 
   writeToFileDir(fileName: string) {
     LogUtil.info(TAG, "writeToFileDir fileName : " + fileName)
-
-    let desPath = globalThis.noteContext.filesDir + "/" + fileName
+    let noteContext = AppStorage.Get<common.UIAbilityContext>('noteContext')!;
+    let desPath = noteContext.filesDir + '/' + fileName;
     LogUtil.info(TAG, "desPath : " + desPath)
     try {
       fileio.accessSync(desPath)
@@ -375,10 +383,10 @@ export default {
     } catch (err) {
       LogUtil.warn(TAG, "desPath has not existed, need to write")
     }
-    let srcPath
-    let size
+    let srcPath: string = '';
+    let size: number = 0;
     try {
-      srcPath = globalThis.noteContext.distributedFilesDir + "/" + fileName
+      srcPath = noteContext.distributedFilesDir + '/' + fileName;
       LogUtil.info(TAG, "srcPath : " + srcPath)
       size = fileio.statSync(srcPath).size
       LogUtil.info(TAG, "srcPath size : " + size)
@@ -393,7 +401,7 @@ export default {
     }
 
 
-    let srcFd
+    let srcFd: number = 0;
     try {
       srcFd = fileio.openSync(srcPath, 0o0)
       LogUtil.info(TAG, "open srcPath success : " + srcFd)
@@ -402,7 +410,7 @@ export default {
       return
     }
 
-    let desFd
+    let desFd: number = 0;
     try {
       desFd = fileio.openSync(desPath, 0o2 | 0o100, 0o400 | 0o200 | 0o040 | 0o020)
       LogUtil.info(TAG, "open desPath success : " + srcFd)
@@ -420,7 +428,7 @@ export default {
     } catch (err) {
       LogUtil.warn(TAG, "read or write error : " + err)
     }
-  },
+  }
 
   /**
    * insert
@@ -428,32 +436,32 @@ export default {
    * @param valueBucket
    * @param callback
    */
-  insert(tableName, valueBucket, callback) {
-    globalThis.rdbStore.insert(tableName, valueBucket).then((rowId) => {
+  insert(tableName: string, valueBucket: relationalStore.ValuesBucket, callback: Callback<number> | null) {
+    rdbStore!.insert(tableName, valueBucket).then((rowId: number) => {
       LogUtil.info(TAG, "insert success, rowId is " + rowId)
       if (callback != null) {
         callback(rowId)
       }
-    }).catch((err) => {
-      LogUtil.warn(TAG, "insert error : " + err)
+    }).catch((err: BusinessError) => {
+      LogUtil.error(TAG, 'insert error:' + err);
     })
-  },
+  }
 
   /**
    * delete
    * @param predicates
    * @param callback
    */
-  delete(predicates, callback) {
-    globalThis.rdbStore.delete(predicates).then((affectedRowCount) => {
+  delete(predicates: relationalStore.RdbPredicates, callback: Callback<number> | null) {
+    rdbStore!.delete(predicates).then((affectedRowCount: number) => {
       LogUtil.info(TAG, "delete success, affectedRowCount is " + affectedRowCount)
       if (callback != null) {
         callback(affectedRowCount)
       }
-    }).catch((err) => {
-      LogUtil.warn(TAG, "delete error : " + err)
+    }).catch((err: BusinessError) => {
+      LogUtil.error(TAG, "delete error : " + err);
     })
-  },
+  }
 
   /**
    * update
@@ -461,19 +469,20 @@ export default {
    * @param predicates
    * @param callback
    */
-  update(valueBucket, predicates, callback) {
-    if (!globalThis.rdbStore) {
+  update(valueBucket: relationalStore.ValuesBucket, predicates: relationalStore.RdbPredicates,
+         callback: Callback<number> | null) {
+    if (!rdbStore) {
       return;
     }
-    globalThis.rdbStore.update(valueBucket, predicates).then((affectedRowCount) => {
+    rdbStore!.update(valueBucket, predicates).then((affectedRowCount: number) => {
       LogUtil.info(TAG, "update success, affectedRowCount is " + affectedRowCount)
       if (callback != null) {
         callback(affectedRowCount)
       }
-    }).catch((err) => {
-      LogUtil.warn(TAG, "update error : " + err)
+    }).catch((err: BusinessError) => {
+      LogUtil.error(TAG, "update error : " + err);
     })
-  },
+  }
 
   /**
    * query
@@ -481,24 +490,24 @@ export default {
    * @param predicates
    * @param callback
    */
-  query(columns, predicates, callback) {
-    globalThis.rdbStore.query(predicates, columns).then((resultSet) => {
+  query(columns: string[], predicates: relationalStore.RdbPredicates, callback: Callback<relationalStore.ResultSet>) {
+    rdbStore!.query(predicates, columns).then((resultSet: relationalStore.ResultSet) => {
       LogUtil.info(TAG, "query success, row count : " + resultSet.rowCount)
       if (callback != null) {
         callback(resultSet)
       }
-    }).catch((err) => {
-      LogUtil.warn(TAG, "query error : " + err)
+    }).catch((err: BusinessError) => {
+      LogUtil.error(TAG, "query error : " + err);
     })
-  },
+  }
 
   /**
    * get RdbPredicates by table name
    * @param tableName
    */
-  getRdbPredicates(tableName) {
+  getRdbPredicates(tableName: string) {
     return new relationalStore.RdbPredicates(tableName)
-  },
+  }
 
   updataNoteImage(noteData: NoteData): string {
     let content_img = ""
@@ -515,3 +524,5 @@ export default {
     return content_img
   }
 }
+
+export default new RdbStoreUtil();

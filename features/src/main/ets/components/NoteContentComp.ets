@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,8 +22,9 @@ import {
   NoteTableColumn,
   SysDefFolderUuid,
   Favorite,
-  Delete
-} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
+  Delete,
+  FolderType
+} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData';
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import { EditContentDialog, DeleteDialog, EditTitleDialog } from './CusDialogComp'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
@@ -35,14 +36,28 @@ import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationU
 import mediaquery from '@ohos.mediaquery'
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
-import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+import abilityAccessCtrl, { Permissions } from '@ohos.abilityAccessCtrl';
+import webview from '@ohos.web.webview';
+import common from '@ohos.app.ability.common';
+import { BusinessError } from '@ohos.base';
+import resourceManager from '@ohos.resourceManager';
 
 const TAG = "NoteContentComp"
 
-var timeId: number
+let timeId: number = 0;
+let noteContext = AppStorage.Get<common.UIAbilityContext>('noteContext')!;
 
 // Note content component
-let inSetValue = AppStorage.Link('inSetValue')
+let inSetValue: string = AppStorage.Link('inSetValue');
+
+interface NoteContentType {
+  callbackhtml: (html: string) => void;
+  callbackImagePath: (imgName: string) => void;
+  callbackhtmlSave: (html: string) => void;
+  callbackScheduledSave: (html: string) => void;
+  callbackPasteImage: (html: string) => void;
+  callbackGetSize: (fontSize: number) => void;
+}
 
 @Component
 export struct NoteContentComp {
@@ -56,7 +71,7 @@ export struct NoteContentComp {
   @Consume('Issave') issave: number
   @Consume('Search') search: boolean
   @StorageLink('dpi') dpi: number = 240
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   private editContentFlag = false
   @State uri1: string = ""
   private context = getContext(this)
@@ -69,7 +84,13 @@ export struct NoteContentComp {
     if (!this.refreshCurrentNote) {
       return
     }
-    this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
+    try {
+      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')");
+      LogUtil.info(TAG, `runJavaScript setHtml success.`);
+    } catch (error) {
+      LogUtil.error(TAG, `runJavaScript setHtml failed.code:${JSON.stringify(error.code)},
+        message:${JSON.stringify(error.message)}`);
+    }
     this.refreshCurrentNote = false
   }
 
@@ -84,7 +105,7 @@ export struct NoteContentComp {
     if (!AppStorage.Has('remoteScrollTopPercent')) {
       return
     }
-    var scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')
+    let scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')!;
     if (scrollTopPercent < 0) {
       return
     }
@@ -104,7 +125,7 @@ export struct NoteContentComp {
     AppStorage.Delete('isRemoteFocusOnSearch')
   }
 
-  noteContent = {
+  noteContent: NoteContentType = {
     callbackhtml: (html) => {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = NoteUtil.contrastInitType(this.selectedNoteData.content_text);
@@ -169,7 +190,7 @@ export struct NoteContentComp {
       if (html) {
         LogUtil.info(TAG, 'paste info' + html)
         let realHtml = ""
-        let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+        let base64regex: RegExp = new RegExp('/^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/');
         if (html && html.indexOf("base64") > 0) {
           LogUtil.info(TAG, " getSrcFromHtml, src[1] : " + html)
           let imgData = html.split(',')[1];
@@ -252,7 +273,7 @@ export struct NoteContentComp {
                   "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
                   () => {
                     // wait for the image in the note to load
-                    setTimeout(function () {
+                    setTimeout(() => {
                       self.restoreScrollTop()
                       self.restoreFocus()
                     }, 100)
@@ -342,10 +363,12 @@ export struct NoteContentOverViewComp {
   @Consume('SectionStatus') sectionStatus: number
   @Consume('RefreshFlag') refreshFlag: number
   @StorageLink('isUpdate') isUpdate: boolean = false
-  NoteDataMoveArray: FolderData[]
-  controllerShow: WebviewController
-  editTitleDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: EditTitleDialog({ confirm: this.confirm.bind(this) }),
+  NoteDataMoveArray: FolderData[] = [];
+  controllerShow: webview.WebviewController = new webview.WebviewController();
+  editTitleDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: EditContentDialog({ confirm: (newTitle: string) => {
+      this.confirm(newTitle);
+    } }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
@@ -386,7 +409,7 @@ export struct NoteContentOverViewComp {
     Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
       List() {
         if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
-          ForEach(this.NoteDataMoveArray, (item) => {
+          ForEach(this.NoteDataMoveArray, (item: FolderData) => {
             ListItem() {
               NoteDataMoveItemCompTablet({ folderItem: item, uuid: this.selectedNoteData.folder_uuid })
             }
@@ -396,7 +419,7 @@ export struct NoteContentOverViewComp {
               predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
               RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
               if (this.sectionStatus != 1) {
-                this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)
+                this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
                 this.controllerShow.runJavaScript(
                   "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
                 )
@@ -410,7 +433,7 @@ export struct NoteContentOverViewComp {
               LogUtil.info(TAG, "NoteContentOverViewComp, MenuBuilder, set continue note success")
               NoteUtil.refreshAll()
             })
-          }, noteItem => noteItem.uuid)
+          }, (noteItem: NoteData) => noteItem.uuid)
         }
       }.listDirection(Axis.Vertical)
       .edgeEffect(EdgeEffect.Spring)
@@ -432,7 +455,7 @@ export struct NoteContentOverViewComp {
             .margin({ left: 0, right: 24 })
             .onClick(() => {
               clearInterval(timeId)
-              this.editTitleDialogCtl.open()
+              this.editTitleDialogCtl!.open();
               // save continue data
               AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
               LogUtil.info(TAG, "NoteContentComp, set continue section success")
@@ -449,7 +472,7 @@ export struct NoteContentOverViewComp {
             .margin({ left: 0 })
           Row() {
             Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
-                 folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
+            folderTextMap.sys_def_myFavorites_uuid ? folderTextMap.sys_def_unClassified_uuid :
             FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
               .id(this.isUpdate + '')
               .fontSize(12)
@@ -487,10 +510,12 @@ export struct ToolBarComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Consume('EditModel') editModel: boolean
   @Consume('Issave') issave: number
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   private context = getContext(this)
-  noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this) }),
+  noteDataDeleteDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: DeleteDialog({ onConfirm: () => {
+      this.onDeleteConfirm();
+    } }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
@@ -509,7 +534,7 @@ export struct ToolBarComp {
       // update note to db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+      RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
     } else {
       NoteUtil.removeNoteData(this.AllNoteArray, this.selectedNoteData.uuid)
       // delete note from db
@@ -518,8 +543,12 @@ export struct ToolBarComp {
       RdbStoreUtil.delete(predicates_note, null)
     }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-    this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')")
+    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
+    try {
+      this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text! + "')");
+    } catch (error) {
+      LogUtil.error(TAG, `setHtml error. code:${JSON.stringify(error.code)},message:${error.message}`);
+    }
     this.chooseNote = false
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -528,8 +557,10 @@ export struct ToolBarComp {
     AppStorage.SetOrCreate('isUpdate', true)
   }
 
-  editContentDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: EditContentDialog({ confirm: this.confirm.bind(this) }),
+  editContentDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: EditContentDialog({ confirm: (newTitle: string) => {
+      this.confirm(newTitle);
+    } }),
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
@@ -561,7 +592,6 @@ export struct ToolBarComp {
               LogUtil.info(TAG, "close note" + this.selectedNoteData.uuid)
               this.controllerShow.runJavaScript("saveHtmlContent()")
               //退出键盘
-              // @ts-ignore
               inputMethod.getController().stopInputSession();
               // 清除定时器
               if (timeId != undefined) {
@@ -587,7 +617,7 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
-                this.noteDataDeleteDialogCtl.open()
+                this.noteDataDeleteDialogCtl!.open();
               })
             Image($r('app.media.recover'))
               .height(24)
@@ -595,13 +625,13 @@ export struct ToolBarComp {
               .onClick(() => {
                 this.selectedNoteData.is_deleted = Delete.No
                 this.selectedNoteData.deleted_time = 0
-                let context: any = getContext(this)
-                let resource = {
+                let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+                let resource: resourceManager.Resource = {
                   bundleName: "com.ohos.note",
                   moduleName: "default",
                   id: $r('app.string.restore').id
                 };
-                context.resourceManager.getString(resource, (error, value) => {
+                context.resourceManager.getStringValue(resource, (error: BusinessError, value: string) => {
                   if (error != null) {
                     LogUtil.error(TAG, "error is " + error);
                   } else {
@@ -615,10 +645,10 @@ export struct ToolBarComp {
                 predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
                 RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
 
-                this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+                this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
                 this.controllerShow.runJavaScript(
-                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-                )
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData!.content_text + "')"
+                );
                 // save continue data
                 let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
                 AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -636,7 +666,6 @@ export struct ToolBarComp {
                   // 清单
                   this.controllerShow.runJavaScript("javascript:RICH_EDITOR.setTodo()")
                   // 退出键盘
-                  // @ts-ignore
                   inputMethod.getController().stopInputSession();
                 })
             }.width(42)
@@ -650,9 +679,8 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(() => {
                   // 退出键盘
-                  // @ts-ignore
                   inputMethod.getController().stopInputSession();
-                  this.editContentDialogCtl.open()
+                  this.editContentDialogCtl!.open();
                 })
             }.width(42)
             .height(42)
@@ -664,13 +692,12 @@ export struct ToolBarComp {
                 .height(24)
                 .width(24)
                 .onClick(async () => {
-                  let permissionList: Array<string> = [
+                  let permissionList: Permissions[] = [
                     "ohos.permission.READ_MEDIA",
                     "ohos.permission.WRITE_MEDIA",
                   ]
-                  let context: any = getContext(this);
+                  let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
                   let AtManager = abilityAccessCtrl.createAtManager();
-                  // @ts-ignore
                   await AtManager.requestPermissionsFromUser(context, permissionList).then((data) => {
                     LogUtil.info(TAG, 'data permissions : ' + data.permissions)
                     LogUtil.info(TAG, 'data result: ' + data.authResults)
@@ -679,31 +706,30 @@ export struct ToolBarComp {
                       sum += data.authResults[i]
                     }
                     LogUtil.info(TAG, 'request permissions sum: ' + sum)
-                  }).catch((err) => {
+                  }).catch((err: BusinessError) => {
                     LogUtil.warn(TAG, 'failed to requestPermissionsFromUser : ' + err.code);
                   })
                   // 退出键盘
-                  // @ts-ignore
                   inputMethod.getController().stopInputSession();
                   LogUtil.info(TAG, 'startAbility start')
-                  await globalThis.noteContext.startAbilityForResult({
+                  await noteContext.startAbilityForResult({
                     parameters: { uri: "singleselect" },
                     bundleName: "com.ohos.photos",
                     abilityName: "com.ohos.photos.MainAbility",
                   })
-                    .then(v => {
+                    .then((v: common.AbilityResult) => {
                       let want = v['want'];
                       if (want != null && want != undefined) {
                         let param = want['parameters'];
                         let imageUri = ""
                         if (param != null && param != undefined) {
                           let uri = param['select-item-list'];
-                          imageUri = uri;
+                          imageUri = uri as string;
                         }
                         // 拷贝
                         if (imageUri != null && imageUri != "") {
                           OperationUtils.copy(imageUri).then((uriPath) => {
-                            var path = "file://" + uriPath
+                            let path = 'file://' + uriPath;
                             LogUtil.info(TAG, 'image uri is:' + path)
                             this.controllerShow.runJavaScript(
                               "javascript:RICH_EDITOR.insertImage('" + path + "')"
@@ -728,7 +754,6 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(() => {
                   // 退出键盘
-                  // @ts-ignore
                   inputMethod.getController().stopInputSession();
                   this.controllerShow.runJavaScript("RICH_EDITOR.undo()")
                 })
@@ -743,7 +768,6 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(() => {
                   // 退出键盘
-                  // @ts-ignore
                   inputMethod.getController().stopInputSession();
                   this.controllerShow.runJavaScript("RICH_EDITOR.redo()")
                 })
@@ -786,7 +810,7 @@ export struct ToolBarComp {
                   predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
                   RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
                   if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
-                    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
+                    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, SysDefFolderUuid.MyFavorites)!;
                     this.controllerShow.runJavaScript(
                       "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
                     )
@@ -804,7 +828,7 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
-                this.noteDataDeleteDialogCtl.open()
+                this.noteDataDeleteDialogCtl!.open();
               })
           }.width(72)
         }
@@ -820,8 +844,8 @@ struct NoteDataMoveItemCompTablet {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
   @StorageLink('isUpdate') isUpdate: boolean = false
-  folderItem: FolderData
-  uuid: String
+  folderItem: FolderData = new FolderData(0, '', new Date().getTime() + '', '', FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime());
+  uuid: string = '';
 
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {

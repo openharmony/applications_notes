@@ -5,10 +5,6 @@
       "value": "备忘录"
     },
     {
-      "name": "read_media_permission",
-      "value": "Used to read media file information in external storage of users"
-    },
-    {
       "name": "media_location_permission",
       "value": "Used for memo access to geographic location information in user media files"
     },
@@ -17,8 +13,12 @@
       "value": "Used for memo data exchange between different equipment"
     },
     {
-      "name": "write_media_permission",
-      "value": "Used to write media file information in external storage of users"
+      "name": "read_image_video_permission",
+      "value": "Used to read images or video files from the user's public directory"
+    },
+    {
+      "name": "write_image_video_permission",
+      "value": "Used to modify image or video files in the user's public directory"
     }
   ]
 }
