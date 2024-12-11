@@ -80,28 +80,28 @@ export default class MainAbility extends UIAbility {
         windowClass.on('windowSizeChange', (data) => {
           this.screenBreakPoints(data.width);
         })
+        // 窗口规避区域
+        windowClass.on('avoidAreaChange', ({ type, area }) => {
+          if (type === window.AvoidAreaType.TYPE_SYSTEM) {
+            AppStorage.setOrCreate<number>('topHeight', area.topRect.height);
+            AppStorage.setOrCreate<number>('topWidth', area.topRect.width);
+          }
+        });
+        windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+        // 设置主窗口沉浸式
+        windowClass.setWindowLayoutFullScreen(true);
+        // 设置主窗口导航栏、状态栏、文字颜色等属性
+        const sysBarProps: window.SystemBarProperties = {
+          statusBarColor: "#ffffff",
+          navigationBarColor: '#ffffff',
+          statusBarContentColor: '#000000',
+          navigationBarContentColor: '#000000'
+        };
+        // 加载状态变量
+        windowClass.setWindowSystemBarProperties(sysBarProps);
       } catch (exception) {
         LogUtil.error(this.Tag, 'windowSizeChange fail');
       }
-      // 窗口规避区域
-      windowClass.on('avoidAreaChange', ({type, area}) => {
-        if (type === window.AvoidAreaType.TYPE_SYSTEM) {
-          AppStorage.setOrCreate<number>('topHeight', area.topRect.height);
-          AppStorage.setOrCreate<number>('topWidth', area.topRect.width);
-        }
-      });
-      windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
-      // 设置主窗口沉浸式
-      windowClass.setWindowLayoutFullScreen(true);
-      // 设置主窗口导航栏、状态栏、文字颜色等属性
-      const sysBarProps: window.SystemBarProperties = {
-        statusBarColor: "#ffffff",
-        navigationBarColor: '#ffffff',
-        statusBarContentColor: '#000000',
-        navigationBarContentColor: '#000000'
-      };
-      // 加载状态变量
-      windowClass.setWindowSystemBarProperties(sysBarProps);
     })
     window.getLastWindow(this.context, (err, data) => {
       if (data && data.getWindowProperties()) {
