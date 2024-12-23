@@ -808,12 +808,18 @@ export struct ToolBarComp {
                   // update note to db
                   let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
                   predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-                  RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null)
+                  RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
                   if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
-                    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)!;
-                    this.controllerShow.runJavaScript(
-                      "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-                    )
+                    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, SysDefFolderUuid.MyFavorites)!;
+                    try {
+                      this.controllerShow.runJavaScript(
+                        "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                      );
+                      LogUtil.info(TAG,`setHtml success`);
+                    } catch (error) {
+                      LogUtil.error(TAG, `setHtml failed.code:${JSON.stringify(error.code)},
+                        message:${JSON.stringify(error.message)}`);
+                    }
                     // save continue data
                     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
                     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
