@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,27 +22,28 @@ import { circleColorArray } from '@ohos/utils/src/main/ets/default/model/NoteBas
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData'
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData'
 import LayoutUtil from '@ohos/utils/src/main/ets/default/baseUtil/LayoutUtil'
+import webview from '@ohos.web.webview';
 
 @Entry
 @Component
 export struct NoteHomeComp {
   // 当前文件夹、笔记、分栏
-  @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')
-  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')
-  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')
+  @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')!;
+  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')!;
+  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')!;
   @Provide('SelectedColor') selectedColor: string = circleColorArray[0]
   @Provide('LastSectionStatus') lastSectionStatus: number = 3 // 记录分栏上一次的状态
   @Provide('Longpress') longpress: boolean = false // 第二栏长按状态
   @Provide('ExpandStatus') expandStatus: boolean = false // 笔记本折叠展开状态
   @Provide('ChooseNote') chooseNote: boolean = true // 是否选择笔记进行打开
-  @Provide('Search') search: boolean = AppStorage.Get('Search') // 是否处于搜索状态
+  @Provide('Search') search: boolean = AppStorage.Get('Search')!; // 是否处于搜索状态
   @Provide('SearchResultList') searchResultList: NoteData[] = [] // 搜索得到的笔记列表
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串
   @Provide('SelectedAll') selectedAll: boolean = false
   @Provide('EditModel') editModel: boolean = false //编辑模式：临时方案
   @Provide('Issave') issave: number = 0
   @StorageLink('breakPoint') breakPoints: string = 'lg'
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   TAG = "NoteHomeComp_Tablet"
   @Provide('AsideWidth') asideWidth: number = 200
 
@@ -159,7 +160,7 @@ export struct NoteHomeComp {
     let isContinue = AppStorage.Get<boolean>('IsContinue')
     LogUtil.info(this.TAG, "aboutToAppear, isContinue : " + isContinue)
     if (isContinue) {
-      this.sectionStatus = AppStorage.Get('Section')
+      this.sectionStatus = AppStorage.Get('Section')!;
     }
     // continue from phone
     let continueFromPhone = AppStorage.Get<boolean>('ContinueFromPhone')

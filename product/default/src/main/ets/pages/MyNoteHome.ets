@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,15 +22,19 @@ import inputMethod from '@ohos.inputMethod';
 import router from '@system.router';
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 import webview from '@ohos.web.webview';
+import { BusinessError } from '@ohos.base';
+import common from '@ohos.app.ability.common';
 
 @Entry
 @Component
 export struct MyNoteHomeComp {
+  @StorageLink('topHeight') topHeight: number = 0; // 窗口规避区域高
+  @StorageLink('topWidth') topWidth: number = 0; // 窗口规避区域宽
   @StorageLink('DBQueryFinished') dBQueryFinished: number = 0
   @Provide('PortraitModel') portraitModel: boolean = true
   @Provide('RefreshFlag') refreshFlag: number = 0
   private controllerShow: WebviewController = new webview.WebviewController()
-  private context = getContext(this)
+  private context = getContext(this) as common.UIAbilityContext;
   TAG = "MyNoteHomeComp_Tablet"
   @StorageLink('breakPoint') @Watch('onBreakPointChange') breakPoints: string = 'lg'
 
@@ -43,23 +47,29 @@ export struct MyNoteHomeComp {
   }
 
   build() {
-    Row() {
-      if (this.dBQueryFinished == 1) {
-        if (this.breakPoints == 'sm') {
-          NoteHomePortraitComp()
-        } else {
-          NoteHomeComp({ controllerShow: this.controllerShow })
-        }
+    Column() {
+      // 窗口顶部规避区域
+      Row()
+        .width(px2vp(this.topWidth))
+        .height(px2vp(this.topHeight))
+      Row() {
+        if (this.dBQueryFinished == 1) {
+          if (this.breakPoints == 'sm') {
+            NoteHomePortraitComp()
+          } else {
+            NoteHomeComp({ controllerShow: this.controllerShow })
+          }
 
+        }
       }
+      .width('100%')
+      .height('100%')
     }
-    .width('100%')
-    .height('100%')
   }
 
   aboutToAppear(): void {
     LogUtil.info(this.TAG, "aboutToAppear")
-    this.breakPoints = AppStorage.Get('breakPoint')
+    this.breakPoints = AppStorage.Get('breakPoint')!;
     if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
       this.portraitModel = true
     } else {
@@ -73,10 +83,9 @@ export struct MyNoteHomeComp {
       "ohos.permission.DISTRIBUTED_DATASYNC"
     ]
     LogUtil.info(this.TAG, 'permissions need to require from user')
-    let context: any = getContext(this);
+    let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     let AtManager = abilityAccessCtrl.createAtManager();
     //requestPermissionsFromUser会判断权限的授权状态来决定是否唤起弹窗
-    // @ts-ignore
     AtManager.requestPermissionsFromUser(context, ["ohos.permission.MANAGE_DISPOSED_APP_STATUS"]).then((data) => {
       LogUtil.info(this.TAG, 'data permissions : ' + data.permissions)
       LogUtil.info(this.TAG, 'data result: ' + data.authResults)
@@ -85,7 +94,7 @@ export struct MyNoteHomeComp {
         sum += data.authResults[i]
       }
       LogUtil.info(this.TAG, 'request permissions sum: ' + sum)
-    }).catch((err) => {
+    }).catch((err: BusinessError) => {
       LogUtil.warn(this.TAG, 'failed to requestPermissionsFromUser : ' + err.code);
     })
     let dbExist = false;
@@ -132,7 +141,6 @@ export struct MyNoteHomeComp {
   onBackPress() {
     LogUtil.info(this.TAG, "onBackPress")
     // 退出键盘
-    // @ts-ignore
     inputMethod.getController().stopInputSession();
     setTimeout(() => {
       LogUtil.info(this.TAG, "wait save cotext")

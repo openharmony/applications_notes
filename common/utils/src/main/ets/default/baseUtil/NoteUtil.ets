@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,18 +13,24 @@
  * limitations under the License.
  */
 
-import {unSelectedNoteBgColorMap, selectedNoteBgColorMap} from '../model/NoteBaseData'
-import FolderData from '../model/databaseModel/FolderData'
-import NoteData from '../model/databaseModel/NoteData'
-import {SysDefFolderUuid, FolderType, Favorite, Delete, TableName, NoteTableColumn,
-} from '../model/databaseModel/EnumData'
-import StyleConstants from '../constants/StyleConstants'
-import {LogUtil} from './LogUtil'
-import FolderUtil from './FolderUtil'
-import RdbStoreUtil from './RdbStoreUtil'
+import { unSelectedNoteBgColorMap, selectedNoteBgColorMap } from '../model/NoteBaseData';
+import FolderData from '../model/databaseModel/FolderData';
+import NoteData from '../model/databaseModel/NoteData';
+import {
+  SysDefFolderUuid,
+  FolderType,
+  Favorite,
+  Delete,
+  TableName,
+  NoteTableColumn
+} from '../model/databaseModel/EnumData';
+import StyleConstants from '../constants/StyleConstants';
+import { LogUtil } from './LogUtil';
+import FolderUtil from './FolderUtil';
+import RdbStoreUtil from './RdbStoreUtil';
 import buffer from '@ohos.buffer';
 
-const TAG = "NoteUtil"
+const TAG: string = 'NoteUtil';
 
 export class NoteUtil {
   /**
@@ -105,18 +111,18 @@ export class NoteUtil {
   */
   getNoteCount(noteDataArray: NoteData[], folderData: FolderData): number {
     let count = 0;
-    const folderTextMap = {
-      "sys_def_allNotes_uuid": (noteData) => {
-          noteData.is_deleted == Delete.No ? ++count : count
+    const folderTextMap: Record<string, (noteData: NoteData) => void> = {
+      "sys_def_allNotes_uuid": (noteData: NoteData) => {
+        noteData.is_deleted == Delete.No ? ++count : count;
       },
-      "sys_def_recentDeletes_uuid": (noteData) => {
-          noteData.is_deleted == Delete.Yes ? ++count : count
+      "sys_def_recentDeletes_uuid": (noteData: NoteData) => {
+        noteData.is_deleted == Delete.Yes ? ++count : count;
       },
-      "sys_def_myFavorites_uuid": (noteData) => {
-          noteData.is_favorite == Favorite.Yes && noteData.is_deleted == Delete.No ? ++count : count
+      "sys_def_myFavorites_uuid": (noteData: NoteData) => {
+        noteData.is_favorite == Favorite.Yes && noteData.is_deleted == Delete.No ? ++count : count;
       },
-      "sys_def_other_uuid": (noteData) => {
-          noteData.folder_uuid == folderData.uuid && noteData.is_deleted == Delete.No ? ++count : count
+      "sys_def_other_uuid": (noteData: NoteData) => {
+        noteData.folder_uuid == folderData.uuid && noteData.is_deleted == Delete.No ? ++count : count;
       }
     }
     if (folderData.uuid == SysDefFolderUuid.AllNotes || folderData.folder_type == FolderType.FeatureDef) {
@@ -203,25 +209,25 @@ export class NoteUtil {
     LogUtil.info(TAG, "folderUuid " + folderUuid)
     this.autoDeleteNote(allNoteDataArray)
     let noteDataArray: NoteData[] = [];
-    let func = (noteData) => noteDataArray.push(noteData)
-    const folderTextMap = {
-      "sys_def_allNotes_uuid": (noteData) => {
-          noteData.is_deleted == Delete.No ? func(noteData) : null
+    let func = (noteData: NoteData) => noteDataArray.push(noteData);
+    const folderTextMap: Record<string, (noteData: NoteData) => void> = {
+      "sys_def_allNotes_uuid": (noteData: NoteData) => {
+        noteData.is_deleted == Delete.No ? func(noteData) : null;
       },
-      "sys_def_recentDeletes_uuid": (noteData) => {
-          noteData.is_deleted == Delete.Yes ? func(noteData) : null
+      "sys_def_recentDeletes_uuid": (noteData: NoteData) => {
+        noteData.is_deleted == Delete.Yes ? func(noteData) : null;
       },
-      "sys_def_myFavorites_uuid": (noteData) => {
-          noteData.is_favorite == Favorite.Yes && noteData.is_deleted == Delete.No ? func(noteData) : null
+      "sys_def_myFavorites_uuid": (noteData: NoteData) => {
+        noteData.is_favorite == Favorite.Yes && noteData.is_deleted == Delete.No ? func(noteData) : null;
       },
-      "sys_def_other_uuid": (noteData) => {
-          noteData.folder_uuid == folderUuid && noteData.is_deleted == Delete.No ? func(noteData) : null
+      "sys_def_other_uuid": (noteData: NoteData) => {
+        noteData.folder_uuid == folderUuid && noteData.is_deleted == Delete.No ? func(noteData) : null;
       },
     }
     if (folderUuid == SysDefFolderUuid.AllNotes || folderUuid == SysDefFolderUuid.RecentDeletes || folderUuid == SysDefFolderUuid.MyFavorites) {
-      allNoteDataArray.forEach(folderTextMap[folderUuid])
+      allNoteDataArray.forEach(folderTextMap[folderUuid]);
     } else {
-      allNoteDataArray.forEach(folderTextMap["sys_def_other_uuid"])
+      allNoteDataArray.forEach(folderTextMap.sys_def_other_uuid);
     }
     // Sort priority: 1、Top or not 2、created time
     noteDataArray.sort((noteItemLeft: NoteData, noteItemRight: NoteData) => {
@@ -241,14 +247,14 @@ export class NoteUtil {
   * @param folderUuid
   * @return NoteData
   */
-  getFirstNoteData(allNoteDataArray: NoteData[], folderUuid: string): NoteData {
+  getFirstNoteData(allNoteDataArray: NoteData[], folderUuid: string): NoteData | undefined {
     let noteDataArray: NoteData[] = this.getNoteDataArray(allNoteDataArray, folderUuid);
-    LogUtil.info(TAG, "get noteDataArray size " + noteDataArray.length.toString())
+    LogUtil.info(TAG, "get noteDataArray size " + noteDataArray.length.toString());
     if (noteDataArray.length == 0) {
-      LogUtil.info(TAG, "get noteDataArray empty")
-      return undefined;
+      LogUtil.info(TAG, "get noteDataArray empty");
+      return;
     }
-    return noteDataArray == undefined ? null : noteDataArray[0]
+    return noteDataArray == undefined ? undefined : noteDataArray[0];
   }
 
   /**
@@ -268,37 +274,36 @@ export class NoteUtil {
   deleteEmptyNote(selectedNoteData: NoteData, AllNoteArray: NoteData[], controllerShow: WebController): boolean {
     if (selectedNoteData.title == "标题" && selectedNoteData.content_text == "") {
       // delete note from db
-      noteUtil.removeNoteData(AllNoteArray, selectedNoteData.uuid)
-      LogUtil.info(TAG, "delete note:" + selectedNoteData.uuid)
-      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-      predicates_note.equalTo(NoteTableColumn.Uuid, selectedNoteData.uuid)
-      RdbStoreUtil.delete(predicates_note, null)
-      LogUtil.info(TAG, "delete note success:" + selectedNoteData.uuid)
-      return true
+      noteUtil.removeNoteData(AllNoteArray, selectedNoteData.uuid);
+      LogUtil.info(TAG, "delete note:" + selectedNoteData.uuid);
+      let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
+      predicates_note.equalTo(NoteTableColumn.Uuid, selectedNoteData.uuid);
+      RdbStoreUtil.delete(predicates_note, null);
+      LogUtil.info(TAG, "delete note success:" + selectedNoteData.uuid);
+      return true;
     }
-    return false
+    return false;
   }
 
   refreshAll() {
-    let isRefresh = AppStorage.Get('isUpdate')
-    AppStorage.Set('isUpdate',!isRefresh)
+    let isRefresh: boolean = AppStorage.Get('isUpdate')!;
+    AppStorage.Set('isUpdate',!isRefresh);
   }
 
   /**
    * Format conversion
    * @param initContent
    */
-  contrastInitType(initContent:string):string {
-    let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-    if(!base64regex.test(initContent)) {
-      const inputBuffer = buffer.from(initContent,'utf-8');
+  contrastInitType(initContent: string): string {
+    let base64regex = new RegExp('/^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/');
+    if (!base64regex.test(initContent)) {
+      const inputBuffer = buffer.from(initContent, 'utf-8');
       initContent = inputBuffer.toString('base64');
     }
     return initContent;
   };
-
 }
 
-let noteUtil = new NoteUtil()
+let noteUtil = new NoteUtil();
 
-export default noteUtil as NoteUtil
+export default noteUtil as NoteUtil;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-import {LogUtil} from './LogUtil'
+import { LogUtil } from './LogUtil';
 
-const TAG = "DateUtil"
+const TAG: string = 'DateUtil';
 
 /**
  * 日期和时间均显示为2位数
  * @param time
  */
-function getUnifiedTime(time: number): any {
+function getUnifiedTime(time: number): string | number {
   return time > 9 ? time : "0" + time
 }
 
@@ -33,7 +33,7 @@ export class DateUtil {
    * 获取笔记标题的格式化时间
    * @param date note modified time
    */
-  formateDateForNoteTitle(date: Date): string{
+  formateDateForNoteTitle(date: Date): string {
     let nowDate = new Date()
     let diffMin = Math.floor((nowDate.getTime() - date.getTime()) / 1000 / 60)
     if (diffMin < 0) {
@@ -88,7 +88,7 @@ export class DateUtil {
    * 获取笔记内容的格式化时间
    * @param date note modified time
    */
-  formateDateForNoteContent(date: Date): string{
+  formateDateForNoteContent(date: Date): string {
     // formatted time
     let noteContentTime = ""
     // note modified time

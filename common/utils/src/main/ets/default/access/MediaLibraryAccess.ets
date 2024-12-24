@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,14 +13,20 @@
  * limitations under the License.
  */
 
-import {LogUtil} from '../baseUtil/LogUtil'
-import MediaLib from '@ohos.multimedia.mediaLibrary';
+import photoAccessHelper from '@ohos.file.photoAccessHelper';
+import common from '@ohos.app.ability.common';
+import { LogUtil } from '../baseUtil/LogUtil';
 
-const TAG = "MediaLibraryAccess"
+const TAG: string = 'MediaLibraryAccess';
+
+interface albumType {
+  count: number;
+  obj: photoAccessHelper.PhotoAsset | null;
+}
+
 export class MediaLibraryAccess {
-
-  static async getFirstObject(fetchOpt, context) {
-    let album = {
+  static async getFirstObject(fetchOpt: photoAccessHelper.FetchOptions, context: common.UIAbilityContext) {
+    let album: albumType = {
       count: 0,
       obj: null,
     }
@@ -28,7 +34,7 @@ export class MediaLibraryAccess {
       // 通过Uri拷贝图片到指定指定的包路径下
       // 1、获取本地路径
 
-      let fileResult = await MediaLib.getMediaLibrary(context).getFileAssets(fetchOpt)
+      let fileResult = await photoAccessHelper.getPhotoAccessHelper(context).getAssets(fetchOpt)
       if (fileResult != undefined) {
         album.count = fileResult.getCount();
         if (album.count <= 0) {
@@ -51,7 +57,7 @@ export class MediaLibraryAccess {
     }
   }
 
-  static async openAsset(mode: string, fileAsset: any) {
+  static async openAsset(mode: string, fileAsset: photoAccessHelper.PhotoAsset) {
     LogUtil.info(TAG, 'openAsset start')
     let fd = await fileAsset.open(mode);
     LogUtil.info(TAG, `openAsset end. fd: ${fd}`)
@@ -64,7 +70,7 @@ export class MediaLibraryAccess {
     return fd;
   }
 
-  static async closeAsset(fd: number, fileAsset: any) {
+  static async closeAsset(fd: number, fileAsset: photoAccessHelper.PhotoAsset) {
     LogUtil.info(TAG, 'closeAsset start')
 
     if (fd <= 0) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,8 +23,9 @@ import {
   NoteTableColumn,
   SysDefFolderUuid,
   Favorite,
-  Delete
-} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData'
+  Delete,
+  FolderType
+} from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData';
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants'
 import { EditContentDialogPortrait, DeleteDialog, EditTitleDialog } from './CusDialogComp'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
@@ -35,11 +36,29 @@ import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationU
 import router from '@system.router'
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
-import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+import abilityAccessCtrl,{ Permissions } from '@ohos.abilityAccessCtrl';
+import webview from '@ohos.web.webview';
+import { BusinessError } from '@ohos.base';
+import resourceManager from '@ohos.resourceManager';
+import common from '@ohos.app.ability.common';
+import window from '@ohos.window';
 
-var time_id: number
+let time_id: number = 0;
+let noteContext = AppStorage.Get<common.UIAbilityContext>('noteContext')!;
 
 const TAG = "NoteContentCompPortrait"
+
+interface NoteContentType {
+  callbackhtml: (html: string) => void;
+  callbackImagePath: (imgName: string) => void;
+  callbackScheduledSave: (html: string) => void;
+  callbackPasteImage: (html: string) => void;
+  callbackGetSize: (fontSize: number) => void;
+  addToDo: () => void;
+  chooseStyle: () => void;
+  openAlbum: () => Promise<void>;
+  getBreakPoint: () => void;
+}
 
 async function routePage() {
   try {
@@ -52,21 +71,27 @@ async function routePage() {
 // Note content component
 @Component
 export struct NoteContentCompPortrait {
-  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('NewNote')
-  @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get("NewFolder")
+  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('NewNote')!;
+  @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get("NewFolder")!;
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
   @Provide('EditModel') editModel: boolean = false
   @StorageLink('dpi') dpi: number = 240
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   private editContentFlag = false
   private isClickBack: boolean = false
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0
-  editContentDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: EditContentDialogPortrait({ confirm: this.confirm.bind(this) }),
+  editContentDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: EditContentDialogPortrait({
+      confirm: (newTitle: string) => {
+        this.confirm(newTitle);
+      }
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
   })
+  @StorageLink('topHeight') topHeight: number = 0; // 窗口规避区域高
+  @StorageLink('topWidth') topWidth: number = 0; // 窗口规避区域宽
 
   confirm(excuteJs: string) {
     this.controllerShow.runJavaScript(excuteJs)
@@ -84,7 +109,7 @@ export struct NoteContentCompPortrait {
       if (!AppStorage.Has('remoteScrollTopPercent')) {
         return
       }
-      var scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')
+      let scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')!;
       if (scrollTopPercent < 0) {
         return
       }
@@ -108,7 +133,7 @@ export struct NoteContentCompPortrait {
     AppStorage.Delete('isRemoteFocusOnSearch')
   }
 
-  noteContent = {
+  noteContent: NoteContentType = {
     callbackhtml: (html) => {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData?.uuid)
       this.selectedNoteData.content_text = NoteUtil.contrastInitType(this.selectedNoteData.content_text);
@@ -153,7 +178,7 @@ export struct NoteContentCompPortrait {
       if (html) {
         LogUtil.info(TAG, 'paste info' + html)
         let realHtml = ""
-        let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+        let base64regex: RegExp = new RegExp('/^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/');
         if (html && html.indexOf("base64") > 0) {
           LogUtil.info(TAG, " getSrcFromHtml, src[1] : " + html)
           let imgData = html.split(',')[1];
@@ -197,16 +222,15 @@ export struct NoteContentCompPortrait {
       this.controllerShow.runJavaScript("javascript:RICH_EDITOR.setTodo()")
     },
     chooseStyle: () => {
-      this.editContentDialogCtl.open()
+      this.editContentDialogCtl!.open();
     },
     openAlbum: async () => {
-      let permissionList: Array<string> = [
-        "ohos.permission.READ_MEDIA",
-        "ohos.permission.WRITE_MEDIA",
+      let permissionList: Permissions[] = [
+        "ohos.permission.READ_IMAGEVIDEO",
+        "ohos.permission.WRITE_IMAGEVIDEO"
       ]
-      let context: any = AppStorage.Get("context");
+      let context: common.UIAbilityContext = AppStorage.Get("context")!;
       let AtManager = abilityAccessCtrl.createAtManager();
-      // @ts-ignore
       await AtManager.requestPermissionsFromUser(context, permissionList).then((data) => {
         LogUtil.info(TAG, 'data permissions : ' + data.permissions)
         LogUtil.info(TAG, 'data result: ' + data.authResults)
@@ -215,28 +239,28 @@ export struct NoteContentCompPortrait {
           sum += data.authResults[i]
         }
         LogUtil.info(TAG, 'request permissions sum: ' + sum)
-      }).catch((err) => {
+      }).catch((err: BusinessError) => {
         LogUtil.warn(TAG, 'failed to requestPermissionsFromUser : ' + err.code);
       })
       LogUtil.info(TAG, 'startAbility start')
-      await globalThis.noteContext.startAbilityForResult({
-        parameters: { uri: "singleselect" },
+      await noteContext.startAbilityForResult({
+        parameters: { uri: "singleselect", filterMediaType: "FILTER_MEDIA_TYPE_IMAGE" },
         bundleName: "com.ohos.photos",
         abilityName: "com.ohos.photos.MainAbility",
-      }).then(v => {
+      }).then((v: common.AbilityResult) => {
         let want = v['want'];
         if (want != null && want != undefined) {
           let param = want['parameters'];
           let imageUri = ""
           if (param != null && param != undefined) {
-            let uri = param['select-item-list'];
+            let uri = param['select-item-list'] as Record<string, string>;
             imageUri = uri[0];
           }
           LogUtil.info(TAG, "image url" + imageUri)
           // 拷贝
           if (imageUri != null && imageUri != "") {
             OperationUtils.copy(imageUri).then((uriPath) => {
-              var path = "file://" + uriPath
+              let path = 'file://' + uriPath;
               LogUtil.info(TAG, 'image uri is:' + path)
               this.controllerShow.runJavaScript("javascript:RICH_EDITOR.getFocus()")
               this.controllerShow.runJavaScript("javascript:RICH_EDITOR.insertImage('" + path + "')")
@@ -255,6 +279,10 @@ export struct NoteContentCompPortrait {
       Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
         alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
         Column() {
+          // 窗口顶部规避区域
+          Row()
+            .width(px2vp(this.topWidth))
+            .height(px2vp(this.topHeight))
           ToolBarComp({ controllerShow: this.controllerShow })
           NoteContentOverViewComp()
             .enabled(this.selectedNoteData && this.selectedNoteData?.is_deleted == Delete.Yes ? false : true)
@@ -285,7 +313,7 @@ export struct NoteContentCompPortrait {
                   "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')",
                   () => {
                     // wait for the image in the note to load
-                    setTimeout(function () {
+                    setTimeout(() => {
                       self.restoreScrollTop()
                       self.restoreFocus()
                     }, 100)
@@ -324,6 +352,7 @@ export struct NoteContentCompPortrait {
               this.editModel = true
             })
         }
+        .height('100%')
         .enabled(this.selectedNoteData && this.selectedNoteData?.is_deleted == Delete.Yes ? false : true)
         .flexShrink(1)
         .margin({ top: 16 })
@@ -331,7 +360,6 @@ export struct NoteContentCompPortrait {
       }
       .flexShrink(1)
       .padding({ left: 24, right: 24 })
-
       DeleteNoteComp()
     }
     .expandSafeArea([SafeAreaType.KEYBOARD, SafeAreaType.SYSTEM])
@@ -342,6 +370,9 @@ export struct NoteContentCompPortrait {
   aboutToAppear(): void {
     this.isClickBack = false
     LogUtil.info(TAG, "aboutToAppear")
+    window.getLastWindow(getContext(this)).then(currentWindow => {
+      currentWindow.setWindowLayoutFullScreen(true);
+    })
   }
 
   aboutToDisappear(): void {
@@ -359,9 +390,13 @@ export struct NoteContentOverViewComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('isUpdate') isUpdate: boolean = false
-  NoteDataMoveArray: FolderData[]
-  editTitleDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: EditTitleDialog({ confirm: this.confirm.bind(this) }),
+  NoteDataMoveArray: FolderData[] = [];
+  editTitleDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: EditTitleDialog({
+      confirm: (newTitle: string) => {
+        this.confirm(newTitle);
+      }
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
@@ -398,7 +433,7 @@ export struct NoteContentOverViewComp {
       Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
         List() {
           if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
-            ForEach(this.NoteDataMoveArray, (item) => {
+            ForEach(this.NoteDataMoveArray, (item: FolderData) => {
               ListItem() {
                 NoteDataMoveItemCompMenu({ folderItem: item, uuid: this.selectedNoteData?.folder_uuid })
               }
@@ -413,7 +448,7 @@ export struct NoteContentOverViewComp {
                 LogUtil.info(TAG, 'MenuBuilder, set continue note success')
                 NoteUtil.refreshAll()
               })
-            }, noteItem => noteItem?.uuid)
+            }, (noteItem: NoteData) => noteItem?.uuid)
           }
         }
         .margin({ top: 4, bottom: 4 })
@@ -437,7 +472,7 @@ export struct NoteContentOverViewComp {
             .fontSize(30).fontWeight(FontWeight.Medium)
             .onClick(() => {
               clearInterval(time_id)
-              this.editTitleDialogCtl.open()
+              this.editTitleDialogCtl!.open();
             })
         }.height(40)
         .width(StyleConstants.PERCENTAGE_100)
@@ -450,7 +485,7 @@ export struct NoteContentOverViewComp {
             .fontColor($r("app.color.modified_time_font_color"))
           Row() {
             Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData?.folder_uuid)) ==
-                 folderTextMap["sys_def_myFavorites_uuid"] ? folderTextMap["sys_def_unClassified_uuid"] :
+            folderTextMap.sys_def_myFavorites_uuid ? folderTextMap.sys_def_unClassified_uuid :
             FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData?.folder_uuid)))
               .id(this.isUpdate + '')
               .fontColor($r('app.color.folder_color_99182431'))
@@ -481,7 +516,7 @@ export struct ToolBarComp {
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('EditModel') editModel: boolean
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
 
   onDeleteConfirm() {
     if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
@@ -503,8 +538,12 @@ export struct ToolBarComp {
     AppStorage.SetOrCreate('isUpdate', true)
   }
 
-  noteDataDeleteDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), multiSelect: true }),
+  noteDataDeleteDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: DeleteDialog({
+      onConfirm: () => {
+        this.onDeleteConfirm();
+      }, multiSelect: true
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -552,7 +591,7 @@ export struct ToolBarComp {
                 predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData?.uuid)
                 RdbStoreUtil.update(this.selectedNoteData?.toNoteObject(), predicates_note, null)
                 if (this.selectedFolderData?.uuid === SysDefFolderUuid.MyFavorites) {
-                  this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)
+                  this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.MyFavorites)!;
                   if (!this.selectedNoteData) {
                     routePage()
                   }
@@ -571,7 +610,7 @@ export struct ToolBarComp {
             })
           Image($r('app.media.delete')).height(24).width(24)
             .onClick(() => {
-              this.noteDataDeleteDialogCtl.open()
+              this.noteDataDeleteDialogCtl!.open();
             })
         }.width(72)
         .visibility(this.selectedNoteData?.is_deleted == Delete.Yes ? Visibility.None : Visibility.Visible)
@@ -582,7 +621,6 @@ export struct ToolBarComp {
               .onClick(() => {
                 try {
                   // 退出键盘
-                  // @ts-ignore
                   inputMethod.getController().stopInputSession();
                   this.controllerShow.runJavaScript("javascript:RICH_EDITOR.undo()")
                 } catch (error) {
@@ -599,7 +637,6 @@ export struct ToolBarComp {
               .onClick(() => {
                 try {
                   // 退出键盘
-                  // @ts-ignore
                   inputMethod.getController().stopInputSession();
                   this.controllerShow.runJavaScript("javascript:RICH_EDITOR.redo()")
                 } catch (error) {
@@ -644,8 +681,12 @@ export struct DeleteNoteComp {
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('RefreshFlag') refreshFlag: number
   @Consume('SelectedNoteData') selectedNoteData: NoteData;
-  noteDataDeleteDialogCtlBottom: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), multiSelect: true }),
+  noteDataDeleteDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
+    builder: DeleteDialog({
+      onConfirm: () => {
+        this.onDeleteConfirm();
+      }, multiSelect: true
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -684,7 +725,7 @@ export struct DeleteNoteComp {
           .height(24)
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
           .onClick(() => {
-            this.noteDataDeleteDialogCtlBottom.open()
+            this.noteDataDeleteDialogCtlBottom!.open();
           })
         Text($r("app.string.delete"))
           .fontSize(10)
@@ -695,6 +736,7 @@ export struct DeleteNoteComp {
       .width(180)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
+      .offset({ y: -50 })
 
       Column() {
         Image($r('app.media.recover'))
@@ -704,13 +746,13 @@ export struct DeleteNoteComp {
           .onClick(() => {
             this.selectedNoteData.is_deleted = Delete.No
             this.selectedNoteData.deleted_time = 0
-            let context: any = getContext(this)
-            let resource = {
+            let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+            let resource: resourceManager.Resource = {
               bundleName: "com.ohos.note",
               moduleName: "default",
               id: $r('app.string.restore').id
             };
-            context.resourceManager.getString(resource, (error, value) => {
+            context.resourceManager.getStringValue(resource, (error: BusinessError, value: string) => {
               if (error != null) {
                 LogUtil.error(TAG, "error is " + error);
               } else {
@@ -733,6 +775,7 @@ export struct DeleteNoteComp {
       .width(180)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
+      .offset({ y: -50 })
     }
     .width(360)
     .height(56)
@@ -746,8 +789,8 @@ struct NoteDataMoveItemCompMenu {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
   @StorageLink('isUpdate') isUpdate: boolean = false
-  folderItem: FolderData
-  uuid: String
+  folderItem: FolderData = new FolderData(0, '', new Date().getTime() + '', '', FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime());
+  uuid: string = '';
 
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {

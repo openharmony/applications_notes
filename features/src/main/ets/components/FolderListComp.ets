@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +29,7 @@ import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
+import webview from '@ohos.web.webview';
 
 // Folder list component
 @Component
@@ -37,7 +38,7 @@ export struct FolderListComp {
   @Consume('SectionStatus') sectionStatus: number
   @Consume('ExpandStatus') expandStatus: boolean // 笔记本折叠展开状态
   @StorageLink('breakPoint') breakPoints: string = 'lg'
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   TAG = "FolderListComp"
   @Consume('AsideWidth') asideWidth: number
 
@@ -78,7 +79,7 @@ export struct FolderListComp {
                 FolderItemComp({ folderItem: folderItem, controllerShow: this.controllerShow })
               }
             }
-          }, folderItem => folderItem.name.toString())
+          }, (folderItem: FolderData) => folderItem.name.toString())
         }
         .width('100%')
         .height(500)
@@ -90,18 +91,19 @@ export struct FolderListComp {
 
       Column() {
         FolderItemComp({
-          folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), SysDefFolderUuid.MyFavorites),
+          folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray')!, SysDefFolderUuid.MyFavorites),
           controllerShow: this.controllerShow
         })
         FolderItemComp({
-          folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), SysDefFolderUuid.RecentDeletes),
+          folderItem: FolderUtil.getFolderData(AppStorage.Get('AllFolderArray')!, SysDefFolderUuid.RecentDeletes),
           controllerShow: this.controllerShow
         })
       }
       .backgroundColor($r("app.color.folderlist_bgcolor_f1f3f5"))
       .flexGrow(0)
       .width("100%")
-      .padding({ left: 12, right: 12, bottom: 24 })
+      .padding({ left: 12, right: 12, bottom: 60 })
+      .margin({ bottom: 65 })
     }
     .height("100%")
     .backgroundColor($r('app.color.folder_color_d6d6d6'))
@@ -122,14 +124,22 @@ export struct NoteAndCreateComp {
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = AppStorage.Link('AllFolderArray')
   @Consume('SelectedColor') selectedColor: string
   @Consume('PortraitModel') portraitModel: boolean
-  folderCreateDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: NewOrEditFolderDialog({ confirm: this.onCreateConfirm.bind(this), dialogType: 0 }),
+  folderCreateDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: NewOrEditFolderDialog({
+      confirm: (color: string, name: string) => {
+        this.onCreateConfirm(color, name)
+      }, dialogType: 0
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
-  folderCreateDialogCtlBottom: CustomDialogController = new CustomDialogController({
-    builder: NewOrEditFolderDialog({ confirm: this.onCreateConfirm.bind(this), dialogType: 0 }),
+  folderCreateDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
+    builder: NewOrEditFolderDialog({
+      confirm: (color: string, name: string) => {
+        this.onCreateConfirm(color, name)
+      }, dialogType: 0
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -144,7 +154,7 @@ export struct NoteAndCreateComp {
     let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
     // insert folder to db
-    RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null)
+    RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null);
     AppStorage.SetOrCreate('isUpdate', true)
   }
 
@@ -163,9 +173,9 @@ export struct NoteAndCreateComp {
           .onClick(() => {
             this.selectedColor = "#e84026" // 新建的时候选中第一个颜色
             if (this.portraitModel) {
-              this.folderCreateDialogCtlBottom.open()
+              this.folderCreateDialogCtlBottom!.open();
             } else {
-              this.folderCreateDialogCtl.open()
+              this.folderCreateDialogCtl!.open();
             }
           }).padding({ right: 0 })
       }.width(50)
@@ -188,15 +198,17 @@ struct FolderItemComp {
   @Consume('Longpress') longpress: boolean
   @Consume('SelectedColor') selectedColor: string
   @Consume('PortraitModel') portraitModel: boolean
-  controllerShow: WebviewController
+  controllerShow: webview.WebviewController = new webview.WebviewController();
   @State isLongPress: boolean = false
-  TAG = "FolderListComp"
+  TAG = 'FolderItemComp';
   @StorageLink('isUpdate') isUpdate: boolean = false
   // Folder Edit Dialog
-  folderEditDialogCtl: CustomDialogController = new CustomDialogController({
+  folderEditDialogCtl: CustomDialogController | null = new CustomDialogController({
     builder: NewOrEditFolderDialog({
       editFolderUuid: this.folderItem.uuid,
-      confirm: this.onEditConfirm.bind(this),
+      confirm: (color: string, name: string) => {
+        this.onEditConfirm(color, name);
+      },
       dialogType: 1
     }),
     alignment: DialogAlignment.Center,
@@ -204,10 +216,12 @@ struct FolderItemComp {
     customStyle: true,
   })
   // Folder Edit Dialog for portrait model
-  folderEditDialogCtlBottom: CustomDialogController = new CustomDialogController({
+  folderEditDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
     builder: NewOrEditFolderDialog({
       editFolderUuid: this.folderItem.uuid,
-      confirm: this.onEditConfirm.bind(this),
+      confirm: (color: string, name: string) => {
+        this.onEditConfirm(color, name);
+      },
       dialogType: 1
     }),
     alignment: DialogAlignment.Bottom,
@@ -235,16 +249,25 @@ struct FolderItemComp {
     RdbStoreUtil.update(this.folderItem.toFolderObject(), predicates_folder, null)
     this.isUpdate = true
   }
+
   // Folder Delete Dialog
-  folderDeleteDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), deleteFileType: DeleteFileType.FolderData }),
+  folderDeleteDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: DeleteDialog({
+      onConfirm: () => {
+        this.onDeleteConfirm();
+      }, deleteFileType: DeleteFileType.FolderData
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
   // Folder Delete Dialog for portrait model
-  folderDeleteDialogCtlBottom: CustomDialogController = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: this.onDeleteConfirm.bind(this), deleteFileType: DeleteFileType.FolderData }),
+  folderDeleteDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
+    builder: DeleteDialog({
+      onConfirm: () => {
+        this.onDeleteConfirm();
+      }, deleteFileType: DeleteFileType.FolderData
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -253,8 +276,8 @@ struct FolderItemComp {
   onDeleteConfirm() {
     let currentFolder = FolderUtil.getFolderData(this.AllFolderArray, this.folderItem.uuid)
     let index = this.AllFolderArray.indexOf(currentFolder)
-    let currentNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
-    let deleteNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), 'sys_def_recentDeletes_uuid')
+    let currentNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.folderItem.uuid)
+    let deleteNoteDataArray = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, 'sys_def_recentDeletes_uuid')
     if (index > -1) {
       this.AllFolderArray.splice(index, 1)
       if (deleteNoteDataArray.length != 0) {
@@ -277,7 +300,7 @@ struct FolderItemComp {
           // update note to db
           let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
           predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-          RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+          RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
         })
       }
       // delete folder from db
@@ -286,15 +309,20 @@ struct FolderItemComp {
       RdbStoreUtil.delete(predicates_folder, null)
       // update selectedFolderData and selectedNoteData
       this.selectedFolderData = FolderUtil.getFolderData(this.AllFolderArray, SysDefFolderUuid.AllNotes)
-      this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, SysDefFolderUuid.AllNotes)
+      this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, SysDefFolderUuid.AllNotes)!;
       if (!this.selectedNoteData) {
         return
       }
       // 刷新web界面
       if (this.portraitModel == false) {
-        this.controllerShow.runJavaScript(
-          "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-        )
+        try {
+          this.controllerShow.runJavaScript(
+            "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+          );
+          LogUtil.info(this.TAG, `runJavaScript success.`);
+        } catch (error) {
+          LogUtil.error(this.TAG, `runJavaScript failed.code:${JSON.stringify(error.code)},message:${JSON.stringify(error.message)}`);
+        }
       }
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -303,20 +331,30 @@ struct FolderItemComp {
     }
     this.isUpdate = true
   }
+
   // Folder Create Dialog
-  folderCreateDialogCtl: CustomDialogController = new CustomDialogController({
-    builder: NewOrEditFolderDialog({ confirm: this.onCreateConfirm.bind(this), dialogType: 0 }),
+  folderCreateDialogCtl: CustomDialogController | null = new CustomDialogController({
+    builder: NewOrEditFolderDialog({
+      confirm: (color: string, name: string) => {
+        this.onCreateConfirm(color, name);
+      }, dialogType: 0
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
   // Folder Create Dialog for portrait model
-  folderCreateDialogCtlBottom: CustomDialogController = new CustomDialogController({
-    builder: NewOrEditFolderDialog({ confirm: this.onCreateConfirm.bind(this), dialogType: 0 }),
+  folderCreateDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
+    builder: NewOrEditFolderDialog({
+      confirm: (color: string, name: string) => {
+        this.onCreateConfirm(color, name);
+      }, dialogType: 0
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
   })
+
   // Folder Create Callback
   onCreateConfirm(color: string, name: string) {
     let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
@@ -337,9 +375,9 @@ struct FolderItemComp {
         .onClick(() => {
           this.selectedColor = this.folderItem.color
           if (this.portraitModel) {
-            this.folderEditDialogCtlBottom.open()
+            this.folderEditDialogCtlBottom!.open();
           } else {
-            this.folderEditDialogCtl.open()
+            this.folderEditDialogCtl!.open();
           }
           ContextMenu.close()
         })
@@ -354,9 +392,9 @@ struct FolderItemComp {
         .fontColor($r("app.color.folder_color_182431"))
         .onClick(() => {
           if (this.portraitModel) {
-            this.folderDeleteDialogCtlBottom.open()
+            this.folderDeleteDialogCtlBottom!.open();
           } else {
-            this.folderDeleteDialogCtl.open()
+            this.folderDeleteDialogCtl!.open();
           }
           ContextMenu.close()
         })
@@ -372,9 +410,9 @@ struct FolderItemComp {
         .onClick(() => {
           this.selectedColor = "#e84026" // 新建的时候选中第一个颜色
           if (this.portraitModel) {
-            this.folderCreateDialogCtlBottom.open()
+            this.folderCreateDialogCtlBottom!.open();
           } else {
-            this.folderCreateDialogCtl.open()
+            this.folderCreateDialogCtl!.open();
           }
           ContextMenu.close()
         })
@@ -422,7 +460,7 @@ struct FolderItemComp {
         .height(56)
         .padding({ left: 12, right: 12 })
         .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
-                                                                                      ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
+          ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
         .bindContextMenu(this.menuBuilder, ResponseType.LongPress)
         .bindContextMenu(this.menuBuilder, ResponseType.RightClick)
         .onClick(() => {
@@ -431,15 +469,21 @@ struct FolderItemComp {
             NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           } else {
             this.selectedFolderData = this.folderItem
-            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
+            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.folderItem.uuid)!;
             if (!this.selectedNoteData) {
               return
             }
             // 刷新web界面
             if (this.portraitModel == false) {
-              this.controllerShow.runJavaScript(
-                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              )
+              try {
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                );
+                LogUtil.info(this.TAG, `onClick runJavaScript setHtml success.`);
+              } catch (error) {
+                LogUtil.error(this.TAG, `onClick runJavaScript setHtml failed,code:${JSON.stringify(error.code)},
+                  message:${JSON.stringify(error.message)}.`);
+              }
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -483,22 +527,28 @@ struct FolderItemComp {
         .height(56)
         .padding({ left: 12, right: 12 })
         .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
-                                                                                      ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
+          ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
         .onClick(() => {
           if (this.longpress) {
             this.longpress = false
             NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           } else {
             this.selectedFolderData = this.folderItem
-            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.folderItem.uuid)
+            this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.folderItem.uuid)!;
             if (!this.selectedNoteData) {
               return
             }
             // 刷新web界面
             if (this.portraitModel == false) {
-              this.controllerShow.runJavaScript(
-                "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-              )
+              try {
+                this.controllerShow.runJavaScript(
+                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+                );
+                LogUtil.info(this.TAG, `else runJavaScript setHtml success.`);
+              } catch (error) {
+                LogUtil.error(this.TAG, `else runJavaScript setHtml failed.code:${JSON.stringify(error.code)},
+                  message:${JSON.stringify(error.message)}`);
+              }
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
@@ -513,17 +563,17 @@ struct FolderItemComp {
     .width('100%')
     .height(56)
     .parallelGesture(
-    GestureGroup(GestureMode.Exclusive,
-    LongPressGesture()
-      .onAction(() => {
-        this.isLongPress = true
-        this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-      })
-      .onActionEnd(() => {
-        this.isLongPress = false
-        this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-      })
-    )
+      GestureGroup(GestureMode.Exclusive,
+        LongPressGesture()
+          .onAction(() => {
+            this.isLongPress = true;
+            this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0);
+          })
+          .onActionEnd(() => {
+            this.isLongPress = false;
+            this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0);
+          })
+      )
     )
   }
 }
