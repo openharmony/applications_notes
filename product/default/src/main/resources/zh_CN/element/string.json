@@ -15,6 +15,10 @@
     {
       "name": "write_image_video_permission",
       "value": "用于备忘录修改用户公共目录的图片或视频文件"
+    },
+    {
+      "name": "keep_background_running_permission",
+      "value": "允许Service Ability在后台持续运行"
     }
   ]
 }

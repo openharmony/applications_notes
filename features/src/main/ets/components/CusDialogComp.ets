@@ -371,7 +371,8 @@ export struct NoteDataMoveDialog {
       .width(288)
 
       List() {
-        if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null && this.NoteDataMoveArray !== []) {
+        if (this.NoteDataMoveArray !== undefined && this.NoteDataMoveArray !== null &&
+          this.NoteDataMoveArray.length > 0) {
           ForEach(this.NoteDataMoveArray.slice(0, this.NoteDataMoveArray.length - 1), (item: FolderData) => {
             ListItem() {
               NoteDataMoveItemComp({ folderItem: item })

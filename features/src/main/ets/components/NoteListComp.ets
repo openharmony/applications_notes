@@ -227,7 +227,7 @@ struct NoteOverViewComp {
   @State isShow: boolean = false
 
   notesNumberChange() {
-    let noteNumbers = FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+    let noteNumbers = FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid);
     if (noteNumbers == 0) {
       this.isShow = false
     } else {
@@ -372,7 +372,7 @@ export struct NoteItemComp {
               .id(this.isUpdate + '')
               .height(16)
               .width(4)
-              .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.Get('AllFolderArray'), this.noteItem.folder_uuid))
+              .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.Get('AllFolderArray')!, this.noteItem.folder_uuid))
             Text(this.noteItem.title)
               .fontSize(16)
               .maxLines(1)
@@ -486,7 +486,7 @@ export struct NoteItemComp {
         routePage()
       }
       this.selectedAll = this.CheckedNoteArray.length ==
-      NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length
+      NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid).length;
       this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     })
     .gesture(
@@ -524,7 +524,7 @@ export struct NoteItemListComp {
 
   updateList() {
     if (this.isUpdate) {
-      this.dateList = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+      this.dateList = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid);
     }
     this.isUpdate = false
     this.doSearch()
@@ -533,7 +533,7 @@ export struct NoteItemListComp {
   aboutToAppear() {
     LogUtil.info(TAG, "inputKeyWord:" + this.inputKeyword)
     this.inputKeyword = ''
-    this.dateList = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+    this.dateList = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid);
   }
 
   doSearch() {
@@ -541,7 +541,7 @@ export struct NoteItemListComp {
       this.setNoteListLazy()
       return;
     };
-    SearchModel.search(NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid), this.inputKeyword)
+    SearchModel.search(NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid), this.inputKeyword)
       .then((result: NoteData[]) => {
         LogUtil.info(TAG, "result size " + result.length.toString())
         this.searchResultList = result
@@ -549,7 +549,7 @@ export struct NoteItemListComp {
         if (this.searchResultList.length != 0) {
           this.selectedNoteData = this.searchResultList[0]
         } else {
-          this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
+          this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
         }
         if (this.portraitModel == false) {
           this.controllerShow.runJavaScript(
@@ -693,7 +693,7 @@ export struct OperateNoteComp {
       // update note to db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-      RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
+      RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
     })
     this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
     // save continue data
@@ -726,7 +726,7 @@ export struct OperateNoteComp {
         // update note to db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
+        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
       })
     } else {
       this.CheckedNoteArray.forEach((noteItem: NoteData) => {
@@ -734,13 +734,13 @@ export struct OperateNoteComp {
         // delete note from db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.delete(predicates_note, null!);
+        RdbStoreUtil.delete(predicates_note, null);
       })
     }
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
-    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
+    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
     if (this.portraitModel == false) {
       this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')")
     }
@@ -766,7 +766,7 @@ export struct OperateNoteComp {
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-            RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+            RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
           })
           this.longpress = false
           NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
@@ -818,7 +818,7 @@ export struct OperateNoteComp {
             // update note to db
             let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
             predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-            RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+            RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
           })
           this.longpress = false
           NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
@@ -832,8 +832,8 @@ export struct OperateNoteComp {
         .onClick(() => {
           LogUtil.info(TAG, "select all click")
           if (this.CheckedNoteArray.length <
-          NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).length) {
-            NoteUtil.setAllNotesChecked(this.CheckedNoteArray, NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid))
+          NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid).length) {
+            NoteUtil.setAllNotesChecked(this.CheckedNoteArray, NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid));
           } else {
             NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           }
@@ -875,7 +875,7 @@ export struct AddNoteComp {
         }
 
         this.AllNoteArray.push(noteData)
-        RdbStoreUtil.insert(TableName.NoteTable, noteData.toNoteObject(), null)
+        RdbStoreUtil.insert(TableName.NoteTable, noteData.toNoteObject(), null);
         LogUtil.info(TAG, 'insert new note is:' + noteData.uuid)
 
         this.selectedNoteData = noteData
@@ -1019,7 +1019,7 @@ export struct OperateNoteCompForPortrait {
       // update note to db
       let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
       predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-      RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
+      RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
     })
     this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
     // save continue data
@@ -1049,7 +1049,7 @@ export struct OperateNoteCompForPortrait {
         // update note to db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null!);
+        RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
       })
     } else {
       this.CheckedNoteArray.forEach((noteItem: NoteData) => {
@@ -1057,13 +1057,13 @@ export struct OperateNoteCompForPortrait {
         // delete note from db
         let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
         predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-        RdbStoreUtil.delete(predicates_note, null!);
+        RdbStoreUtil.delete(predicates_note, null);
       })
     }
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)!;
+    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
     AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
@@ -1086,7 +1086,7 @@ export struct OperateNoteCompForPortrait {
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
                 predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-                RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+                RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
               })
               this.longpress = false
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -1182,7 +1182,7 @@ export struct OperateNoteCompForPortrait {
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
                 predicates_note.equalTo(NoteTableColumn.Uuid, noteItem.uuid)
-                RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null)
+                RdbStoreUtil.update(noteItem.toNoteObject(), predicates_note, null);
               })
               this.longpress = false
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
@@ -1210,10 +1210,10 @@ export struct OperateNoteCompForPortrait {
           .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
           .id(this.isUpdate + '')
           .onClick(() => {
-            if (this.CheckedNoteArray.length <
-            NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
-              .length) {
-              NoteUtil.setAllNotesChecked(this.CheckedNoteArray, NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid))
+            if (this.CheckedNoteArray.length < NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!,
+              this.selectedFolderData.uuid).length) {
+              NoteUtil.setAllNotesChecked(this.CheckedNoteArray, NoteUtil.getNoteDataArray(
+                AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid));
             } else {
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             }

@@ -115,7 +115,7 @@ class RdbStoreUtil {
               noteData.folder_uuid = SysDefFolderUuid.UnClassified
               noteDataArray.push(noteData)
               AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
-              this.insert(TableName.NoteTable, noteData.toNoteObject(), null!);
+              this.insert(TableName.NoteTable, noteData.toNoteObject(), null);
               AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, SysDefFolderUuid.UnClassified))
             } else {
               // 迁移过来的笔记在本地存在，则进行修改
@@ -128,7 +128,7 @@ class RdbStoreUtil {
               }
               let predicates_note = this.getRdbPredicates(TableName.NoteTable)
               predicates_note.equalTo(NoteTableColumn.CreatedTime, noteData.created_time)
-              this.update(noteData.toNoteObject(), predicates_note, null!);
+              this.update(noteData.toNoteObject(), predicates_note, null);
               AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, folderUuid))
             }
             AppStorage.SetOrCreate('Note', noteData)
@@ -138,7 +138,7 @@ class RdbStoreUtil {
           } else {
             LogUtil.info(TAG, "createRdbStore, IsContinue false")
             AppStorage.SetOrCreate('Folder', (AppStorage.Get('AllFolderArray') as FolderData[])[0]);
-            let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
+            let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, SysDefFolderUuid.AllNotes);
             AppStorage.SetOrCreate('Note', note)
             if (note) {
               AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
@@ -289,7 +289,7 @@ class RdbStoreUtil {
               noteData.folder_uuid = SysDefFolderUuid.UnClassified
               noteDataArray.push(noteData)
               AppStorage.SetOrCreate('AllNoteArray', noteDataArray)
-              this.insert(TableName.NoteTable, noteData.toNoteObject(), null!);
+              this.insert(TableName.NoteTable, noteData.toNoteObject(), null);
               AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, SysDefFolderUuid.UnClassified))
             } else {
               // 迁移过来的笔记在本地存在，则进行修改
@@ -302,7 +302,7 @@ class RdbStoreUtil {
               }
               let predicates_note = this.getRdbPredicates(TableName.NoteTable)
               predicates_note.equalTo(NoteTableColumn.CreatedTime, noteData.created_time)
-              this.update(noteData.toNoteObject(), predicates_note, null!);
+              this.update(noteData.toNoteObject(), predicates_note, null);
               AppStorage.SetOrCreate('Folder', FolderUtil.getFolderData(folderDataArray, folderUuid))
             }
             AppStorage.SetOrCreate('Note', noteData)
@@ -312,7 +312,7 @@ class RdbStoreUtil {
           } else {
             LogUtil.info(TAG, "initAppStorage, IsContinue false")
             AppStorage.SetOrCreate('Folder', (AppStorage.Get('AllFolderArray') as FolderData[])[0]);
-            let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray'), SysDefFolderUuid.AllNotes)
+            let note = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, SysDefFolderUuid.AllNotes);
             AppStorage.SetOrCreate('Note', note)
             if (note) {
               AppStorage.SetOrCreate<string>('ContinueNote', JSON.stringify(note.toNoteObject()))
@@ -437,7 +437,7 @@ class RdbStoreUtil {
    * @param valueBucket
    * @param callback
    */
-  insert(tableName: string, valueBucket: relationalStore.ValuesBucket, callback: Callback<number>) {
+  insert(tableName: string, valueBucket: relationalStore.ValuesBucket, callback: Callback<number> | null) {
     rdbStore!.insert(tableName, valueBucket).then((rowId: number) => {
       LogUtil.info(TAG, "insert success, rowId is " + rowId)
       if (callback != null) {
@@ -453,7 +453,7 @@ class RdbStoreUtil {
    * @param predicates
    * @param callback
    */
-  delete(predicates: relationalStore.RdbPredicates, callback: Callback<number>) {
+  delete(predicates: relationalStore.RdbPredicates, callback: Callback<number> | null) {
     rdbStore!.delete(predicates).then((affectedRowCount: number) => {
       LogUtil.info(TAG, "delete success, affectedRowCount is " + affectedRowCount)
       if (callback != null) {
@@ -471,7 +471,7 @@ class RdbStoreUtil {
    * @param callback
    */
   update(valueBucket: relationalStore.ValuesBucket, predicates: relationalStore.RdbPredicates,
-         callback: Callback<number>) {
+         callback: Callback<number> | null) {
     if (!rdbStore) {
       return;
     }

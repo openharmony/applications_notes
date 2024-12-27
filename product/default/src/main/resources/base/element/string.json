@@ -19,6 +19,10 @@
     {
       "name": "write_image_video_permission",
       "value": "Used to modify image or video files in the user's public directory"
+    },
+    {
+      "name": "keep_background_running_permission",
+      "value": "Allow Service Ability to run continuously in the background"
     }
   ]
 }

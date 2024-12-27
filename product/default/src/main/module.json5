@@ -18,7 +18,7 @@
   "module": {
     "name": "default",
     "type": "entry",
-    "srcEntrance": "./ets/Application/AbilityStage.ts",
+    "srcEntry": "./ets/Application/AbilityStage.ts",
     "description": "$string:entry_MainAbility",
     "mainElement": "MainAbility",
     "deviceTypes": [
@@ -71,6 +71,16 @@
           ],
           "when":"inuse"
         }
+      },
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+        "reason": "$string:keep_background_running_permission",
+        "usedScene": {
+          "abilities": [
+            "MainAbility"
+          ],
+          "when":"always"
+        }
       }
     ],
     "deliveryWithInstall": true,
@@ -86,7 +96,7 @@
     "abilities": [
       {
         "name": "MainAbility",
-        "srcEntrance": "./ets/MainAbility/MainAbility.ts",
+        "srcEntry": "./ets/MainAbility/MainAbility.ts",
         "description": "$string:entry_MainAbility",
         "icon": "$media:note",
         "label": "$string:entry_MainAbility",
@@ -101,6 +111,9 @@
               "action.system.home"
             ]
           }
+        ],
+        "backgroundModes": [
+          "dataTransfer"
         ],
         "startWindowBackground": "$color:color_1",
         "startWindowIcon": "$media:note"
