@@ -28,7 +28,7 @@ import {
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData';
 import { NoteDataMoveDialog, DeleteDialog } from './CusDialogComp'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
-import prompt from '@system.prompt'
+import { promptAction } from '@kit.ArkUI';
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import SearchModel from '@ohos/utils/src/main/ets/default/model/searchModel/SearchModel'
@@ -812,7 +812,7 @@ export struct OperateNoteComp {
               if (error != null) {
                 LogUtil.error(TAG, "error is " + error);
               } else {
-                prompt.showToast({ message: value, duration: 2000 });
+                promptAction.showToast({ message: value, duration: 2000 });
               }
             });
             // update note to db
@@ -881,9 +881,14 @@ export struct AddNoteComp {
         this.selectedNoteData = noteData
         AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
         if (this.portraitModel == false) {
-          this.controllerShow.runJavaScript(
-            "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')"
-          )
+          try {
+            this.controllerShow.runJavaScript(
+              "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')"
+            )
+          } catch (error) {
+            LogUtil.error(TAG, `runJavaScript setHtml content_text failed.
+            code:${JSON.stringify(error.code)},message:${JSON.stringify(error.message)}`);
+          }
         }
         if (this.portraitModel == true) {
           this.editModel = true
@@ -1176,7 +1181,7 @@ export struct OperateNoteCompForPortrait {
                   if (error != null) {
                     LogUtil.error(TAG, "error is " + error);
                   } else {
-                    prompt.showToast({ message: value, duration: 2000 });
+                    promptAction.showToast({ message: value, duration: 2000 });
                   }
                 });
                 // update note to db
