@@ -29,7 +29,7 @@ import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleCons
 import { EditContentDialog, DeleteDialog, EditTitleDialog } from './CusDialogComp'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
-import prompt from '@system.prompt'
+import { promptAction } from '@kit.ArkUI';
 import util from '@ohos.util'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
@@ -256,33 +256,37 @@ export struct NoteContentComp {
             })
             .enabled(this.sectionStatus !== 1 ? false : true)
             .onPageEnd((e) => {
-              if (this.dpi <= 240) {
-                this.controllerShow.runJavaScript("changeSizeToRk()")
-              } else if (this.dpi <= 320 && this.dpi > 240) {
-                this.controllerShow.runJavaScript("changeSizeToPhone()")
-              } else {
-                this.controllerShow.runJavaScript("changeSizeToTablet()")
-              }
-              if (AppStorage.Get('breakPoint') !== 'sm') {
-                this.controllerShow.runJavaScript("hiddenButton()")
-              }
-              LogUtil.info(TAG, "finish loadurl")
-              if (this.selectedNoteData) {
-                let self = this
-                this.controllerShow.runJavaScript(
-                  "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
-                  () => {
-                    // wait for the image in the note to load
-                    setTimeout(() => {
-                      self.restoreScrollTop()
-                      self.restoreFocus()
-                    }, 100)
-                  }
-                )
-              }
-              // 初次加载为为小屏预览模式
-              if (this.sectionStatus != 1) {
-                this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
+              try {
+                if (this.dpi <= 240) {
+                  this.controllerShow.runJavaScript("changeSizeToRk()")
+                } else if (this.dpi <= 320 && this.dpi > 240) {
+                  this.controllerShow.runJavaScript("changeSizeToPhone()")
+                } else {
+                  this.controllerShow.runJavaScript("changeSizeToTablet()")
+                }
+                if (AppStorage.Get('breakPoint') !== 'sm') {
+                  this.controllerShow.runJavaScript("hiddenButton()")
+                }
+                LogUtil.info(TAG, "finish loadurl")
+                if (this.selectedNoteData) {
+                  let self = this
+                  this.controllerShow.runJavaScript(
+                    "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
+                    () => {
+                      // wait for the image in the note to load
+                      setTimeout(() => {
+                        self.restoreScrollTop()
+                        self.restoreFocus()
+                      }, 100)
+                    }
+                  )
+                }
+                // 初次加载为为小屏预览模式
+                if (this.sectionStatus != 1) {
+                  this.controllerShow.runJavaScript("RICH_EDITOR.setInputEnabled(false)")
+                }
+              } catch (error) {
+                LogUtil.info(TAG, `runJavaScript onPageEnd error. code:${JSON.stringify(error.code)},message:${error.message}`);
               }
             })
             .imageAccess(true)
@@ -636,7 +640,7 @@ export struct ToolBarComp {
                   if (error != null) {
                     LogUtil.error(TAG, "error is " + error);
                   } else {
-                    prompt.showToast({ message: value, duration: 2000 });
+                    promptAction.showToast({ message: value, duration: 2000 });
                   }
                 });
                 this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)

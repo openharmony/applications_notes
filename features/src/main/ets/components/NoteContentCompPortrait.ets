@@ -30,7 +30,7 @@ import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleCons
 import { EditContentDialogPortrait, DeleteDialog, EditTitleDialog } from './CusDialogComp'
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil'
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil'
-import prompt from '@system.prompt'
+import { promptAction } from '@kit.ArkUI';
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils'
 import router from '@system.router'
@@ -792,7 +792,7 @@ export struct DeleteNoteComp {
               if (error != null) {
                 LogUtil.error(TAG, 'error is' + error);
               } else {
-                prompt.showToast({ message: value, duration: 2000 });
+                promptAction.showToast({ message: value, duration: 2000 });
               }
             });
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
