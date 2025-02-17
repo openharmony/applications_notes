@@ -628,37 +628,41 @@ export struct ToolBarComp {
               .height(24)
               .width(24)
               .onClick(() => {
-                this.selectedNoteData.is_deleted = Delete.No
-                this.selectedNoteData.deleted_time = 0
-                let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
-                let resource: resourceManager.Resource = {
-                  bundleName: "com.ohos.note",
-                  moduleName: "default",
-                  id: $r('app.string.restore').id
-                };
-                context.resourceManager.getStringValue(resource, (error: BusinessError, value: string) => {
-                  if (error != null) {
-                    LogUtil.error(TAG, "error is " + error);
-                  } else {
-                    promptAction.showToast({ message: value, duration: 2000 });
-                  }
-                });
-                this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-                this.chooseNote = false
-                // update note to db
-                let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
-                predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
-                RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
+                try {
+                  this.selectedNoteData.is_deleted = Delete.No
+                  this.selectedNoteData.deleted_time = 0
+                  let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+                  let resource: resourceManager.Resource = {
+                    bundleName: "com.ohos.note",
+                    moduleName: "default",
+                    id: $r('app.string.restore').id
+                  };
+                  context.resourceManager.getStringValue(resource, (error: BusinessError, value: string) => {
+                    if (error != null) {
+                      LogUtil.error(TAG, "error is " + error);
+                    } else {
+                      promptAction.showToast({ message: value, duration: 2000 });
+                    }
+                  });
+                  this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
+                  this.chooseNote = false
+                  // update note to db
+                  let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
+                  predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
+                  RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicates_note, null);
 
-                this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
-                this.controllerShow.runJavaScript(
-                  "RICH_EDITOR.setHtml('" + this.selectedNoteData!.content_text + "')"
-                )
-                // save continue data
-                let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-                AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-                LogUtil.info(TAG, "recover, set continue note success")
-                NoteUtil.refreshAll()
+                  this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
+                  this.controllerShow.runJavaScript(
+                    "RICH_EDITOR.setHtml('" + this.selectedNoteData!.content_text + "')"
+                  )
+                  // save continue data
+                  let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
+                  AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+                  LogUtil.info(TAG, "recover, set continue note success")
+                  NoteUtil.refreshAll()
+                } catch (error) {
+                  LogUtil.error(TAG, `recover failed.code:${JSON.stringify(error.code)}, message:${JSON.stringify(error.message)}`);
+                }
               })
           }.width(72)
         } else if (this.editModel == true) {
