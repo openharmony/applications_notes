@@ -157,8 +157,13 @@ export struct NoteContentComp {
     },
     callbackImagePath: (imgName) => {
       // updata note image
-      LogUtil.info(TAG, 'note imgName is:' + imgName);
-      this.selectedNoteData.content_img = imgName;
+      try {
+        LogUtil.info(TAG, 'note imgName is:' + imgName);
+        this.selectedNoteData.content_img = imgName;
+        LogUtil.info(TAG, 'set content_img success');
+      } catch (error) {
+        LogUtil.error(TAG, 'callbackImagePath error: ' + JSON.stringify(error));
+      }
     },
 
     callbackhtmlSave: (html) => {
