@@ -157,13 +157,13 @@ export struct NoteHomeComp {
 
   aboutToAppear(): void {
     LogUtil.info(this.TAG, "aboutToAppear")
-    let isContinue = AppStorage.Get<boolean>('IsContinue')
+    let isContinue = AppStorage.get<boolean>('IsContinue')
     LogUtil.info(this.TAG, "aboutToAppear, isContinue : " + isContinue)
     if (isContinue) {
-      this.sectionStatus = AppStorage.Get('Section')!;
+      this.sectionStatus = AppStorage.get('Section')!;
     }
     // continue from phone
-    let continueFromPhone = AppStorage.Get<boolean>('ContinueFromPhone')
+    let continueFromPhone = AppStorage.get<boolean>('ContinueFromPhone')
     LogUtil.info(this.TAG, "aboutToAppear, continueFromPhone : " + continueFromPhone)
     if (continueFromPhone) {
       this.sectionStatus = 1
@@ -175,5 +175,13 @@ export struct NoteHomeComp {
 
   aboutToDisappear(): void {
     LogUtil.info(this.TAG, "aboutToDisappear")
+  }
+
+  onPageShow(): void {
+    LogUtil.info(this.TAG, "onPageShow");
+  }
+
+  onPageHide(): void {
+    LogUtil.info(this.TAG, "onPageHide");
   }
 }

@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-import fileio from '@ohos.fileio'
+import fileio from '@ohos.file.fs'
 import { NoteHomeComp } from './NoteHome'
 import { NoteHomePortraitComp } from './NoteHomePortrait'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
 import inputMethod from '@ohos.inputMethod';
-import router from '@system.router';
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 import webview from '@ohos.web.webview';
 import { BusinessError } from '@ohos.base';
@@ -34,11 +33,12 @@ export struct MyNoteHomeComp {
   @Provide('PortraitModel') portraitModel: boolean = true
   @Provide('RefreshFlag') refreshFlag: number = 0
   private controllerShow: WebviewController = new webview.WebviewController()
-  private context = getContext(this) as common.UIAbilityContext;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   TAG = "MyNoteHomeComp_Tablet"
   @StorageLink('breakPoint') @Watch('onBreakPointChange') breakPoints: string = 'lg'
 
   onBreakPointChange() {
+    LogUtil.info(this.TAG, "onBreakPointChange, breakPoints = "+this.breakPoints)
     if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
       this.portraitModel = true
     } else {
@@ -50,8 +50,8 @@ export struct MyNoteHomeComp {
     Column() {
       // 窗口顶部规避区域
       Row()
-        .width(px2vp(this.topWidth))
-        .height(px2vp(this.topHeight))
+        .width(this.getUIContext().px2vp(this.topWidth))
+        .height(this.getUIContext().px2vp(this.topHeight))
       Row() {
         if (this.dBQueryFinished == 1) {
           if (this.breakPoints == 'sm') {
@@ -69,7 +69,7 @@ export struct MyNoteHomeComp {
 
   aboutToAppear(): void {
     LogUtil.info(this.TAG, "aboutToAppear")
-    this.breakPoints = AppStorage.Get('breakPoint')!;
+    this.breakPoints = AppStorage.get('breakPoint')!;
     if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
       this.portraitModel = true
     } else {
@@ -127,13 +127,13 @@ export struct MyNoteHomeComp {
   onPageShow(): void {
     LogUtil.info(this.TAG, "onPageShow")
     // continue from tablet
-    let continueFromTablet = AppStorage.Get<boolean>('ContinueFromTablet')
+    let continueFromTablet = AppStorage.get<boolean>('ContinueFromTablet')
     LogUtil.info(this.TAG, "onPageShow, continueFromTablet : " + continueFromTablet)
-    let noteContentHomeExist = AppStorage.Get<boolean>('NoteContentHomeExist')
+    let noteContentHomeExist = AppStorage.get<boolean>('NoteContentHomeExist')
     LogUtil.info(this.TAG, "onPageShow, noteContentHomeExist : " + noteContentHomeExist)
     if (continueFromTablet && !noteContentHomeExist) {
-      router.push({ uri: 'pages/NoteContentHome' })
-      AppStorage.SetOrCreate<boolean>('ContinueFromTablet', false)
+      this.getUIContext().getRouter().pushUrl({ url: 'pages/NoteContentHome' })
+      AppStorage.setOrCreate<boolean>('ContinueFromTablet', false)
     }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
   }

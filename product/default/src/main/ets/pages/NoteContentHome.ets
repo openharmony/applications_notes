@@ -62,16 +62,24 @@ struct NoteContentHome {
   }
 
   aboutToAppear(): void {
-    let noteContext = AppStorage.Get<common.UIAbilityContext>('noteContext')!;
-    this.breakPoints = AppStorage.Get('breakPoint')!;
+    let noteContext = AppStorage.get<common.UIAbilityContext>('noteContext')!;
+    this.breakPoints = AppStorage.get('breakPoint')!;
     LogUtil.info(this.TAG, "aboutToAppear")
-    let isContinue = AppStorage.Get<boolean>('IsContinue')
+    let isContinue = AppStorage.get<boolean>('IsContinue')
     LogUtil.info(this.TAG, "aboutToAppear, isContinue : " + isContinue)
     if (isContinue) {
       RdbStoreUtil.initAppStorage(noteContext);
     }
     if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
-      AppStorage.SetOrCreate<boolean>('NoteContentHomeExist', true)
+      AppStorage.setOrCreate<boolean>('NoteContentHomeExist', true)
     }
+  }
+
+  onPageShow(): void {
+    LogUtil.info(this.TAG, "onPageShow")
+  }
+
+  onPageHide(): void {
+    LogUtil.info(this.TAG, "onPageHide")
   }
 }

@@ -68,20 +68,22 @@ abstract class BasicDataSource<T> implements IDataSource {
   public abstract totalCount(): number;
 
   public getData(index: number): T | void {
-    LogUtil.info(TAG, 'getDataindex: '+index);
+    LogUtil.info(TAG, 'getDataindex: ' + index);
   };
 
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
       this.listeners.push(listener);
-    };
+    }
+    ;
   };
 
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
     if (pos >= 0) {
       this.listeners.splice(pos, 1);
-    };
+    }
+    ;
   };
 
   notifyDataReload(): void {
@@ -113,7 +115,8 @@ abstract class BasicDataSource<T> implements IDataSource {
       listener.onDataMove(from, to);
     });
   };
-};
+}
+;
 
 class noteListData extends BasicDataSource<NoteData> {
   private noteList: Array<NoteData> = [];
@@ -163,7 +166,8 @@ class noteListData extends BasicDataSource<NoteData> {
     this.noteList = data;
     this.notifyDataReload();
   }
-};
+}
+;
 
 // Note list component
 @Component
@@ -192,26 +196,34 @@ export struct NoteListComp {
         OperateNoteCompForPortrait()
       }
       .flexShrink(0)
-      .padding({ bottom: 90})
+      .padding({ bottom: 90 })
     }
     .height('100%')
     .width('100%')
   }
 
   aboutToAppear(): void {
-    AppStorage.SetOrCreate('isUpdate', false)
+    AppStorage.setOrCreate('isUpdate', false)
     LogUtil.info(TAG, "aboutToAppear")
   }
 
   aboutToDisappear(): void {
     LogUtil.info(TAG, "aboutToDisappear")
   }
+
+  onPageShow(): void {
+    LogUtil.info(TAG, "onPageShow");
+  }
+
+  onPageHide(): void {
+    LogUtil.info(TAG, "onPageHide");
+  }
 }
 
 @Component
 struct NoteOverViewComp {
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = AppStorage.Link('AllNoteArray')!;
-  @StorageLink('breakPoint') breakPoints: string = AppStorage.Get('breakPoint')!;
+  @StorageLink('breakPoint') breakPoints: string = AppStorage.get('breakPoint')!;
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @Consume('SelectedFolderData') selectedFolderData: FolderData
   @Consume('RefreshFlag') refreshFlag: number
@@ -252,14 +264,14 @@ struct NoteOverViewComp {
             .visibility(this.breakPoints == 'lg' && this.sectionStatus == 3 ? Visibility.None : Visibility.Visible)
             .onClick(() => {
               if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
-                animateTo({ duration: 200 }, () => {
+                this.getUIContext().animateTo({ duration: 200 }, () => {
                   this.expandStatus = !this.expandStatus
                 })
               } else {
                 this.asideWidth = 200
                 this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
                 // save continue data
-                AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
+                AppStorage.setOrCreate<number>('ContinueSection', this.sectionStatus)
                 LogUtil.info(TAG, "NoteOverViewComp, set continue section success")
               }
             })
@@ -279,7 +291,7 @@ struct NoteOverViewComp {
             .fontWeight(FontWeight.Medium)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Row() {
-            Text(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid).toString())
+            Text(FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid).toString())
               .id(this.isUpdate + '')
               .maxLines(1)
               .fontSize(14)
@@ -308,7 +320,8 @@ struct NoteOverViewComp {
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             })
-          Text(this.CheckedNoteArray.length == 0 ? $r("app.string.none_selected") : $r("app.string.selected", this.CheckedNoteArray.length))
+          Text(this.CheckedNoteArray.length == 0 ? $r("app.string.none_selected") :
+          $r("app.string.selected", this.CheckedNoteArray.length))
             .fontSize(20)
             .fontColor($r("app.color.note_selected_font_color"))
             .margin({ left: 16 })
@@ -335,7 +348,9 @@ struct NoteOverViewComp {
 
 @Component
 export struct NoteItemComp {
-  public noteItem: NoteData = new NoteData(0, '标题', new Date().getTime() + '', '', '', '', NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0, 0);
+  public noteItem: NoteData =
+    new NoteData(0, '标题', new Date().getTime() + '', '', '', '', NoteType.SysDef, Top.No, Favorite.No, Delete.No,
+      new Date().getTime(), new Date().getTime(), 0, 0);
   public spans: TextSpan[] = [];
   controllerShow: webview.WebviewController = new webview.WebviewController();
   @Consume('SelectedFolderData') selectedFolderData: FolderData
@@ -372,7 +387,7 @@ export struct NoteItemComp {
               .id(this.isUpdate + '')
               .height(16)
               .width(4)
-              .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.Get('AllFolderArray')!, this.noteItem.folder_uuid))
+              .fillColor(NoteUtil.getVerticalBarBgColor(AppStorage.get('AllFolderArray')!, this.noteItem.folder_uuid))
             Text(this.noteItem.title)
               .fontSize(16)
               .maxLines(1)
@@ -439,12 +454,13 @@ export struct NoteItemComp {
     .borderRadius(24)
     .linearGradient({
       direction: GradientDirection.Right,
-      colors: this.selectedNoteData?.uuid == this.noteItem.uuid ? [[0xffcdae, 0.0], [0xFfece2, 1.0]] : [[0xffffff, 0.0], [0xffffff, 1.0]]
+      colors: this.selectedNoteData?.uuid == this.noteItem.uuid ? [[0xffcdae, 0.0], [0xFfece2, 1.0]] :
+        [[0xffffff, 0.0], [0xffffff, 1.0]]
     })
     .onClick(() => {
       if (this.search) {
         this.search = false
-        AppStorage.SetOrCreate<boolean>('Search', this.search)
+        AppStorage.setOrCreate<boolean>('Search', this.search)
         return
       }
       if (this.longpress) {
@@ -463,11 +479,13 @@ export struct NoteItemComp {
         this.chooseNote = true
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
-        AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+        AppStorage.setOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "NoteItemComp, set continue note success")
       }
       if (this.portraitModel == false) {
         try {
+          LogUtil.info(TAG,
+            `portraitModel is false, runJavaScript setHtml ----------- ` + this.selectedNoteData?.content_text)
           this.controllerShow.runJavaScript(
             "RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')"
           )
@@ -490,17 +508,17 @@ export struct NoteItemComp {
       this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     })
     .gesture(
-    GestureGroup(GestureMode.Exclusive,
-      // 长按：对笔记列表进行操作
-    LongPressGesture()
-      .onAction(() => {
-        if (this.longpress == false) {
-          this.longpress = true
-          NoteUtil.setNoteChecked(this.CheckedNoteArray, this.noteItem)
-          this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)
-        }
-      })
-    )
+      GestureGroup(GestureMode.Exclusive,
+        // 长按：对笔记列表进行操作
+        LongPressGesture()
+          .onAction(() => {
+            if (this.longpress == false) {
+              this.longpress = true
+              NoteUtil.setNoteChecked(this.CheckedNoteArray, this.noteItem)
+              this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)
+            }
+          })
+      )
     )
 
   }
@@ -524,7 +542,7 @@ export struct NoteItemListComp {
 
   updateList() {
     if (this.isUpdate) {
-      this.dateList = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid);
+      this.dateList = NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid);
     }
     this.isUpdate = false
     this.doSearch()
@@ -533,15 +551,17 @@ export struct NoteItemListComp {
   aboutToAppear() {
     LogUtil.info(TAG, "inputKeyWord:" + this.inputKeyword)
     this.inputKeyword = ''
-    this.dateList = NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid);
+    this.dateList = NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid);
   }
 
   doSearch() {
     if (this.inputKeyword.length == 0) {
       this.setNoteListLazy()
       return;
-    };
-    SearchModel.search(NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid), this.inputKeyword)
+    }
+    ;
+    SearchModel.search(NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid),
+      this.inputKeyword)
       .then((result: NoteData[]) => {
         LogUtil.info(TAG, "result size " + result.length.toString())
         this.searchResultList = result
@@ -549,7 +569,8 @@ export struct NoteItemListComp {
         if (this.searchResultList.length != 0) {
           this.selectedNoteData = this.searchResultList[0]
         } else {
-          this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
+          this.selectedNoteData =
+            NoteUtil.getFirstNoteData(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid)!;
         }
         if (this.portraitModel == false) {
           this.controllerShow.runJavaScript(
@@ -579,7 +600,8 @@ export struct NoteItemListComp {
       .id(this.isUpdate + '')
       .width("100%")
       .padding({ left: 24, right: 24, bottom: 12 })
-      .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
+      .visibility((FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ?
+      Visibility.None : Visibility.Visible)
 
       Stack() {
         Flex({ direction: FlexDirection.Column }) {
@@ -591,7 +613,8 @@ export struct NoteItemListComp {
           .padding({ bottom: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 12 : 0 })
           .width('100%')
           .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes
-                      && FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) > 0 ? Visibility.Visible : Visibility.None)
+            && FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) > 0 ?
+          Visibility.Visible : Visibility.None)
 
           Column() {
             List({ initialIndex: 0 }) {
@@ -609,7 +632,8 @@ export struct NoteItemListComp {
               .width('100%')
               .height('100%')
               .padding({ bottom: 120 })
-              .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.Visible : Visibility.None)
+              .visibility((FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ?
+              Visibility.Visible : Visibility.None)
 
               LazyForEach(this.noteList, (noteItem: NoteData) => {
                 ListItem() {
@@ -622,15 +646,16 @@ export struct NoteItemListComp {
                   }
                   .padding({ left: 24, right: 24, bottom: 12 })
                 }
-                .visibility((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? Visibility.None : Visibility.Visible)
+                .visibility((FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) ==
+                  0) ? Visibility.None : Visibility.Visible)
               }, (noteItem: NoteData) => JSON.stringify(noteItem))
             }
             .id(this.isUpdate + '')
-            .margin((FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? {
-                                                                                                                     bottom: 0
-                                                                                                                   } : {
-                                                                                                                         bottom: 56
-                                                                                                                       })
+            .margin((FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ? {
+              bottom: 0
+            } : {
+              bottom: 56
+            })
             .layoutWeight(1)
             .listDirection(Axis.Vertical)
             .edgeEffect(EdgeEffect.Spring)
@@ -656,7 +681,7 @@ export struct NoteItemListComp {
     .onClick(() => {
       this.search = false
       inputMethod.getController().stopInputSession()
-      AppStorage.SetOrCreate<boolean>('Search', this.search)
+      AppStorage.setOrCreate<boolean>('Search', this.search)
     })
   }
 }
@@ -674,9 +699,11 @@ export struct OperateNoteComp {
   @StorageLink('isUpdate') isUpdate: boolean = false
   controllerShow: webview.WebviewController = new webview.WebviewController();
   noteDataMoveDialogCtl: CustomDialogController | null = new CustomDialogController({
-    builder: NoteDataMoveDialog({ onConfirm: (folderUuid: string) => {
-      this.onMoveConfirm(folderUuid);
-    } }),
+    builder: NoteDataMoveDialog({
+      onConfirm: (folderUuid: string) => {
+        this.onMoveConfirm(folderUuid);
+      }
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
@@ -698,7 +725,7 @@ export struct OperateNoteComp {
     this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
-    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+    AppStorage.setOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "onMoveConfirm, set continue note success")
     if (this.portraitModel == false) {
       this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')")
@@ -710,9 +737,11 @@ export struct OperateNoteComp {
   }
 
   noteDataDeleteDialogCtl: CustomDialogController | null = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: () => {
-      this.onDeleteConfirm();
-    }, multiSelect: true }),
+    builder: DeleteDialog({
+      onConfirm: () => {
+        this.onDeleteConfirm();
+      }, multiSelect: true
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
@@ -740,13 +769,13 @@ export struct OperateNoteComp {
     NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     this.longpress = false
-    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
+    this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid)!;
     if (this.portraitModel == false) {
       this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData?.content_text + "')")
     }
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
-    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+    AppStorage.setOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "OperateNoteComp, set continue note success")
     NoteUtil.refreshAll()
   }
@@ -759,7 +788,8 @@ export struct OperateNoteComp {
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
         .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 18 })
-        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
+        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None :
+        Visibility.Visible)
         .onClick(() => {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_top = (noteItem.is_top == Top.Yes) ? Top.No : Top.Yes
@@ -778,7 +808,8 @@ export struct OperateNoteComp {
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
         .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 18 })
-        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
+        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None :
+        Visibility.Visible)
         .onClick(() => {
           this.noteDataMoveDialogCtl!.open();
         })
@@ -797,12 +828,13 @@ export struct OperateNoteComp {
         .opacity(this.CheckedNoteArray.length == 0 ? 0.4 : 1)
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
         .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 18 : 0 })
-        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible : Visibility.None)
+        .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible :
+        Visibility.None)
         .onClick(() => {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_deleted = Delete.No
             noteItem.deleted_time = 0
-            let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+            let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
             let resource: resourceManager.Resource = {
               bundleName: "com.ohos.note",
               moduleName: "default",
@@ -812,7 +844,7 @@ export struct OperateNoteComp {
               if (error != null) {
                 LogUtil.error(TAG, "error is " + error);
               } else {
-                promptAction.showToast({ message: value, duration: 2000 });
+                this.getUIContext().getPromptAction().showToast({ message: value, duration: 2000 });
               }
             });
             // update note to db
@@ -824,7 +856,8 @@ export struct OperateNoteComp {
           NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           NoteUtil.refreshAll()
         })
-      Image(this.CheckedNoteArray.length == NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid)
+      Image(this.CheckedNoteArray.length ==
+      NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid)
         .length ? $r('app.media.check_all1') : $r('app.media.check_all'))
         .width(24)
         .height(24)
@@ -832,8 +865,9 @@ export struct OperateNoteComp {
         .onClick(() => {
           LogUtil.info(TAG, "select all click")
           if (this.CheckedNoteArray.length <
-          NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid).length) {
-            NoteUtil.setAllNotesChecked(this.CheckedNoteArray, NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid));
+          NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid).length) {
+            NoteUtil.setAllNotesChecked(this.CheckedNoteArray,
+              NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid));
           } else {
             NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
           }
@@ -865,13 +899,23 @@ export struct AddNoteComp {
       .width(24)
       .height(24)
       .margin({ right: 12 })
-      .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+      .responseRegion({
+        x: -15.0,
+        y: -15.0,
+        width: 54,
+        height: 54
+      })
       .onClick(() => {
         let noteData: NoteData;
-        if (this.selectedFolderData.uuid == SysDefFolderUuid.AllNotes || this.selectedFolderData.uuid == SysDefFolderUuid.MyFavorites) {
-          noteData = new NoteData(0, "标题", new Date().getTime() + "", SysDefFolderUuid.UnClassified, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0, 0)
+        if (this.selectedFolderData.uuid == SysDefFolderUuid.AllNotes ||
+          this.selectedFolderData.uuid == SysDefFolderUuid.MyFavorites) {
+          noteData =
+            new NoteData(0, "标题", new Date().getTime() + "", SysDefFolderUuid.UnClassified, "", "", NoteType.SysDef,
+              Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0, 0)
         } else {
-          noteData = new NoteData(0, "标题", new Date().getTime() + "", this.selectedFolderData.uuid, "", "", NoteType.SysDef, Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0, 0)
+          noteData =
+            new NoteData(0, "标题", new Date().getTime() + "", this.selectedFolderData.uuid, "", "", NoteType.SysDef,
+              Top.No, Favorite.No, Delete.No, new Date().getTime(), new Date().getTime(), 0, 0)
         }
 
         this.AllNoteArray.push(noteData)
@@ -879,7 +923,7 @@ export struct AddNoteComp {
         LogUtil.info(TAG, 'insert new note is:' + noteData.uuid)
 
         this.selectedNoteData = noteData
-        AppStorage.SetOrCreate<NoteData>('NewNote', noteData)
+        AppStorage.setOrCreate<NoteData>('NewNote', noteData)
         if (this.portraitModel == false) {
           try {
             this.controllerShow.runJavaScript(
@@ -896,13 +940,14 @@ export struct AddNoteComp {
         this.chooseNote = true
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
-        AppStorage.SetOrCreate<FolderData>('NewFolder', this.selectedFolderData)
-        AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+        AppStorage.setOrCreate<FolderData>('NewFolder', this.selectedFolderData)
+        AppStorage.setOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "addNote, set continue note success")
-        AppStorage.SetOrCreate('isUpdate', true)
+        AppStorage.setOrCreate('isUpdate', true)
         routePage()
       })
-      .visibility(this.longpress || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None : Visibility.Visible)
+      .visibility(this.longpress || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None :
+      Visibility.Visible)
   }
 }
 
@@ -919,7 +964,12 @@ export struct SearchComp {
       Image($r('app.media.back'))
         .width(24)
         .height(24)
-        .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+        .responseRegion({
+          x: -15.0,
+          y: -15.0,
+          width: 54,
+          height: 54
+        })
         .margin({ right: this.search ? 16 : 0 })
         .visibility(this.search ? Visibility.Visible : Visibility.None)
         .onClick(() => {
@@ -927,7 +977,7 @@ export struct SearchComp {
           this.search = false
           // 退出键盘
           inputMethod.getController().stopInputSession();
-          AppStorage.SetOrCreate<boolean>('Search', this.search)
+          AppStorage.setOrCreate<boolean>('Search', this.search)
         })
 
       Flex({ justifyContent: FlexAlign.Start }) {
@@ -938,10 +988,16 @@ export struct SearchComp {
           .key('searchFocus')
           .defaultFocus(true)
         TextInput({ placeholder: $r('app.string.searchNote'), text: this.text })
-          .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
+          .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") :
+          $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
           .enabled(this.longpress ? false : true)
-          .padding({ left: 6, top: 0, bottom: 0, right: 0 })
+          .padding({
+            left: 6,
+            top: 0,
+            bottom: 0,
+            right: 0
+          })
           .onEditChange((isEditing: boolean) => {
             //            this.search = isEditing
           })
@@ -955,27 +1011,32 @@ export struct SearchComp {
           .onClick(() => {
             if (this.longpress) {
               this.search = false
-              AppStorage.SetOrCreate<boolean>('Search', this.search)
+              AppStorage.setOrCreate<boolean>('Search', this.search)
             } else {
               this.search = true
-              AppStorage.SetOrCreate<boolean>('Search', this.search)
+              AppStorage.setOrCreate<boolean>('Search', this.search)
             }
           })
-            // whether the focus is on the search input before coutinue
+          // whether the focus is on the search input before coutinue
           .onFocus(() => {
             this.isFocusOnSearch = true
           })
           .onBlur(() => {
             this.isFocusOnSearch = false
           })
-            // key for request focus after coutinue
+          // key for request focus after coutinue
           .key('searchInput')
           .restoreId(3)
       }
       .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") : $r("app.color.color_ffffff"))
       .height(40)
       .opacity(this.longpress ? 0.4 : 1)
-      .padding({ left: 6, right: 12, top: 9, bottom: 9 })
+      .padding({
+        left: 6,
+        right: 12,
+        top: 9,
+        bottom: 9
+      })
       .borderRadius(20)
       .border({ width: 1.5, color: $r("app.color.divider_color_e4e4e4") })
       .margin({ right: this.search ? 40 : 0 })
@@ -995,9 +1056,11 @@ export struct OperateNoteCompForPortrait {
   @State greyOpacity: boolean = false
   @StorageLink('isUpdate') isUpdate: boolean = false
   noteDataMoveDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
-    builder: NoteDataMoveDialog({ onConfirm: (folderUuid: string) => {
-      this.onMoveConfirm(folderUuid);
-    } }),
+    builder: NoteDataMoveDialog({
+      onConfirm: (folderUuid: string) => {
+        this.onMoveConfirm(folderUuid);
+      }
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -1029,7 +1092,7 @@ export struct OperateNoteCompForPortrait {
     this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
-    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+    AppStorage.setOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "onMoveConfirm, set continue note success")
     this.longpress = false
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -1038,9 +1101,11 @@ export struct OperateNoteCompForPortrait {
   }
 
   noteDataDeleteDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: () => {
-      this.onDeleteConfirm();
-    }, multiSelect: true }),
+    builder: DeleteDialog({
+      onConfirm: () => {
+        this.onDeleteConfirm();
+      }, multiSelect: true
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -1071,7 +1136,7 @@ export struct OperateNoteCompForPortrait {
     this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
     // save continue data
     let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
-    AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+    AppStorage.setOrCreate<string>('ContinueNote', continueNote)
     LogUtil.info(TAG, "OperateNoteCompForPortrait, set continue note success")
     NoteUtil.refreshAll()
   }
@@ -1084,7 +1149,12 @@ export struct OperateNoteCompForPortrait {
             .opacity(this.greyOpacity ? 0.4 : 1)
             .width(24)
             .height(24)
-            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+            .responseRegion({
+              x: -15.0,
+              y: -15.0,
+              width: 54,
+              height: 54
+            })
             .onClick(() => {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_top = (noteItem.is_top == Top.Yes) ? Top.No : Top.Yes
@@ -1117,10 +1187,15 @@ export struct OperateNoteCompForPortrait {
           .opacity(this.greyOpacity ? 0.4 : 1)
           .width(24)
           .height(24)
-          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+          .responseRegion({
+            x: -15.0,
+            y: -15.0,
+            width: 54,
+            height: 54
+          })
           .onClick(() => {
             this.noteDataDeleteDialogCtlBottom!.open();
-            AppStorage.SetOrCreate('isUpdate', true)
+            AppStorage.setOrCreate('isUpdate', true)
           })
         Text($r("app.string.delete"))
           .opacity(this.greyOpacity ? 0.4 : 1)
@@ -1141,10 +1216,15 @@ export struct OperateNoteCompForPortrait {
             .opacity(this.greyOpacity ? 0.4 : 1)
             .width(24)
             .height(24)
-            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+            .responseRegion({
+              x: -15.0,
+              y: -15.0,
+              width: 54,
+              height: 54
+            })
             .onClick(() => {
               this.noteDataMoveDialogCtlBottom!.open();
-              AppStorage.SetOrCreate('isUpdate', true)
+              AppStorage.setOrCreate('isUpdate', true)
             })
           Text($r("app.string.move"))
             .opacity(this.greyOpacity ? 0.4 : 1)
@@ -1166,7 +1246,12 @@ export struct OperateNoteCompForPortrait {
           Image($r('app.media.recover'))
             .width(24)
             .height(24)
-            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+            .responseRegion({
+              x: -15.0,
+              y: -15.0,
+              width: 54,
+              height: 54
+            })
             .onClick(() => {
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_deleted = Delete.No
@@ -1181,7 +1266,7 @@ export struct OperateNoteCompForPortrait {
                   if (error != null) {
                     LogUtil.error(TAG, "error is " + error);
                   } else {
-                    promptAction.showToast({ message: value, duration: 2000 });
+                   this.getUIContext().getPromptAction().showToast({ message: value, duration: 2000 });
                   }
                 });
                 // update note to db
@@ -1192,7 +1277,7 @@ export struct OperateNoteCompForPortrait {
               this.longpress = false
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
-              AppStorage.SetOrCreate('isUpdate', true)
+              AppStorage.setOrCreate('isUpdate', true)
               NoteUtil.refreshAll()
             })
           Text($r("app.string.recover"))
@@ -1212,13 +1297,18 @@ export struct OperateNoteCompForPortrait {
         Image($r('app.media.check_all'))
           .width(24)
           .height(24)
-          .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+          .responseRegion({
+            x: -15.0,
+            y: -15.0,
+            width: 54,
+            height: 54
+          })
           .id(this.isUpdate + '')
           .onClick(() => {
-            if (this.CheckedNoteArray.length < NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!,
+            if (this.CheckedNoteArray.length < NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!,
               this.selectedFolderData.uuid).length) {
               NoteUtil.setAllNotesChecked(this.CheckedNoteArray, NoteUtil.getNoteDataArray(
-                AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid));
+                AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid));
             } else {
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             }

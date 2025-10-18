@@ -18,22 +18,20 @@ import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil
 import FolderData from '@ohos/utils/src/main/ets/default/model/databaseModel/FolderData';
 import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteData';
 import {
-  TableName,
+  Delete,
+  Favorite,
+  FolderType,
   NoteTableColumn,
   SysDefFolderUuid,
-  Favorite,
-  Delete,
-  FolderType
+  TableName
 } from '@ohos/utils/src/main/ets/default/model/databaseModel/EnumData';
 import StyleConstants from '@ohos/utils/src/main/ets/default/constants/StyleConstants';
-import { EditContentDialog, DeleteDialog, EditTitleDialog } from './CusDialogComp';
+import { DeleteDialog, EditContentDialog } from './CusDialogComp';
 import FolderUtil from '@ohos/utils/src/main/ets/default/baseUtil/FolderUtil';
 import NoteUtil from '@ohos/utils/src/main/ets/default/baseUtil/NoteUtil';
-import { promptAction } from '@kit.ArkUI';
 import util from '@ohos.util';
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil';
 import OperationUtils from '@ohos/utils/src/main/ets/default/baseUtil/OperationUtils';
-import mediaquery from '@ohos.mediaquery';
 import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData';
 import abilityAccessCtrl, { Permissions } from '@ohos.abilityAccessCtrl';
@@ -45,7 +43,7 @@ import resourceManager from '@ohos.resourceManager';
 const TAG = 'NoteContentComp';
 
 let timeId: number = 0;
-let noteContext = AppStorage.Get<common.UIAbilityContext>('noteContext')!;
+let noteContext = AppStorage.get<common.UIAbilityContext>('noteContext')!;
 
 // Note content component
 let inSetValue: string = AppStorage.Link('inSetValue');
@@ -72,9 +70,7 @@ export struct NoteContentComp {
   @Consume('Search') search: boolean;
   @StorageLink('dpi') dpi: number = 240;
   controllerShow: webview.WebviewController = new webview.WebviewController();
-  private editContentFlag = false;
   @State uri1: string = "";
-  private context = getContext(this);
   @StorageLink('ScrollTopPercent') scrollTopPercent: number = 0.0;
   @StorageLink('isUpdate') isUpdate: boolean = false;
   @StorageLink('refreshCurrentNote') @Watch('isDataChange') refreshCurrentNote: boolean = false;
@@ -85,6 +81,7 @@ export struct NoteContentComp {
       return;
     }
     try {
+      LogUtil.info(TAG, `isDataChange runJavaScript setHtml ` + this.selectedNoteData.content_text);
       this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')");
       LogUtil.info(TAG, `runJavaScript setHtml success.`);
     } catch (error) {
@@ -98,18 +95,21 @@ export struct NoteContentComp {
     if (scrollTop < 0) {
       return;
     }
-    AppStorage.SetOrCreate<number>('ScrollTopPercent', scrollTop / this.controllerShow.getPageHeight());
+    AppStorage.setOrCreate<number>('ScrollTopPercent', scrollTop / this.controllerShow.getPageHeight());
   }
 
   restoreScrollTop() {
     try {
-      if (!AppStorage.Has('remoteScrollTopPercent')) {
+      LogUtil.info(TAG, 'restoreScrollTop');
+      if (!AppStorage.has('remoteScrollTopPercent')) {
         return;
       }
       let scrollTopPercent = AppStorage.Get<number>('remoteScrollTopPercent')!;
       if (scrollTopPercent < 0) {
         return;
       }
+      LogUtil.info(TAG,
+        'runJavaScript document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent);
       this.controllerShow.runJavaScript(
         'document.documentElement.scrollTop = ' + this.controllerShow.getPageHeight() * scrollTopPercent
       )
@@ -120,14 +120,17 @@ export struct NoteContentComp {
   }
 
   restoreFocus() {
+    LogUtil.info(TAG, 'restoreFocus');
     if (!AppStorage.Has('isRemoteFocusOnSearch')) {
       return;
     }
+    LogUtil.info(TAG, 'restoreFocus not return');
     let isRemoteFocusOnSearch = AppStorage.Get<boolean>('isRemoteFocusOnSearch');
     if (isRemoteFocusOnSearch) {
+      LogUtil.info(TAG, 'restoreFocus isRemoteFocusOnSearch');
       focusControl.requestFocus('searchInput');
     }
-    AppStorage.Delete('isRemoteFocusOnSearch');
+    AppStorage.delete('isRemoteFocusOnSearch');
   }
 
   noteContent: NoteContentType = {
@@ -144,10 +147,10 @@ export struct NoteContentComp {
         let predicatesNote = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
         predicatesNote.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid);
         RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicatesNote, null);
-        LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid);
+        LogUtil.info(TAG, 'update note success:' + JSON.stringify(this.selectedNoteData));
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject());
-        AppStorage.SetOrCreate<string>('ContinueNote', continueNote);
+        AppStorage.setOrCreate<string>('ContinueNote', continueNote);
         LogUtil.info(TAG, 'callbackhtml, set continue note success');
         return 'AceString';
       } catch (error) {
@@ -174,13 +177,13 @@ export struct NoteContentComp {
         let predicatesNote = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
         predicatesNote.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid);
         RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicatesNote, null);
-        LogUtil.info(TAG, 'update note success:' + this.selectedNoteData.uuid);
+        LogUtil.info(TAG, 'update note success:' + JSON.stringify(this.selectedNoteData));
         this.sectionStatus = this.lastSectionStatus;
-        this.sectionStatus = mediaquery.matchMediaSync('(width < 2000)').matches ? 2 : 3;
+        this.sectionStatus = this.getUIContext().getMediaQuery().matchMediaSync('(width < 2000)').matches ? 2 : 3;
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject());
-        AppStorage.SetOrCreate<string>('ContinueNote', continueNote);
-        AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus);
+        AppStorage.setOrCreate<string>('ContinueNote', continueNote);
+        AppStorage.setOrCreate<number>('ContinueSection', this.sectionStatus);
         LogUtil.info(TAG, 'callbackhtmlSave, set continue note and section success');
         return 'AceString';
       } catch (error) {
@@ -201,7 +204,7 @@ export struct NoteContentComp {
         let predicatesNote = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
         predicatesNote.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid);
         RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicatesNote, null);
-        LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + this.selectedNoteData.uuid);
+        LogUtil.info(TAG, 'callbackScheduledSave, update note success:' + JSON.stringify(this.selectedNoteData));
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject());
         AppStorage.SetOrCreate<string>('ContinueNote', continueNote);
@@ -213,6 +216,7 @@ export struct NoteContentComp {
 
     callbackPasteImage: (html) => {
       try {
+        LogUtil.info(TAG, 'paste image callback start');
         if (html) {
           LogUtil.info(TAG, 'paste info' + html);
           let realHtml = "";
@@ -228,7 +232,7 @@ export struct NoteContentComp {
             }
             let filePath = "";
             if (base64regex.test(imgData)) {
-              let base64 = new util.Base64();
+              let base64 = new util.Base64Helper();
               let decodeArr = base64.decodeSync(imgData);
               filePath = OperationUtils.saveImageData(decodeArr, imgType);
             } else {
@@ -292,6 +296,7 @@ export struct NoteContentComp {
             .enabled(this.sectionStatus !== 1 ? false : true)
             .onPageEnd((e) => {
               try {
+                LogUtil.info(TAG, `dpi：${this.dpi}}`);
                 if (this.dpi <= 240) {
                   this.controllerShow.runJavaScript('changeSizeToRk()');
                 } else if (this.dpi <= 320 && this.dpi > 240) {
@@ -305,9 +310,11 @@ export struct NoteContentComp {
                 LogUtil.info(TAG, 'finish loadurl');
                 if (this.selectedNoteData) {
                   let self = this;
+                  LogUtil.info(TAG, 'runJavaScript setHtml ：' + this.selectedNoteData.content_text);
                   this.controllerShow.runJavaScript(
                     "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')",
                     () => {
+                      LogUtil.info(TAG, 'runJavaScript setHtml success');
                       // wait for the image in the note to load
                       setTimeout(() => {
                         self.restoreScrollTop();
@@ -343,10 +350,11 @@ export struct NoteContentComp {
           try {
             this.issave = 0;
             LogUtil.info(TAG, 'editModel : ' + this.editModel + ', sectionStatus : ' + this.sectionStatus);
-            let isContinue = AppStorage.Get<boolean>('IsContinue');
+            let isContinue = AppStorage.get<boolean>('IsContinue');
             LogUtil.info(TAG, 'isContinue : ' + isContinue);
             // 点击第三屏进入全屏编辑模式
             if (this.sectionStatus != 1 || isContinue) {
+              LogUtil.info(TAG, 'Third Screen Full Screen Edit Mode');
               this.asideWidth = 0;
               this.lastSectionStatus = this.sectionStatus;
               this.sectionStatus = 1;
@@ -356,7 +364,9 @@ export struct NoteContentComp {
                 clearInterval(timeId);
               }
               timeId = setInterval(() => {
+                LogUtil.info(TAG, 'runJavaScript(scheduledSaveContent) start');
                 this.controllerShow.runJavaScript('scheduledSaveContent()');
+                LogUtil.info(TAG, 'runJavaScript(scheduledSaveContent) end');
               }, 3000)
               LogUtil.info(TAG, 'setInterval timeId : ' + timeId);
               // save continue data
@@ -373,7 +383,7 @@ export struct NoteContentComp {
       }
       .id(this.isUpdate + '')
       .height(StyleConstants.PERCENTAGE_100)
-      .visibility(FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray'), this.selectedFolderData.uuid) == 0 ?
+      .visibility(FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) == 0 ?
       Visibility.Hidden : Visibility.Visible)
 
       Column() {
@@ -395,6 +405,14 @@ export struct NoteContentComp {
   aboutToDisappear(): void {
     clearInterval(timeId)
     LogUtil.info(TAG, 'aboutToDisappear')
+  }
+
+  onPageShow(): void {
+    LogUtil.info(TAG, 'onPageShow')
+  }
+
+  onPageHide(): void {
+    LogUtil.info(TAG, 'onPageHide')
   }
 }
 
@@ -425,35 +443,40 @@ export struct NoteContentOverViewComp {
   getArray() {
     this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
     if (this.AllFolderArray[1] === undefined || this.AllFolderArray[1] === null) {
-      LogUtil.info(TAG, 'this AllFolderArray[1] undefined');
+      LogUtil.info(TAG, 'NoteContentOverViewComp this AllFolderArray[1] undefined');
       return;
     }
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
   }
 
   aboutToAppear() {
+    LogUtil.info(TAG, 'NoteContentOverViewComp aboutToAppear');
     this.NoteDataMoveArray = this.AllFolderArray.slice(2, this.AllFolderArray.length);
     if (this.AllFolderArray[1] === undefined || this.AllFolderArray[1] === null) {
-      LogUtil.info(TAG, 'this AllFolderArray[1] undefined');
+      LogUtil.info(TAG, 'NoteContentOverViewComp this AllFolderArray[1] undefined');
       return;
     }
+    LogUtil.info(TAG, 'NoteContentOverViewComp ' + JSON.stringify(this.AllFolderArray));
     this.NoteDataMoveArray.push(this.AllFolderArray[1]);
   }
 
   aboutToDisappear() {
+    LogUtil.info(TAG, 'NoteContentOverViewComp aboutToDisappear');
     this.editTitleDialogCtl = null;
   }
 
   confirm(newTitle: string) {
     try {
+      LogUtil.info(TAG, 'NoteContentOverViewComp confirm');
       this.selectedNoteData.title = newTitle;
       this.selectedNoteData.modified_time = new Date().getTime();
       let predicatesNote = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
       predicatesNote.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid);
       RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicatesNote, null);
       NoteUtil.refreshAll();
+      LogUtil.info(TAG, 'NoteContentOverViewComp confirm end');
     } catch (error) {
-      LogUtil.error(TAG, 'confirm error: ' + JSON.stringify(error));
+      LogUtil.error(TAG, 'NoteContentOverViewComp confirm error: ' + JSON.stringify(error));
     }
   }
 
@@ -469,26 +492,32 @@ export struct NoteContentOverViewComp {
             }
             .onClick(() => {
               try {
+                LogUtil.info(TAG, 'NoteContentOverViewComp MenuBuilder onClick');
                 this.selectedNoteData.folder_uuid = item.uuid;
                 let predicatesNote = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
                 predicatesNote.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid);
                 RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicatesNote, null);
+                LogUtil.info(TAG, 'NoteContentOverViewComp MenuBuilder onClick, selectionStatus:' + this.sectionStatus);
                 if (this.sectionStatus != 1) {
                   this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
+                  LogUtil.info(TAG,
+                    'NoteContentOverViewComp MenuBuilder onClick, runJavaScript(RICH_EDITOR.setHtml)' + this.selectedNoteData.content_text);
                   this.controllerShow.runJavaScript(
                     "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
                   )
                   this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0);
                 } else {
-                  this.selectedFolderData = FolderUtil.getFolderData(AppStorage.Get('AllFolderArray')!, item.uuid);
+                  this.selectedFolderData = FolderUtil.getFolderData(AppStorage.get('AllFolderArray')!, item.uuid);
+                  LogUtil.info(TAG,
+                    'NoteContentOverViewComp MenuBuilder onClick, selectedFolderData :' + JSON.stringify(this.selectedFolderData));
                 }
                 // save continue data
                 let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject());
-                AppStorage.SetOrCreate<string>('ContinueNote', continueNote);
+                AppStorage.setOrCreate<string>('ContinueNote', continueNote);
                 LogUtil.info(TAG, 'NoteContentOverViewComp, MenuBuilder, set continue note success');
                 NoteUtil.refreshAll();
               } catch (error) {
-                LogUtil.error(TAG, 'ListItem click error: ' + JSON.stringify(error));
+                LogUtil.error(TAG, 'NoteContentOverViewComp ListItem click error: ' + JSON.stringify(error));
               }
             })
           }, (noteItem: NoteData) => noteItem.uuid)
@@ -519,8 +548,8 @@ export struct NoteContentOverViewComp {
               clearInterval(timeId);
               this.editTitleDialogCtl!.open();
               // save continue data
-              AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus);
-              LogUtil.info(TAG, 'NoteContentComp, set continue section success');
+              AppStorage.setOrCreate<number>('ContinueSection', this.sectionStatus);
+              LogUtil.info(TAG, 'NoteContentOverViewComp, set continue section success');
             })
         }.height(40)
         .width(StyleConstants.PERCENTAGE_100)
@@ -533,10 +562,10 @@ export struct NoteContentOverViewComp {
             .fontColor($r('app.color.modified_time_font_color'))
             .margin({ left: 0 })
           Row() {
-            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'),
+            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.get('AllFolderArray'),
               this.selectedNoteData.folder_uuid)) ==
             folderTextMap.sys_def_myFavorites_uuid ? folderTextMap.sys_def_unClassified_uuid :
-            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'),
+            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.get('AllFolderArray'),
               this.selectedNoteData.folder_uuid)))
               .id(this.isUpdate + '')
               .fontSize(12)
@@ -556,7 +585,7 @@ export struct NoteContentOverViewComp {
           })
           .margin({ left: 8 })
           .borderRadius(16)
-          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray')!, this.selectedNoteData.folder_uuid,
+          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.get('AllFolderArray')!, this.selectedNoteData.folder_uuid,
             SysDefFolderUuid.AllNotes, false))
           .bindMenu(this.MenuBuilder)
         }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
@@ -581,7 +610,6 @@ export struct ToolBarComp {
   @Consume('EditModel') editModel: boolean;
   @Consume('Issave') issave: number;
   controllerShow: webview.WebviewController = new webview.WebviewController();
-  private context = getContext(this);
   noteDataDeleteDialogCtl: CustomDialogController | null = new CustomDialogController({
     builder: DeleteDialog({
       onConfirm: () => {
@@ -595,12 +623,16 @@ export struct ToolBarComp {
   @Consume('AsideWidth') asideWidth: number;
 
   aboutToDisappear() {
+    LogUtil.info(TAG, 'ToolBarComp, aboutToDisappear');
     this.noteDataDeleteDialogCtl = null;
     this.editContentDialogCtl = null;
   }
 
   onDeleteConfirm() {
     try {
+      LogUtil.info(TAG, 'ToolBarComp, onDeleteConfirm selectedFolderData: ' + JSON.stringify(this.selectedFolderData));
+      LogUtil.info(TAG,
+        'ToolBarComp, onDeleteConfirm RecentDeletes: ' + JSON.stringify(SysDefFolderUuid.RecentDeletes));
       if (this.selectedFolderData.uuid != SysDefFolderUuid.RecentDeletes) {
         this.selectedNoteData.is_deleted = Delete.Yes;
         this.selectedNoteData.deleted_time = new Date().getTime();
@@ -615,21 +647,23 @@ export struct ToolBarComp {
         predicatesNote.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid);
         RdbStoreUtil.delete(predicatesNote, null);
       }
+      LogUtil.info(TAG, 'ToolBarComp, onDeleteConfirm, delete note success');
       this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0);
-      this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
+      this.selectedNoteData = NoteUtil.getFirstNoteData(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid)!;
       try {
+        LogUtil.info(TAG, 'ToolBarComp, onDeleteConfirm, set html ' + this.selectedNoteData.content_text);
         this.controllerShow.runJavaScript("RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text! + "')");
       } catch (error) {
-        LogUtil.info(TAG, `setHtml error. code:${JSON.stringify(error.code)},message:${error.message}`);
+        LogUtil.info(TAG, `ToolBarComp setHtml error. code:${JSON.stringify(error.code)},message:${error.message}`);
       }
       this.chooseNote = false;
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject());
-      AppStorage.SetOrCreate<string>('ContinueNote', continueNote);
-      LogUtil.info(TAG, 'NoteContentOverViewComp, set continue note success');
-      AppStorage.SetOrCreate('isUpdate', true);
+      AppStorage.setOrCreate<string>('ContinueNote', continueNote);
+      LogUtil.info(TAG, 'ToolBarComp, set continue note success');
+      AppStorage.setOrCreate('isUpdate', true);
     } catch (error) {
-      LogUtil.error(TAG, 'onDeleteConfirm error: ' + JSON.stringify(error));
+      LogUtil.error(TAG, 'ToolBarComp onDeleteConfirm error: ' + JSON.stringify(error));
     }
   }
 
@@ -661,24 +695,27 @@ export struct ToolBarComp {
         .onClick(() => {
           try {
             if (this.sectionStatus != 1) {
+              LogUtil.info(TAG, 'ToolBarComp zoom, sectionStatus : ' + this.sectionStatus);
               this.lastSectionStatus = this.sectionStatus;
               this.sectionStatus = 1;
               this.asideWidth = 0;
               this.controllerShow.runJavaScript('RICH_EDITOR.setInputEnabled(true)');
+              LogUtil.info(TAG, 'ToolBarComp zoom, runJavaScript : RICH_EDITOR.setInputEnabled(true)');
             } else {
+              LogUtil.info(TAG, 'ToolBarComp zoom, sectionStatus : ' + this.sectionStatus);
               if (this.lastSectionStatus != undefined) {
                 this.asideWidth = 200;
                 // 切换为小屏预览模式
                 this.controllerShow.runJavaScript('RICH_EDITOR.setInputEnabled(false)');
                 this.sectionStatus = this.lastSectionStatus;
                 // 退出全屏时存库
-                LogUtil.info(TAG, 'close note' + this.selectedNoteData.uuid);
+                LogUtil.info(TAG, 'ToolBarComp close note' + this.selectedNoteData.uuid);
                 this.controllerShow.runJavaScript('saveHtmlContent()');
                 //退出键盘
                 inputMethod.getController().stopInputSession();
                 // 清除定时器
                 if (timeId != undefined) {
-                  LogUtil.info(TAG, 'zoom, clearInterval timeId : ' + timeId);
+                  LogUtil.info(TAG, 'ToolBarComp zoom, clearInterval timeId : ' + timeId);
                   clearInterval(timeId);
                 }
               } else {
@@ -687,12 +724,13 @@ export struct ToolBarComp {
             }
             this.editModel = !this.editModel;
             // save continue data
-            AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus);
+            AppStorage.setOrCreate<number>('ContinueSection', this.sectionStatus);
             LogUtil.info(TAG, 'ToolBarComp, set continue section success');
             NoteUtil.refreshAll();
           } catch (error) {
             LogUtil.error(TAG,
-              `Image ${this.sectionStatus == 1 ? 'narrow' : 'zoom'} click failed.code:${JSON.stringify(error.code)},
+              `ToolBarComp  Image ${this.sectionStatus == 1 ? 'narrow' :
+                'zoom'} click failed.code:${JSON.stringify(error.code)},
             message:${JSON.stringify(error.message)}`);
           }
         })
@@ -713,9 +751,10 @@ export struct ToolBarComp {
               .width(24)
               .onClick(() => {
                 try {
+                  LogUtil.info(TAG, 'ToolBarComp, onClick, recover note');
                   this.selectedNoteData.is_deleted = Delete.No;
                   this.selectedNoteData.deleted_time = 0;
-                  let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+                  let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
                   let resource: resourceManager.Resource = {
                     bundleName: 'com.ohos.note',
                     moduleName: 'default',
@@ -725,18 +764,21 @@ export struct ToolBarComp {
                     if (error != null) {
                       LogUtil.error(TAG, 'error is ' + error);
                     } else {
-                      promptAction.showToast({ message: value, duration: 2000 });
+                      this.getUIContext().getPromptAction().showToast({ message: value, duration: 2000 });
                     }
                   });
                   this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0);
                   this.chooseNote = false;
+                  LogUtil.info(TAG, 'ToolBarComp, onClick, recover note , update note to db');
                   // update note to db
                   let predicatesNote = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
                   predicatesNote.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid);
                   RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicatesNote, null);
 
                   this.selectedNoteData =
-                    NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid)!;
+                    NoteUtil.getFirstNoteData(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid)!;
+                  LogUtil.info(TAG,
+                    'ToolBarComp, onClick, recover note, setHtml ' + this.selectedNoteData!.content_text);
                   this.controllerShow.runJavaScript(
                     "RICH_EDITOR.setHtml('" + this.selectedNoteData!.content_text + "')"
                   )
@@ -747,7 +789,7 @@ export struct ToolBarComp {
                   NoteUtil.refreshAll();
                 } catch (error) {
                   LogUtil.error(TAG,
-                    `recover failed.code:${JSON.stringify(error.code)}, message:${JSON.stringify(error.message)}`);
+                    `ToolBarComp recover failed.code:${JSON.stringify(error.code)}, message:${JSON.stringify(error.message)}`);
                 }
               })
           }.width(72)
@@ -760,11 +802,13 @@ export struct ToolBarComp {
                 .onClick(() => {
                   try {
                     // 清单
+                    LogUtil.info(TAG,
+                      'ToolBarComp, onClick, circle_tick1, runJavaScript javascript:RICH_EDITOR.setTodo()');
                     this.controllerShow.runJavaScript('javascript:RICH_EDITOR.setTodo()');
                     // 退出键盘
                     inputMethod.getController().stopInputSession();
                   } catch (error) {
-                    LogUtil.error(TAG, `Image circle_tick1 click failed.code:${JSON.stringify(error.code)},
+                    LogUtil.error(TAG, `ToolBarComp Image circle_tick1 click failed.code:${JSON.stringify(error.code)},
                     message:${JSON.stringify(error.message)}`);
                   }
                 })
@@ -779,6 +823,7 @@ export struct ToolBarComp {
                 .width(24)
                 .onClick(() => {
                   // 退出键盘
+                  LogUtil.info(TAG, 'ToolBarComp, onClick, styles, exit keyboard');
                   inputMethod.getController().stopInputSession();
                   this.editContentDialogCtl!.open();
                 })
@@ -792,32 +837,34 @@ export struct ToolBarComp {
                 .height(24)
                 .width(24)
                 .onClick(async () => {
+                  LogUtil.info(TAG, 'ToolBarComp, onClick, picture_white');
                   let permissionList: Permissions[] = [
                     'ohos.permission.READ_MEDIA',
                     'ohos.permission.WRITE_MEDIA',
                   ];
-                  let context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+                  let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
                   let AtManager = abilityAccessCtrl.createAtManager();
                   await AtManager.requestPermissionsFromUser(context, permissionList).then((data) => {
-                    LogUtil.info(TAG, 'data permissions : ' + data.permissions);
-                    LogUtil.info(TAG, 'data result: ' + data.authResults);
+                    LogUtil.info(TAG, 'ToolBarComp data permissions : ' + data.permissions);
+                    LogUtil.info(TAG, 'ToolBarComp data result: ' + data.authResults);
                     let sum = 0;
                     for (let i = 0; i < data.authResults.length; i++) {
                       sum += data.authResults[i];
                     }
-                    LogUtil.info(TAG, 'request permissions sum: ' + sum);
+                    LogUtil.info(TAG, 'ToolBarComp request permissions sum: ' + sum);
                   }).catch((err: BusinessError) => {
-                    LogUtil.warn(TAG, 'failed to requestPermissionsFromUser : ' + err.code);
+                    LogUtil.warn(TAG, 'ToolBarComp failed to requestPermissionsFromUser : ' + err.code);
                   })
                   // 退出键盘
                   inputMethod.getController().stopInputSession();
-                  LogUtil.info(TAG, 'startAbility start');
+                  LogUtil.info(TAG, 'ToolBarComp startAbility start');
                   await noteContext.startAbilityForResult({
                     parameters: { uri: 'singleselect' },
                     bundleName: 'com.ohos.photos',
                     abilityName: 'com.ohos.photos.MainAbility',
                   })
                     .then((v: common.AbilityResult) => {
+                      LogUtil.info(TAG, 'ToolBarComp startAbility success');
                       try {
                         let want = v['want'];
                         if (want != null && want != undefined) {
@@ -828,22 +875,26 @@ export struct ToolBarComp {
                             imageUri = uri as string;
                           }
                           // 拷贝
+                          LogUtil.info(TAG, 'ToolBarComp, onClick, picture_white, copy image ' + imageUri);
                           if (imageUri != null && imageUri != "") {
                             OperationUtils.copy(imageUri).then((uriPath) => {
                               let path = 'file://' + uriPath;
                               LogUtil.info(TAG, 'image uri is:' + path);
+                              LogUtil.info(TAG,
+                                'ToolBarComp, onClick, picture_white, runJavaScript javascript:RICH_EDITOR.insertImage()');
                               this.controllerShow.runJavaScript(
                                 "javascript:RICH_EDITOR.insertImage('" + path + "')"
                               );
                               this.issave = 1;
                               // 保存笔记信息到数据库
+                              LogUtil.info(TAG, 'ToolBarComp, onClick, picture_white, runJavaScript getHtmlContent()');
                               this.controllerShow.runJavaScript('getHtmlContent()');
                             })
                           }
                         }
                         NoteUtil.refreshAll();
                       } catch (error) {
-                        LogUtil.error(TAG, `startAbilityForResult failed.code:${JSON.stringify(error.code)},
+                        LogUtil.error(TAG, `ToolBarComp startAbilityForResult failed.code:${JSON.stringify(error.code)},
                         message:${JSON.stringify(error.message)}`);
                       }
                     });
@@ -860,10 +911,11 @@ export struct ToolBarComp {
                 .onClick(() => {
                   try {
                     // 退出键盘
+                    LogUtil.info(TAG, 'ToolBarComp, onClick, undo, exit keyboard');
                     inputMethod.getController().stopInputSession();
                     this.controllerShow.runJavaScript('RICH_EDITOR.undo()');
                   } catch (error) {
-                    LogUtil.error(TAG, `Image undo click failed.code:${JSON.stringify(error.code)},
+                    LogUtil.error(TAG, `ToolBarComp Image undo click failed.code:${JSON.stringify(error.code)},
                     message:${JSON.stringify(error.message)}`);
                   }
                 })
@@ -879,10 +931,11 @@ export struct ToolBarComp {
                 .onClick(() => {
                   try {
                     // 退出键盘
+                    LogUtil.info(TAG, 'ToolBarComp, onClick, todo, exit keyboard');
                     inputMethod.getController().stopInputSession();
                     this.controllerShow.runJavaScript('RICH_EDITOR.redo()');
                   } catch (error) {
-                    LogUtil.error(TAG, `Image todo click failed.code:${JSON.stringify(error.code)},
+                    LogUtil.error(TAG, `ToolBarComp Image todo click failed.code:${JSON.stringify(error.code)},
                     message:${JSON.stringify(error.message)}`);
                   }
                 })
@@ -900,14 +953,16 @@ export struct ToolBarComp {
                 .onClick(() => {
                   try {
                     // 保存笔记信息到数据库
+                    LogUtil.info(TAG, 'ToolBarComp, onClick, tick_thin, runJavaScript getHtmlContent()');
                     this.controllerShow.runJavaScript('getHtmlContent()');
+                    LogUtil.info(TAG, 'ToolBarComp, onClick, tick_thin, runJavaScript getBlur()');
                     this.controllerShow.runJavaScript('javascript:RICH_EDITOR.getBlur()');
                     if (this.selectedNoteData.title == '标题' && this.selectedNoteData.content_text == "") {
                       LogUtil.info(TAG, 'note is empty,save note failed');
                     }
                     this.issave = 1;
                   } catch (error) {
-                    LogUtil.error(TAG, `Image tick_thin click failed.code:${JSON.stringify(error.code)},
+                    LogUtil.error(TAG, `ToolBarComp Image tick_thin click failed.code:${JSON.stringify(error.code)},
                     message:${JSON.stringify(error.message)}`);
                   }
                 })
@@ -924,6 +979,7 @@ export struct ToolBarComp {
               .width(24)
               .onClick(() => {
                 try {
+                  LogUtil.info(TAG, 'ToolBarComp, onClick, favorite, favorite note');
                   this.selectedNoteData.is_favorite =
                     (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes);
                   this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0);
@@ -931,26 +987,32 @@ export struct ToolBarComp {
                   let predicatesNote = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
                   predicatesNote.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid);
                   RdbStoreUtil.update(this.selectedNoteData.toNoteObject(), predicatesNote, null);
+                  LogUtil.info(TAG,
+                    'ToolBarComp, onClick, favorite, selectedFolderData ' + JSON.stringify(this.selectedFolderData));
+                  LogUtil.info(TAG,
+                    'ToolBarComp, onClick, favorite, MyFavorites ' + JSON.stringify(SysDefFolderUuid.MyFavorites));
                   if (this.selectedFolderData.uuid === SysDefFolderUuid.MyFavorites) {
                     this.selectedNoteData =
                       NoteUtil.getFirstNoteData(AppStorage.Get('AllNoteArray')!, SysDefFolderUuid.MyFavorites)!;
                     try {
+                      LogUtil.info(TAG, `ToolBarComp, favorite, MyFavorites, setHtml` +
+                      JSON.stringify(this.selectedNoteData.content_text));
                       this.controllerShow.runJavaScript(
                         "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
                       );
-                      LogUtil.info(TAG, `setHtml success`);
+                      LogUtil.info(TAG, `ToolBarComp setHtml success`);
                     } catch (error) {
-                      LogUtil.error(TAG, `setHtml failed.code:${JSON.stringify(error.code)},
+                      LogUtil.error(TAG, `ToolBarComp setHtml failed.code:${JSON.stringify(error.code)},
                         message:${JSON.stringify(error.message)}`);
                     }
                     // save continue data
                     let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject());
-                    AppStorage.SetOrCreate<string>('ContinueNote', continueNote);
+                    AppStorage.setOrCreate<string>('ContinueNote', continueNote);
                     LogUtil.info(TAG, 'ToolBarComp, set continue note success');
                   }
                   NoteUtil.refreshAll();
                 } catch (error) {
-                  LogUtil.error(TAG, 'favorite error: ' + JSON.stringify(error));
+                  LogUtil.error(TAG, 'ToolBarComp favorite error: ' + JSON.stringify(error));
                 }
               })
             Image($r('app.media.delete'))

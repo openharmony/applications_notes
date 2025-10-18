@@ -16,7 +16,7 @@
 import UIAbility from '@ohos.app.ability.UIAbility';
 import deviceInfo from '@ohos.deviceInfo';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
-import fileio from '@ohos.fileio';
+import fileio from '@ohos.file.fs';
 import inputMethod from '@ohos.inputMethod';
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil';
 import display from '@ohos.display';
@@ -25,22 +25,22 @@ import util from '@ohos.util';
 import common from '@ohos.app.ability.common';
 import relationalStore from '@ohos.data.relationalStore';
 
-AppStorage.SetOrCreate<relationalStore.RdbStore>('rdbStore', undefined);
+AppStorage.setOrCreate<relationalStore.RdbStore>('rdbStore', undefined);
 
 export default class MainAbility extends UIAbility {
   private Tag = 'MainAbility_Tablet';
 
   onCreate(want, launchParam) {
 
-    AppStorage.SetOrCreate('context', this.context);
+    AppStorage.setOrCreate('context', this.context);
     LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason + ", deviceType" + deviceInfo.deviceType);
     if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
-      AppStorage.SetOrCreate<boolean>('Expand', false);
-      AppStorage.SetOrCreate<boolean>('Choose', true);
+      AppStorage.setOrCreate<boolean>('Expand', false);
+      AppStorage.setOrCreate<boolean>('Choose', true);
     }
     if (launchParam.launchReason == AbilityConstant.LaunchReason.CONTINUATION) {
       // 设置迁移标记
-      AppStorage.SetOrCreate<boolean>('IsContinue', true);
+      AppStorage.setOrCreate<boolean>('IsContinue', true);
       // 获取对端的迁移数据
       let Search: boolean = want.parameters["Search"];
       let continueNote: string = want.parameters["ContinueNote"];
@@ -48,24 +48,24 @@ export default class MainAbility extends UIAbility {
       let scrollTopPercent: number = want.parameters["ScrollTopPercent"];
       let isFocusOnSearch: boolean = want.parameters["isFocusOnSearch"];
       LogUtil.info(this.Tag, " continueSection : " + continueSection);
-      AppStorage.SetOrCreate<boolean>('Search', Search);
-      AppStorage.SetOrCreate<string>('ContinueNote', continueNote);
-      AppStorage.SetOrCreate<number>('ContinueSection', continueSection);
+      AppStorage.setOrCreate<boolean>('Search', Search);
+      AppStorage.setOrCreate<string>('ContinueNote', continueNote);
+      AppStorage.setOrCreate<number>('ContinueSection', continueSection);
       // 使用新的key保存数据，防止迁移过来的数据在使用前被本地操作覆盖
-      AppStorage.SetOrCreate<number>('remoteScrollTopPercent', scrollTopPercent);
-      AppStorage.SetOrCreate<boolean>('isRemoteFocusOnSearch', isFocusOnSearch);
+      AppStorage.setOrCreate<number>('remoteScrollTopPercent', scrollTopPercent);
+      AppStorage.setOrCreate<boolean>('isRemoteFocusOnSearch', isFocusOnSearch);
       // 来自手机的迁移
       let continueChoose: boolean = want.parameters["ContinueChoose"];
       if (continueChoose) {
         LogUtil.info(this.Tag, " continue from phone");
-        AppStorage.SetOrCreate<boolean>('ContinueFromPhone', true);
+        AppStorage.setOrCreate<boolean>('ContinueFromPhone', true);
       } else {
-        AppStorage.SetOrCreate<boolean>('ContinueFromTablet', true);
+        AppStorage.setOrCreate<boolean>('ContinueFromTablet', true);
         LogUtil.error(this.Tag, " continue from tablet");
       }
       this.context.restoreWindowStage(null);
     }
-    AppStorage.SetOrCreate<common.UIAbilityContext>('noteContext', this.context);
+    AppStorage.setOrCreate<common.UIAbilityContext>('noteContext', this.context);
 
   }
 
@@ -75,6 +75,7 @@ export default class MainAbility extends UIAbility {
 
   onWindowStageCreate(windowStage) {
     windowStage.getMainWindow((err, data) => {
+      LogUtil.info(this.Tag, " getMainWindow");
       let windowClass = data;
       try {
         windowClass.on('windowSizeChange', (data) => {
@@ -133,27 +134,27 @@ export default class MainAbility extends UIAbility {
   onContinue(wantParam: { [key: string]: any }) {
     LogUtil.info(this.Tag, " onContinue");
     // 获取本端的迁移数据
-    let Search = AppStorage.Get<boolean>('Search');
-    let continueNote = AppStorage.Get<string>('ContinueNote');
+    let Search = AppStorage.get<boolean>('Search');
+    let continueNote = AppStorage.get<string>('ContinueNote');
     if (continueNote == undefined || continueNote == null) {
       LogUtil.info(this.Tag, " onContinue, continueNote is error, default [0]");
-      continueNote = JSON.stringify(AppStorage.Get('AllNoteArray')[0].toNoteObject());
+      continueNote = JSON.stringify(AppStorage.get('AllNoteArray')[0].toNoteObject());
     }
 
-    let continueSection = AppStorage.Get<number>('ContinueSection');
+    let continueSection = AppStorage.get<number>('ContinueSection');
     if (continueSection == undefined || continueSection == null) {
       LogUtil.info(this.Tag, " onContinue, continueSection is error, default 3");
       continueSection = 3;
     }
     LogUtil.info(this.Tag, " onContinue, continueSection : " + continueSection);
 
-    let scrollTopPercent = AppStorage.Get<number>('ScrollTopPercent');
+    let scrollTopPercent = AppStorage.get<number>('ScrollTopPercent');
     if (scrollTopPercent == undefined || scrollTopPercent == null) {
       LogUtil.info(this.Tag, " onContinue, scrollTopPercent is error, default 0");
       scrollTopPercent = 0;
     }
 
-    let isFocusOnSearch = AppStorage.Get<boolean>('isFocusOnSearch');
+    let isFocusOnSearch = AppStorage.get<boolean>('isFocusOnSearch');
     if (isFocusOnSearch == undefined || isFocusOnSearch == null) {
       LogUtil.info(this.Tag, " onContinue, isFocusOnSearch is error, default true");
       isFocusOnSearch = true;
@@ -185,6 +186,7 @@ export default class MainAbility extends UIAbility {
   }
 
   getSrcFromHtml(html: string): any {
+    LogUtil.info(this.Tag, " getSrcFromHtml "+ html);
     let srcArray = [];
     if (html == undefined || html == null || html == "") {
       return srcArray;
@@ -231,15 +233,15 @@ export default class MainAbility extends UIAbility {
     let screenDpi = null;
     displayClass = display.getDefaultDisplaySync();
     screenDpi = displayClass.densityDPI;
-    AppStorage.SetOrCreate('dpi', screenDpi);
+    AppStorage.setOrCreate('dpi', screenDpi);
     let windowWidth = data / (screenDpi / 160);
     LogUtil.debug(this.Tag, " screenBreakPoints windowWidth: " + windowWidth);
     if (windowWidth >= 320 && windowWidth < 520 || windowWidth < 320) {
-      AppStorage.SetOrCreate('breakPoint', 'sm');
+      AppStorage.setOrCreate('breakPoint', 'sm');
     } else if (windowWidth >= 520 && windowWidth < 840) {
-      AppStorage.SetOrCreate('breakPoint', 'md');
+      AppStorage.setOrCreate('breakPoint', 'md');
     } else if (windowWidth >= 840) {
-      AppStorage.SetOrCreate('breakPoint', 'lg');
+      AppStorage.setOrCreate('breakPoint', 'lg');
     }
   }
 }
