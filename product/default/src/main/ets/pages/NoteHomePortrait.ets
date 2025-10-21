@@ -25,8 +25,8 @@ import NoteData from '@ohos/utils/src/main/ets/default/model/databaseModel/NoteD
 @Component
 export struct NoteHomePortraitComp {
   // 当前文件夹、笔记、分栏
-  @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')!;
-  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')!;
+  @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.get('Folder')!;
+  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.get('Note')!;
   @Provide('SectionStatus') sectionStatus: number = 1; // 表示分栏状态， 3表示三分栏， 2表示二分栏，1表示一分栏
   @Provide('LastSectionStatus') lastSectionStatus: number = 1; // 记录分栏上一次的状态
   @Provide('SelectedColor') selectedColor: string = circleColorArray[0];
@@ -34,7 +34,7 @@ export struct NoteHomePortraitComp {
 
   // 分栏状态
   @Provide('ExpandStatus') expandStatus: boolean = false // 笔记本折叠展开状态
-  @Provide('ChooseNote') chooseNote: boolean = AppStorage.Get<boolean>('Choose')!; // 是否选择笔记进行打开
+  @Provide('ChooseNote') chooseNote: boolean = AppStorage.get<boolean>('Choose')!; // 是否选择笔记进行打开
 
   @Provide('Search') search: boolean = false // 是否处于搜索状态
   @Provide('SearchResultList') searchResultList: NoteData[] = [] // 搜索得到的笔记列表
@@ -83,5 +83,13 @@ export struct NoteHomePortraitComp {
 
   aboutToDisappear(): void {
     LogUtil.info(this.TAG, "aboutToDisappear")
+  }
+
+  onPageShow(): void {
+    LogUtil.info(this.TAG, "onPageShow")
+  }
+
+  onPageHide(): void {
+    LogUtil.info(this.TAG, "onPageHide")
   }
 }

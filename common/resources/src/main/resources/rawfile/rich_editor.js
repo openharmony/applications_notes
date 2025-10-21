@@ -66,6 +66,10 @@ RICH_EDITOR.setUnderline = function () {
   document.execCommand('underline', false, null);
 };
 
+RICH_EDITOR.setInputEnabled = function (enabled) {
+  console.info(enabled);
+}
+
 RICH_EDITOR.getListStyle = function () {
   let selection;
   let type;
