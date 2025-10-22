@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import fileio from '@ohos.file.fs'
+import fileio from '@ohos.fileio'
 import { NoteHomeComp } from './NoteHome'
 import { NoteHomePortraitComp } from './NoteHomePortrait'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
