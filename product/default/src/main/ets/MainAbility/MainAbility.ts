@@ -16,7 +16,7 @@
 import UIAbility from '@ohos.app.ability.UIAbility';
 import deviceInfo from '@ohos.deviceInfo';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
-import fileio from '@ohos.file.fs';
+import fileio from '@ohos.fileio';
 import inputMethod from '@ohos.inputMethod';
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil';
 import display from '@ohos.display';
