@@ -21,6 +21,7 @@ import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil
 import inputMethod from '@ohos.inputMethod'
 import webview from '@ohos.web.webview';
 import common from '@ohos.app.ability.common';
+import { emitter } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
@@ -56,6 +57,7 @@ struct NoteContentHome {
       if (deviceInfo.deviceType !== 'phone' && deviceInfo.deviceType !== 'default') {
         inputMethod.getController().stopInputSession();
       }
+      emitter.emit('backToHome');
     } catch (error) {
       LogUtil.info(this.TAG, 'onBackPress error')
     }

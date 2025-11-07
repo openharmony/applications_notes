@@ -24,6 +24,7 @@ import window from '@ohos.window';
 import util from '@ohos.util';
 import common from '@ohos.app.ability.common';
 import relationalStore from '@ohos.data.relationalStore';
+import { Configuration } from '@ohos.app.ability.Configuration';
 
 AppStorage.setOrCreate<relationalStore.RdbStore>('rdbStore', undefined);
 
@@ -33,7 +34,8 @@ export default class MainAbility extends UIAbility {
   onCreate(want, launchParam) {
 
     AppStorage.setOrCreate('context', this.context);
-    LogUtil.info(this.Tag, " onCreate, launchReason is " + launchParam.launchReason + ", deviceType" + deviceInfo.deviceType);
+    LogUtil.info(this.Tag,
+      " onCreate, launchReason is " + launchParam.launchReason + ", deviceType" + deviceInfo.deviceType);
     if (deviceInfo.deviceType === 'phone' || deviceInfo.deviceType === 'default') {
       AppStorage.setOrCreate<boolean>('Expand', false);
       AppStorage.setOrCreate<boolean>('Choose', true);
@@ -79,6 +81,7 @@ export default class MainAbility extends UIAbility {
       let windowClass = data;
       try {
         windowClass.on('windowSizeChange', (data) => {
+          LogUtil.info(this.Tag, " --------------- windowSizeChange ---------------");
           this.screenBreakPoints(data.width);
         })
         // 窗口规避区域
@@ -105,6 +108,7 @@ export default class MainAbility extends UIAbility {
       }
     })
     window.getLastWindow(this.context, (err, data) => {
+      LogUtil.info(this.Tag, " --------------- getLastWindow ----------------");
       if (data && data.getWindowProperties()) {
         let windowWidth = data.getWindowProperties().windowRect.width;
         LogUtil.info(this.Tag, " getLastWindow：" + windowWidth);
@@ -122,13 +126,37 @@ export default class MainAbility extends UIAbility {
   }
 
   onForeground() {
-    LogUtil.info(this.Tag, " onForeground");
+    LogUtil.info(this.Tag, " ------------- onForeground ------------- ");
   }
 
   onBackground() {
-    LogUtil.info(this.Tag, " onBackground");
+    LogUtil.info(this.Tag, " ------------- onBackground ------------- ");
     // 退出键盘
     inputMethod.getController().stopInputSession();
+  }
+
+  onWillBackground(): void {
+    LogUtil.info(this.Tag, " ------------- onWillBackground ------------- ");
+  }
+
+  onDidBackground(): void {
+    LogUtil.info(this.Tag, " ------------- onDidBackground ------------- ");
+  }
+
+  onWillForeground(): void {
+    LogUtil.info(this.Tag, " ------------- onWillForeground ------------- ");
+  }
+
+  onDidForeground(): void {
+    LogUtil.info(this.Tag, " ------------- onDidForeground ------------- ");
+  }
+
+  onConfigurationUpdate(newConfig: Configuration): void {
+    LogUtil.info(this.Tag, " ------------- onConfigurationUpdate : " + JSON.stringify(newConfig) + " ------------- ");
+  }
+
+  onMemoryLevel(level: AbilityConstant.MemoryLevel): void {
+    LogUtil.info(this.Tag, " ------------- onMemoryLevel : " + JSON.stringify(level) + " ------------- ");
   }
 
   onContinue(wantParam: { [key: string]: any }) {
@@ -186,7 +214,7 @@ export default class MainAbility extends UIAbility {
   }
 
   getSrcFromHtml(html: string): any {
-    LogUtil.info(this.Tag, " getSrcFromHtml "+ html);
+    LogUtil.info(this.Tag, " getSrcFromHtml " + html);
     let srcArray = [];
     if (html == undefined || html == null || html == "") {
       return srcArray;
@@ -235,7 +263,7 @@ export default class MainAbility extends UIAbility {
     screenDpi = displayClass.densityDPI;
     AppStorage.setOrCreate('dpi', screenDpi);
     let windowWidth = data / (screenDpi / 160);
-    LogUtil.debug(this.Tag, " screenBreakPoints windowWidth: " + windowWidth);
+    LogUtil.info(this.Tag, " screenBreakPoints windowWidth: " + windowWidth);
     if (windowWidth >= 320 && windowWidth < 520 || windowWidth < 320) {
       AppStorage.setOrCreate('breakPoint', 'sm');
     } else if (windowWidth >= 520 && windowWidth < 840) {

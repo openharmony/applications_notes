@@ -44,6 +44,7 @@ import common from '@ohos.app.ability.common';
 import window from '@ohos.window';
 import { wantAgent, WantAgent } from '@kit.AbilityKit';
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit';
+import { emitter } from '@kit.BasicServicesKit'
 
 let time_id: number = 0;
 let noteContext = AppStorage.get<common.UIAbilityContext>('noteContext')!;
@@ -143,7 +144,6 @@ export struct NoteContentCompPortrait {
       if (this.selectedNoteData.content_text === html) {
         return;
       }
-      ;
       this.selectedNoteData.content_text = html;
       this.selectedNoteData.modified_time = new Date().getTime();
       let predicatesNote = RdbStoreUtil.getRdbPredicates(TableName.NoteTable);
@@ -423,7 +423,10 @@ export struct NoteContentCompPortrait {
   }
 
   aboutToAppear(): void {
-    this.isClickBack = false
+    this.isClickBack = false;
+    emitter.on('backToHome', () => {
+      clearInterval(time_id);
+    })
     LogUtil.info(TAG, 'aboutToAppear');
     window.getLastWindow(this.getUIContext().getHostContext()).then(currentWindow => {
       currentWindow.setWindowLayoutFullScreen(true);
@@ -432,10 +435,10 @@ export struct NoteContentCompPortrait {
 
   aboutToDisappear(): void {
     this.isClickBack = true
-    clearInterval(time_id)
-    NoteUtil.refreshAll()
+    emitter.off('backToHome');
+    NoteUtil.refreshAll();
     LogUtil.info(TAG, 'aboutToDisappear');
-    this.editContentDialogCtl = null
+    this.editContentDialogCtl = null;
   }
 }
 

@@ -25,9 +25,11 @@ let noteContext = AppStorage.Get<common.UIAbilityContext>('noteContext')!;
 
 export class OperationUtils {
   async copy(uri: string): Promise<string | undefined> {
+    LogUtil.info(TAG, 'copy start ：'+ uri);
     let imagePath: string = '';
     try {
       let context = noteContext;
+      LogUtil.info(TAG, 'getFileAssetById start ：'+ uri);
       let fileAsset = await this.getFileAssetById(uri, context);
       if (fileAsset == null || fileAsset == undefined) {
         LogUtil.warn(TAG, "Failed to get fileAsset");
@@ -110,7 +112,7 @@ export class OperationUtils {
   }
 
   async getFileAssetById(imagePath: string, context: common.UIAbilityContext) {
-    LogUtil.info(TAG, 'getFileAssetById', imagePath);
+    LogUtil.info(TAG, 'getFileAssetById：', imagePath);
     let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
     let fetchOpt: photoAccessHelper.FetchOptions = {
       fetchColumns: [],

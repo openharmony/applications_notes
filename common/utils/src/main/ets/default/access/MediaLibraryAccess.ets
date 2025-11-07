@@ -33,7 +33,7 @@ export class MediaLibraryAccess {
     try {
       // 通过Uri拷贝图片到指定指定的包路径下
       // 1、获取本地路径
-
+      LogUtil.info(TAG, 'getFirstObject start: '+JSON.stringify(fetchOpt));
       let fileResult = await photoAccessHelper.getPhotoAccessHelper(context).getAssets(fetchOpt)
       if (fileResult != undefined) {
         album.count = fileResult.getCount();

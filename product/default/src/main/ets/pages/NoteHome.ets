@@ -42,10 +42,14 @@ export struct NoteHomeComp {
   @Provide('SelectedAll') selectedAll: boolean = false
   @Provide('EditModel') editModel: boolean = false //编辑模式：临时方案
   @Provide('Issave') issave: number = 0
-  @StorageLink('breakPoint') breakPoints: string = 'lg'
+  @StorageLink('breakPoint') @Watch('onBreakPoints') breakPoints: string = 'lg'
   controllerShow: webview.WebviewController = new webview.WebviewController();
   TAG = "NoteHomeComp_Tablet"
   @Provide('AsideWidth') asideWidth: number = 200
+
+  onBreakPoints(){
+    LogUtil.info(this.TAG, "onBreakPoints : "+this.breakPoints);
+  }
 
   build() {
     Flex({ justifyContent: FlexAlign.Start }) {
