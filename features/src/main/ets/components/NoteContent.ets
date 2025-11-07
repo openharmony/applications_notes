@@ -37,6 +37,7 @@ import inputMethod from '@ohos.inputMethod';
 import { folderTextMap } from '@ohos/utils/src/main/ets/default/model/NoteBaseData'
 import webview from '@ohos.web.webview';
 import common from '@ohos.app.ability.common';
+import { emitter } from '@kit.BasicServicesKit'
 
 const TAG: string = 'NoteContent';
 
@@ -267,13 +268,16 @@ export struct NoteContent {
 
   aboutToAppear(): void {
     LogUtil.info(TAG, "aboutToAppear")
+    emitter.on('backToHome', () => {
+      clearInterval(timeID);
+    })
   }
 
   aboutToDisappear(): void {
-    AppStorage.Set("refreshCurrentNote", true)
-    NoteUtil.refreshAll()
-    clearInterval(timeID)
-    LogUtil.info(TAG, "aboutToDisappear")
+    AppStorage.set("refreshCurrentNote", true);
+    emitter.off('backToHome');
+    NoteUtil.refreshAll();
+    LogUtil.info(TAG, "aboutToDisappear");
   }
 }
 

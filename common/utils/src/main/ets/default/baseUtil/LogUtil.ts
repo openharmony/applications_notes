@@ -12,13 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import hilog from '@ohos.hilog'
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'SampleNote';
 
 export class LogUtil {
   private static readonly IS_DEBUG_ON: boolean = false;
   private static readonly CONTACTS_DOMAIN: number = 0x0927;
   private static readonly SLASH: string = "/";
   private static readonly COLON: string = ": ";
+
   constructor() {
   }
 
@@ -28,21 +31,21 @@ export class LogUtil {
 
   static debug(tag: string, msg: string, ...args: any[]) {
     if (this.IS_DEBUG_ON) {
-      hilog.info(this.CONTACTS_DOMAIN, this.prefix(tag), msg, args);
+      hilog.info(this.CONTACTS_DOMAIN, TAG, this.prefix(tag)+ msg, args);
     } else {
-      hilog.debug(this.CONTACTS_DOMAIN, this.prefix(tag), msg, args);
+      hilog.debug(this.CONTACTS_DOMAIN, TAG, this.prefix(tag)+ msg, args);
     }
   }
 
   static info(tag: string, msg: string, ...args: any[]) {
-    hilog.info(this.CONTACTS_DOMAIN, this.prefix(tag), msg, args);
+    hilog.info(this.CONTACTS_DOMAIN, TAG, this.prefix(tag)+ msg, args);
   }
 
   static warn(tag: string, msg: string, ...args: any[]) {
-    hilog.warn(this.CONTACTS_DOMAIN, this.prefix(tag), msg, args);
+    hilog.warn(this.CONTACTS_DOMAIN, TAG, this.prefix(tag)+ msg, args);
   }
 
   static error(tag: string, msg: string, ...args: any[]) {
-    hilog.error(this.CONTACTS_DOMAIN, this.prefix(tag), msg, args);
+    hilog.error(this.CONTACTS_DOMAIN, TAG, this.prefix(tag)+ msg, args);
   }
 }
