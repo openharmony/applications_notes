@@ -80,10 +80,11 @@ export default class MainAbility extends UIAbility {
       LogUtil.info(this.Tag, " getMainWindow");
       let windowClass = data;
       try {
-        windowClass.on('windowSizeChange', (data) => {
-          LogUtil.info(this.Tag, " --------------- windowSizeChange ---------------");
-          this.screenBreakPoints(data.width);
-        })
+        // 窗口尺寸改变时改变页面布局，可能导致freeze，暂时注释代码进行规避，验证freeze问题后删除。
+        // windowClass.on('windowSizeChange', (data) => {
+        //   LogUtil.info(this.Tag, " --------------- windowSizeChange ---------------");
+        //   this.screenBreakPoints(data.width);
+        // })
         // 窗口规避区域
         windowClass.on('avoidAreaChange', ({ type, area }) => {
           if (type === window.AvoidAreaType.TYPE_SYSTEM) {
