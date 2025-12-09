@@ -301,7 +301,7 @@ export class NoteUtil {
       initContent = inputBuffer.toString('base64');
     }
     return initContent;
-  };
+  }
 }
 
 let noteUtil = new NoteUtil();

@@ -69,96 +69,93 @@ abstract class BasicDataSource<T> implements IDataSource {
 
   public getData(index: number): T | void {
     LogUtil.info(TAG, 'getDataindex: ' + index);
-  };
+  }
 
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
       this.listeners.push(listener);
     }
-    ;
-  };
+  }
 
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
     if (pos >= 0) {
       this.listeners.splice(pos, 1);
     }
-    ;
-  };
+  }
 
   notifyDataReload(): void {
     this.listeners.forEach((listener: DataChangeListener) => {
       listener.onDataReloaded();
     });
-  };
+  }
 
   notifyDataAdd(index: number): void {
     this.listeners.forEach((listener: DataChangeListener) => {
       listener.onDataAdd(index);
     });
-  };
+  }
 
   notifyDataChange(index: number): void {
     this.listeners.forEach((listener: DataChangeListener) => {
       listener.onDataChange(index);
     });
-  };
+  }
 
   notifyDataDelete(index: number): void {
     this.listeners.forEach((listener: DataChangeListener) => {
       listener.onDataDelete(index);
     });
-  };
+  }
 
   notifyDataMove(from: number, to: number): void {
     this.listeners.forEach((listener: DataChangeListener) => {
       listener.onDataMove(from, to);
     });
-  };
+  }
 }
-;
 
 class noteListData extends BasicDataSource<NoteData> {
   private noteList: Array<NoteData> = [];
 
   public totalCount(): number {
     return this.noteList.length;
-  };
+  }
 
   public getData(index: number): NoteData {
     LogUtil.info(TAG, 'getData, index=' + index);
     return this.noteList[index];
-  };
+  }
 
   public addData(index: number, data: NoteData): void {
     this.noteList.splice(index, 0, data);
     this.notifyDataAdd(index);
-  };
+  }
 
   public pushData(data: NoteData): void {
     this.noteList.push(data);
     this.notifyDataAdd(this.noteList.length - 1);
-  };
+  }
 
   // 查找列表中对象的index
   public indexOf(data: NoteData): number {
     LogUtil.info(TAG, `indexOf data , id = ${data.id} , name = ${data.title}`);
     return this.noteList.indexOf(data);
-  };
+  }
 
   // 删除列表中处于index位置的对象
   public deleteDataByIndex(index: number): void {
     LogUtil.info(TAG, `delete data , index = ${index}}`);
     this.noteList.splice(index, 1);
     this.notifyDataDelete(index);
-  };
+  }
 
   // 删除列表中的对象
   public deleteData(data: NoteData): void {
     LogUtil.info(TAG, `delete data , data = ${data.id}}`);
     let index = this.indexOf(data);
     this.deleteDataByIndex(index);
-  };
+  }
 
   // 修改列表中所有对象
   public modifyAllData(data: NoteData[]): void {
@@ -167,7 +164,6 @@ class noteListData extends BasicDataSource<NoteData> {
     this.notifyDataReload();
   }
 }
-;
 
 // Note list component
 @Component
@@ -559,7 +555,6 @@ export struct NoteItemListComp {
       this.setNoteListLazy()
       return;
     }
-    ;
     SearchModel.search(NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid),
       this.inputKeyword)
       .then((result: NoteData[]) => {
