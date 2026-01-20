@@ -64,15 +64,16 @@ export struct NoteHomePortraitComp {
           .backgroundColor(Color.Black)
           .opacity(0.2)
           .transition({ opacity: 0 })
+        //Folder list display area
+        Column() {
+          FolderListComp()
+        }
+        .width(200)
+        .height(StyleConstants.PERCENTAGE_100)
+        .position({ x: 0, y: 0 })
+        .translate({ x: this.expandStatus ? 0 : '-200', y: 0 })
       }
-      //Folder list display area
-      Column() {
-        FolderListComp()
-      }
-      .width(200)
-      .height(StyleConstants.PERCENTAGE_100)
-      .position({ x: 0, y: 0 })
-      .translate({ x: this.expandStatus ? 0 : '-200', y: 0 })
+
     }
     .width(StyleConstants.PERCENTAGE_100).height(StyleConstants.PERCENTAGE_100)
   }

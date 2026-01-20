@@ -24,6 +24,7 @@ RICH_EDITOR.setHtml = function (contents) {
   }
   let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
   if (base64regex.test(contents)) {
+    console.log('setHtml:'+decodeURIComponent(escape(atob(contents))));
     RICH_EDITOR.editor.innerHTML = decodeURIComponent(escape(atob(contents)));
   } else {
     RICH_EDITOR.editor.innerHTML = contents;
@@ -392,6 +393,7 @@ function getHtmlContent() {
   console.log('getHtmlContent');
   let htmlString = RICH_EDITOR.getHtml();
   let imgName = getImagePathFromContent(htmlString);
+  console.log('getHtmlContent:'+htmlString)
   htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
   callBackToApp.callbackImagePath(imgName);
   let str = callBackToApp.callbackhtml(htmlString);

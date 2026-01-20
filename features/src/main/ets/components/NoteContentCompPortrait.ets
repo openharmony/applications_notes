@@ -139,6 +139,7 @@ export struct NoteContentCompPortrait {
 
   noteContent: NoteContentType = {
     callbackhtml: (html) => {
+      LogUtil.info(TAG, 'callbackhtml: '+html);
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData?.uuid);
       this.selectedNoteData.content_text = NoteUtil.contrastInitType(this.selectedNoteData.content_text);
       if (this.selectedNoteData.content_text === html) {
@@ -351,13 +352,7 @@ export struct NoteContentCompPortrait {
             })
             .onPageEnd((e) => {
               try {
-                if (this.dpi <= 240) {
-                  this.controllerShow.runJavaScript('changeSizeToRk()');
-                } else if (this.dpi <= 320 && this.dpi > 240) {
-                  this.controllerShow.runJavaScript('changeSizeToPhone()');
-                } else {
-                  this.controllerShow.runJavaScript('changeSizeToTablet()');
-                }
+                this.controllerShow.runJavaScript('changeSizeToRk()');
                 LogUtil.info(TAG, 'finish loadurl');
                 let self = this;
                 LogUtil.info(TAG, 'onPageEnd setHtml start');
@@ -548,10 +543,10 @@ export struct NoteContentOverViewComp {
             .padding({ top: 4, bottom: 4 })
             .fontColor($r('app.color.modified_time_font_color'))
           Row() {
-            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'),
+            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.get('AllFolderArray'),
               this.selectedNoteData?.folder_uuid)) ==
             folderTextMap.sys_def_myFavorites_uuid ? folderTextMap.sys_def_unClassified_uuid :
-            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'),
+            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.get('AllFolderArray'),
               this.selectedNoteData?.folder_uuid)))
               .id(this.isUpdate + '')
               .fontColor($r('app.color.folder_color_99182431'))

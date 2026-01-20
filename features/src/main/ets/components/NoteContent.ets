@@ -99,7 +99,7 @@ export struct NoteContent {
     callbackhtml: (html: string) => {
       LogUtil.info(TAG, 'note uuid is:' + this.selectedNoteData.uuid)
       this.selectedNoteData.content_text = NoteUtil.contrastInitType(this.selectedNoteData.content_text);
-      if (this.selectedNoteData.content_text === html ) {
+      if (this.selectedNoteData.content_text === html) {
         return;
       }
       this.selectedNoteData.content_text = html
@@ -186,8 +186,12 @@ export struct NoteContent {
 
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
-      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
-        alignItems: ItemAlign.Start, alignContent: FlexAlign.SpaceAround }) {
+      Flex({
+        direction: FlexDirection.Column,
+        wrap: FlexWrap.NoWrap,
+        alignItems: ItemAlign.Start,
+        alignContent: FlexAlign.SpaceAround
+      }) {
         Column() {
           ToolBarComp({ controllerShow: this.controllerShow })
         }.margin({ left: 24, right: 24 })
@@ -200,20 +204,12 @@ export struct NoteContent {
             .javaScriptProxy({
               object: this.noteContent,
               name: "callBackToApp", // html-->  name.method
-              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath", "callbackGetSize"],
+              methodList: ["callbackhtml", "callbackScheduledSave", "callbackPasteImage", "callbackImagePath",
+                "callbackGetSize"],
               controller: this.controllerShow
             })
             .onPageEnd((e) => {
-              if (this.dpi <= 240) {
-                this.controllerShow.runJavaScript("changeSizeToRk()")
-              } else if (this.dpi <= 320 && this.dpi > 240) {
-                this.controllerShow.runJavaScript("changeSizeToPhone()")
-              } else {
-                this.controllerShow.runJavaScript("changeSizeToTablet()")
-              }
-              if (AppStorage.Get('breakPoint') !== 'sm') {
-                this.controllerShow.runJavaScript("hiddenButton()")
-              }
+              this.controllerShow.runJavaScript("changeSizeToRk()")
               LogUtil.info(TAG, "finish loadurl")
               if (this.selectedNoteData) {
                 let self = this
@@ -289,9 +285,11 @@ export struct ToolBarComp {
   @Consume('EditModel') editModel: boolean
   controllerShow: webview.WebviewController = new webview.WebviewController();
   editContentDialogCtl: CustomDialogController | null = new CustomDialogController({
-    builder: EditContentDialog({ confirm: (newTitle: string) => {
-      this.confirm(newTitle);
-    } }),
+    builder: EditContentDialog({
+      confirm: (newTitle: string) => {
+        this.confirm(newTitle);
+      }
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: true,
     customStyle: true,
@@ -306,8 +304,12 @@ export struct ToolBarComp {
   }
 
   build() {
-    Flex({ direction: FlexDirection.Row, wrap: FlexWrap.NoWrap,
-      justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+    Flex({
+      direction: FlexDirection.Row,
+      wrap: FlexWrap.NoWrap,
+      justifyContent: FlexAlign.SpaceBetween,
+      alignItems: ItemAlign.Center
+    }) {
       Image($r('app.media.narrow'))
         .height(24)
         .width(24)
@@ -334,11 +336,13 @@ export struct ToolBarComp {
 
       if (this.editModel == false) {
         Row({ space: StyleConstants.SPACE_24 }) {
-          Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') : $r('app.media.favorite_cancel'))
+          Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') :
+            $r('app.media.favorite_cancel'))
             .height(24).width(24)
             .onClick(() => {
               try {
-                this.selectedNoteData.is_favorite = (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
+                this.selectedNoteData.is_favorite =
+                  (this.selectedNoteData.is_favorite == Favorite.Yes ? Favorite.No : Favorite.Yes)
                 // update note to db
                 let predicates_note = RdbStoreUtil.getRdbPredicates(TableName.NoteTable)
                 predicates_note.equalTo(NoteTableColumn.Uuid, this.selectedNoteData.uuid)
@@ -485,9 +489,11 @@ export struct NoteContentOverViewComp {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('isUpdate') isUpdate: boolean = false
   editTitleDialogCtl: CustomDialogController | null = new CustomDialogController({
-    builder: EditTitleDialog({ confirm: (newTitle: string) => {
-      this.confirm(newTitle);
-    } }),
+    builder: EditTitleDialog({
+      confirm: (newTitle: string) => {
+        this.confirm(newTitle);
+      }
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
@@ -510,7 +516,8 @@ export struct NoteContentOverViewComp {
     NoteUtil.refreshAll()
   }
 
-  @Builder MenuBuilder() {
+  @Builder
+  MenuBuilder() {
     Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
       List() {
         ForEach(this.AllFolderArray, (item: FolderData) => {
@@ -540,8 +547,12 @@ export struct NoteContentOverViewComp {
 
   build() {
     if (this.selectedNoteData) {
-      Flex({ direction: FlexDirection.Column, wrap: FlexWrap.NoWrap,
-        justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+      Flex({
+        direction: FlexDirection.Column,
+        wrap: FlexWrap.NoWrap,
+        justifyContent: FlexAlign.SpaceBetween,
+        alignItems: ItemAlign.Center
+      }) {
         Row() {
           Text(this.selectedNoteData.title)
             .id(this.isUpdate + '')
@@ -562,9 +573,11 @@ export struct NoteContentOverViewComp {
             .fontColor($r("app.color.modified_time_font_color"))
             .margin({ left: 12 })
           Row() {
-            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)) ==
+            Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'),
+              this.selectedNoteData.folder_uuid)) ==
             folderTextMap.sys_def_myFavorites_uuid ? folderTextMap.sys_def_unClassified_uuid :
-            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'), this.selectedNoteData.folder_uuid)))
+              FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.Get('AllFolderArray'),
+                this.selectedNoteData.folder_uuid)))
               .id(this.isUpdate + '')
               .fontSize(12)
               .fontColor($r("app.color.list_modified_time_font_color"))
@@ -573,10 +586,16 @@ export struct NoteContentOverViewComp {
               .height(12)
               .margin({ left: 4 })
           }
-          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .padding({
+            left: 8,
+            right: 8,
+            top: 4,
+            bottom: 4
+          })
           .margin({ left: 8 })
           .borderRadius(16)
-          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray')!, this.selectedNoteData.folder_uuid, SysDefFolderUuid.AllNotes, false))
+          .backgroundColor(NoteUtil.getNoteBgColor(AppStorage.Get('AllFolderArray')!, this.selectedNoteData.folder_uuid,
+            SysDefFolderUuid.AllNotes, false))
           .bindMenu(this.MenuBuilder)
         }.alignItems(VerticalAlign.Top).height(40).width(StyleConstants.PERCENTAGE_100)
       }
@@ -591,7 +610,9 @@ export struct NoteContentOverViewComp {
 struct NoteDataMoveItemComp {
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
-  private folderItem: FolderData = new FolderData(0, '', new Date().getTime() + '', '', FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime());
+  private folderItem: FolderData =
+    new FolderData(0, '', new Date().getTime() + '', '', FolderType.CusDef, Delete.No, new Date().getTime(),
+      new Date().getTime());
 
   build() {
     Flex({ alignItems: ItemAlign.Center, wrap: FlexWrap.NoWrap, justifyContent: FlexAlign.Center }) {

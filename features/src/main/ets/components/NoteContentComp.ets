@@ -297,16 +297,7 @@ export struct NoteContentComp {
             .onPageEnd((e) => {
               try {
                 LogUtil.info(TAG, `dpi：${this.dpi}}`);
-                if (this.dpi <= 240) {
-                  this.controllerShow.runJavaScript('changeSizeToRk()');
-                } else if (this.dpi <= 320 && this.dpi > 240) {
-                  this.controllerShow.runJavaScript('changeSizeToPhone()');
-                } else {
-                  this.controllerShow.runJavaScript('changeSizeToTablet()');
-                }
-                if (AppStorage.Get('breakPoint') !== 'sm') {
-                  this.controllerShow.runJavaScript('hiddenButton()');
-                }
+                this.controllerShow.runJavaScript('changeSizeToRk()');
                 LogUtil.info(TAG, 'finish loadurl');
                 if (this.selectedNoteData) {
                   let self = this;
@@ -384,7 +375,7 @@ export struct NoteContentComp {
       .id(this.isUpdate + '')
       .height(StyleConstants.PERCENTAGE_100)
       .visibility(FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) == 0 ?
-      Visibility.Hidden : Visibility.Visible)
+        Visibility.Hidden : Visibility.Visible)
 
       Column() {
       }
@@ -501,7 +492,8 @@ export struct NoteContentOverViewComp {
                 if (this.sectionStatus != 1) {
                   this.selectedNoteData = NoteUtil.getFirstNoteData(this.AllNoteArray, this.selectedFolderData.uuid)!;
                   LogUtil.info(TAG,
-                    'NoteContentOverViewComp MenuBuilder onClick, runJavaScript(RICH_EDITOR.setHtml)' + this.selectedNoteData.content_text);
+                    'NoteContentOverViewComp MenuBuilder onClick, runJavaScript(RICH_EDITOR.setHtml)' +
+                    this.selectedNoteData.content_text);
                   this.controllerShow.runJavaScript(
                     "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
                   )
@@ -509,7 +501,8 @@ export struct NoteContentOverViewComp {
                 } else {
                   this.selectedFolderData = FolderUtil.getFolderData(AppStorage.get('AllFolderArray')!, item.uuid);
                   LogUtil.info(TAG,
-                    'NoteContentOverViewComp MenuBuilder onClick, selectedFolderData :' + JSON.stringify(this.selectedFolderData));
+                    'NoteContentOverViewComp MenuBuilder onClick, selectedFolderData :' +
+                    JSON.stringify(this.selectedFolderData));
                 }
                 // save continue data
                 let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject());
@@ -565,8 +558,8 @@ export struct NoteContentOverViewComp {
             Text(FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.get('AllFolderArray'),
               this.selectedNoteData.folder_uuid)) ==
             folderTextMap.sys_def_myFavorites_uuid ? folderTextMap.sys_def_unClassified_uuid :
-            FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.get('AllFolderArray'),
-              this.selectedNoteData.folder_uuid)))
+              FolderUtil.getFolderText(FolderUtil.getFolderData(AppStorage.get('AllFolderArray'),
+                this.selectedNoteData.folder_uuid)))
               .id(this.isUpdate + '')
               .fontSize(12)
               .fontColor($r('app.color.list_modified_time_font_color'))
@@ -754,7 +747,8 @@ export struct ToolBarComp {
                   LogUtil.info(TAG, 'ToolBarComp, onClick, recover note');
                   this.selectedNoteData.is_deleted = Delete.No;
                   this.selectedNoteData.deleted_time = 0;
-                  let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                  let context: common.UIAbilityContext =
+                    this.getUIContext().getHostContext() as common.UIAbilityContext;
                   let resource: resourceManager.Resource = {
                     bundleName: 'com.ohos.note',
                     moduleName: 'default',
@@ -842,7 +836,8 @@ export struct ToolBarComp {
                     'ohos.permission.READ_MEDIA',
                     'ohos.permission.WRITE_MEDIA',
                   ];
-                  let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                  let context: common.UIAbilityContext =
+                    this.getUIContext().getHostContext() as common.UIAbilityContext;
                   let AtManager = abilityAccessCtrl.createAtManager();
                   await AtManager.requestPermissionsFromUser(context, permissionList).then((data) => {
                     LogUtil.info(TAG, 'ToolBarComp data permissions : ' + data.permissions);
@@ -974,7 +969,7 @@ export struct ToolBarComp {
         } else {
           Row({ space: StyleConstants.SPACE_24 }) {
             Image(this.selectedNoteData.is_favorite == Favorite.Yes ? $r('app.media.favorite') :
-            $r('app.media.favorite_cancel'))
+              $r('app.media.favorite_cancel'))
               .height(24)
               .width(24)
               .onClick(() => {

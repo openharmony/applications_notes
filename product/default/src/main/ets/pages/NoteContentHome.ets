@@ -36,12 +36,7 @@ struct NoteContentHome {
     // Note content display area
     Flex({ direction: FlexDirection.Column, wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
       if (this.dBQueryFinished == 1) {
-        if (this.breakPoints == 'sm') {
-          NoteContentCompPortrait({ controllerShow: this.controllerShow })
-        } else {
-          NoteContent({ controllerShow: this.controllerShow })
-        }
-
+        NoteContentCompPortrait({ controllerShow: this.controllerShow })
       }
     }
     .backgroundColor($r("app.color.notecontent_color_ffffff"))

@@ -46,14 +46,16 @@ export class SearchModel {
     noteDataArray.forEach((noteData) => {
       let base64regex = new RegExp('/^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/');
       let contentTextValue: string
+      LogUtil.info(TAG, "content_text " + noteData.content_text)
       if (base64regex.test(noteData.content_text) && noteData.content_text.length > 0) {
-        let Base64 = new util.Base64()
-        let textDecoder = new util.TextDecoder("utf-8", { ignoreBOM: true }) // utf-8:编码格式为utf-8,ignoreBOM:是否忽略BOM标记
-        let decodeStr = Base64.decodeSync(noteData.content_text)
-        contentTextValue = textDecoder.decode(decodeStr, { stream: false }) // stream:在随后的decode()调用中是否跟随附加数据块
+        let base64 = new util.Base64Helper()
+        let textDecoder:util.TextDecoder = util.TextDecoder.create("utf-8", { ignoreBOM: true }) // utf-8:编码格式为utf-8,ignoreBOM:是否忽略BOM标记
+        let decodeStr = base64.decodeSync(noteData.content_text)
+        contentTextValue = textDecoder.decodeToString(decodeStr, { stream: false }) // stream:在随后的decode()调用中是否跟随附加数据块
       } else {
         contentTextValue = noteData.content_text
       }
+      LogUtil.info(TAG, "contentTextValue " + contentTextValue)
       if (contentTextValue.replace(new RegExp('/<[^>]+>/g'), "").toLowerCase().indexOf(query.toLowerCase()) != -1
         || noteData.title.toLowerCase().indexOf(query.toLowerCase()) != -1) {
         LogUtil.info(TAG, "uuid " + noteData.uuid)
