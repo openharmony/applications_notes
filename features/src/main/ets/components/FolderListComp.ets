@@ -49,19 +49,16 @@ export struct FolderListComp {
           Image($r("app.media.suojin"))
             .height(24)
             .width(24)
-            .responseRegion({ x: -15.0, y: -15.0, width: 54, height: 54 })
+            .responseRegion({
+              x: -15.0,
+              y: -15.0,
+              width: 54,
+              height: 54
+            })
             .onClick(() => {
-              if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
-                animateTo({ duration: 200 }, () => {
-                  this.expandStatus = !this.expandStatus
-                })
-              } else {
-                this.asideWidth = 0
-                this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
-                // save continue data
-                AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
-                LogUtil.info(this.TAG, "FolderListComp, set continue section success")
-              }
+              this.getUIContext().animateTo({ duration: 200 }, () => {
+                this.expandStatus = !this.expandStatus
+              })
             })
         }
         .alignItems(HorizontalAlign.Start)
@@ -125,17 +122,21 @@ export struct NoteAndCreateComp {
   @Consume('SelectedColor') selectedColor: string
   @Consume('PortraitModel') portraitModel: boolean
   folderCreateDialogCtl: CustomDialogController | null = new CustomDialogController({
-    builder: NewOrEditFolderDialog({ confirm: (color: string, name: string) => {
-      this.onCreateConfirm(color, name)
-    }, dialogType: 0 }),
+    builder: NewOrEditFolderDialog({
+      confirm: (color: string, name: string) => {
+        this.onCreateConfirm(color, name)
+      }, dialogType: 0
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
   folderCreateDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
-    builder: NewOrEditFolderDialog({ confirm: (color: string, name: string) => {
-      this.onCreateConfirm(color, name)
-    }, dialogType: 0 }),
+    builder: NewOrEditFolderDialog({
+      confirm: (color: string, name: string) => {
+        this.onCreateConfirm(color, name)
+      }, dialogType: 0
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -147,7 +148,9 @@ export struct NoteAndCreateComp {
   }
 
   onCreateConfirm(color: string, name: string) {
-    let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
+    let folderData =
+      new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(),
+        new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
     // insert folder to db
     RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null);
@@ -184,7 +187,9 @@ export struct NoteAndCreateComp {
 
 @Component
 struct FolderItemComp {
-  @State folderItem: FolderData = new FolderData(0, "", new Date().getTime() + "", "", FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime())
+  @State folderItem: FolderData =
+    new FolderData(0, "", new Date().getTime() + "", "", FolderType.CusDef, Delete.No, new Date().getTime(),
+      new Date().getTime())
   @StorageLink('AllNoteArray') AllNoteArray: NoteData[] = []
   @StorageLink('AllFolderArray') AllFolderArray: FolderData[] = []
   @StorageLink('CheckedNoteArray') CheckedNoteArray: NoteData[] = []
@@ -248,22 +253,27 @@ struct FolderItemComp {
 
   // Folder Delete Dialog
   folderDeleteDialogCtl: CustomDialogController | null = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: () => {
-      this.onDeleteConfirm();
-    }, deleteFileType: DeleteFileType.FolderData }),
+    builder: DeleteDialog({
+      onConfirm: () => {
+        this.onDeleteConfirm();
+      }, deleteFileType: DeleteFileType.FolderData
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
   // Folder Delete Dialog for portrait model
   folderDeleteDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
-    builder: DeleteDialog({ onConfirm: () => {
-      this.onDeleteConfirm();
-    }, deleteFileType: DeleteFileType.FolderData }),
+    builder: DeleteDialog({
+      onConfirm: () => {
+        this.onDeleteConfirm();
+      }, deleteFileType: DeleteFileType.FolderData
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
   })
+
   // Folder Delete Callback
   onDeleteConfirm() {
     let currentFolder = FolderUtil.getFolderData(this.AllFolderArray, this.folderItem.uuid)
@@ -306,19 +316,18 @@ struct FolderItemComp {
         return
       }
       // 刷新web界面
-      if (this.portraitModel == false) {
-        try {
-          this.controllerShow.runJavaScript(
-            "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
-          )
-          LogUtil.info(this.TAG, `runJavaScript success.`);
-        } catch (error) {
-          LogUtil.error(this.TAG, `runJavaScript failed.code:${JSON.stringify(error.code)},message:${JSON.stringify(error.message)}`);
-        }
+      try {
+        this.controllerShow.runJavaScript(
+          "RICH_EDITOR.setHtml('" + this.selectedNoteData.content_text + "')"
+        )
+        LogUtil.info(this.TAG, `runJavaScript success.`);
+      } catch (error) {
+        LogUtil.error(this.TAG,
+          `runJavaScript failed.code:${JSON.stringify(error.code)},message:${JSON.stringify(error.message)}`);
       }
       // save continue data
       let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-      AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+      AppStorage.setOrCreate<string>('ContinueNote', continueNote)
       LogUtil.info(this.TAG, "onDeleteConfirm, set continue note success")
     }
     this.isUpdate = true
@@ -326,18 +335,22 @@ struct FolderItemComp {
 
   // Folder Create Dialog
   folderCreateDialogCtl: CustomDialogController | null = new CustomDialogController({
-    builder: NewOrEditFolderDialog({ confirm: (color: string, name: string) => {
-      this.onCreateConfirm(color, name);
-    }, dialogType: 0 }),
+    builder: NewOrEditFolderDialog({
+      confirm: (color: string, name: string) => {
+        this.onCreateConfirm(color, name);
+      }, dialogType: 0
+    }),
     alignment: DialogAlignment.Center,
     autoCancel: false,
     customStyle: true,
   })
   // Folder Create Dialog for portrait model
   folderCreateDialogCtlBottom: CustomDialogController | null = new CustomDialogController({
-    builder: NewOrEditFolderDialog({ confirm: (color: string, name: string) => {
-      this.onCreateConfirm(color, name);
-    }, dialogType: 0 }),
+    builder: NewOrEditFolderDialog({
+      confirm: (color: string, name: string) => {
+        this.onCreateConfirm(color, name);
+      }, dialogType: 0
+    }),
     alignment: DialogAlignment.Bottom,
     autoCancel: false,
     customStyle: true,
@@ -345,14 +358,17 @@ struct FolderItemComp {
 
   // Folder Create Callback
   onCreateConfirm(color: string, name: string) {
-    let folderData = new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(), new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
+    let folderData =
+      new FolderData(0, name, new Date().getTime() + "", color, FolderType.CusDef, Delete.No, new Date().getTime(),
+        new Date().getTime()) // 新的的笔记本都是自定义类型 type为1
     this.AllFolderArray.push(folderData)
     // insert folder to db
     RdbStoreUtil.insert(TableName.FolderTable, folderData.toFolderObject(), null);
     this.isUpdate = true
   }
 
-  @Builder menuBuilder() {
+  @Builder
+  menuBuilder() {
     Column({ space: 1 }) {
       Text($r("app.string.editFolder"))
         .width(124)
@@ -407,7 +423,12 @@ struct FolderItemComp {
     }
     .width(156)
     .height(154)
-    .padding({ top: 4, bottom: 4, left: 16, right: 16 })
+    .padding({
+      top: 4,
+      bottom: 4,
+      left: 16,
+      right: 16
+    })
     .borderRadius(16)
     .backgroundColor($r("app.color.press_folder_bg_color"))
   }
@@ -422,7 +443,8 @@ struct FolderItemComp {
               .objectFit(ImageFit.Fill)
               .width(24)
               .height(24)
-              .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
+              .fillColor(FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid,
+                this.selectedFolderData.uuid == this.folderItem.uuid))
               .margin({ right: 16 })
             Text(FolderUtil.getFolderText(this.folderItem))
               .id(this.isUpdate + '')
@@ -447,8 +469,9 @@ struct FolderItemComp {
         .borderRadius(12)
         .height(56)
         .padding({ left: 12, right: 12 })
-        .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
-                                                                                      ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
+        .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") :
+          this.selectedFolderData.uuid == this.folderItem.uuid
+            ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
         .bindContextMenu(this.menuBuilder, ResponseType.LongPress)
         .bindContextMenu(this.menuBuilder, ResponseType.RightClick)
         .onClick(() => {
@@ -475,8 +498,8 @@ struct FolderItemComp {
             }
             // save continue data
             let continueNote: string = JSON.stringify(this.selectedNoteData.toNoteObject())
-            AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
-            AppStorage.SetOrCreate('ContinueSection', 3)
+            AppStorage.setOrCreate<string>('ContinueNote', continueNote)
+            AppStorage.setOrCreate<number>('ContinueSection', 3)
             LogUtil.info(this.TAG, "FolderItemComp, set continue note success")
           }
           NoteUtil.refreshAll()
@@ -489,7 +512,10 @@ struct FolderItemComp {
               .objectFit(ImageFit.Fill)
               .width(24)
               .height(24)
-              .fillColor(this.isUpdate ? FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid) : FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid, this.selectedFolderData.uuid == this.folderItem.uuid))
+              .fillColor(this.isUpdate ? FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid,
+                this.selectedFolderData.uuid == this.folderItem.uuid) :
+                FolderUtil.getFolderIconColor(this.AllFolderArray, this.folderItem.uuid,
+                  this.selectedFolderData.uuid == this.folderItem.uuid))
               .margin({ right: 16 })
             Text(FolderUtil.getFolderText(this.folderItem))
               .id(this.isUpdate + '')
@@ -514,8 +540,9 @@ struct FolderItemComp {
         .borderRadius(12)
         .height(56)
         .padding({ left: 12, right: 12 })
-        .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") : this.selectedFolderData.uuid == this.folderItem.uuid
-          ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
+        .backgroundColor(this.isLongPress ? $r("app.color.folder_color_19182431") :
+          this.selectedFolderData.uuid == this.folderItem.uuid
+            ? $r("app.color.folder_color_ffffff") : "#00FFFFFF")
         .onClick(() => {
           if (this.longpress) {
             this.longpress = false

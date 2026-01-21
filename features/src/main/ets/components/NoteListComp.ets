@@ -235,7 +235,7 @@ struct NoteOverViewComp {
   @State isShow: boolean = false
 
   notesNumberChange() {
-    let noteNumbers = FolderUtil.getNoteCount(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid);
+    let noteNumbers = FolderUtil.getNoteCount(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid);
     if (noteNumbers == 0) {
       this.isShow = false
     } else {
@@ -259,17 +259,9 @@ struct NoteOverViewComp {
             .margin({ right: 24 }) // 两分栏时缩进图片与右边有个24的间距
             .visibility(this.breakPoints == 'lg' && this.sectionStatus == 3 ? Visibility.None : Visibility.Visible)
             .onClick(() => {
-              if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
-                this.getUIContext().animateTo({ duration: 200 }, () => {
-                  this.expandStatus = !this.expandStatus
-                })
-              } else {
-                this.asideWidth = 200
-                this.sectionStatus = (this.sectionStatus == 3 ? 2 : 3)
-                // save continue data
-                AppStorage.setOrCreate<number>('ContinueSection', this.sectionStatus)
-                LogUtil.info(TAG, "NoteOverViewComp, set continue section success")
-              }
+              this.getUIContext().animateTo({ duration: 200 }, () => {
+                this.expandStatus = !this.expandStatus
+              })
             })
         }.alignItems(HorizontalAlign.Center)
 
@@ -317,7 +309,7 @@ struct NoteOverViewComp {
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
             })
           Text(this.CheckedNoteArray.length == 0 ? $r("app.string.none_selected") :
-          $r("app.string.selected", this.CheckedNoteArray.length))
+            $r("app.string.selected", this.CheckedNoteArray.length))
             .fontSize(20)
             .fontColor($r("app.color.note_selected_font_color"))
             .margin({ left: 16 })
@@ -359,11 +351,11 @@ export struct NoteItemComp {
   @Consume('selectedAll') selectedAll: boolean
   @Consume('PortraitModel') portraitModel: boolean
   @State isChecked: boolean = false;
-  @Consume('Longpress') @Watch('isLongPress') longpress: boolean
+  @Consume('Longpress') @Watch('isLongPress') longPress: boolean
   @StorageLink('isUpdate') isUpdate: boolean = false
 
   isLongPress() {
-    if (this.longpress) {
+    if (this.longPress) {
       this.isChecked = false
     }
   }
@@ -433,11 +425,11 @@ export struct NoteItemComp {
             .id(this.isUpdate + '')
         }.width(24)
         .height(24)
-        .visibility(this.longpress ? Visibility.Visible : Visibility.None)
+        .visibility(this.longPress ? Visibility.Visible : Visibility.None)
       }
       .flexShrink(0)
       .height(48)
-      .width(this.longpress ? 80 : 48)
+      .width(this.longPress ? 80 : 48)
     }
     .width('100%')
     .height(72)
@@ -459,7 +451,7 @@ export struct NoteItemComp {
         AppStorage.setOrCreate<boolean>('Search', this.search)
         return
       }
-      if (this.longpress) {
+      if (this.longPress) {
         if (NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)) {
           NoteUtil.unsetNoteChecked(this.CheckedNoteArray, this.noteItem)
           this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
@@ -495,12 +487,12 @@ export struct NoteItemComp {
         }
       }
       if (this.portraitModel == true) {
-        AppStorage.SetOrCreate<NoteData>('NewNote', this.selectedNoteData)
-        AppStorage.SetOrCreate<FolderData>('NewFolder', this.selectedFolderData)
+        AppStorage.setOrCreate<NoteData>('NewNote', this.selectedNoteData)
+        AppStorage.setOrCreate<FolderData>('NewFolder', this.selectedFolderData)
         routePage()
       }
       this.selectedAll = this.CheckedNoteArray.length ==
-      NoteUtil.getNoteDataArray(AppStorage.Get('AllNoteArray')!, this.selectedFolderData.uuid).length;
+      NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!, this.selectedFolderData.uuid).length;
       this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
     })
     .gesture(
@@ -508,8 +500,8 @@ export struct NoteItemComp {
         // 长按：对笔记列表进行操作
         LongPressGesture()
           .onAction(() => {
-            if (this.longpress == false) {
-              this.longpress = true
+            if (this.longPress == false) {
+              this.longPress = true
               NoteUtil.setNoteChecked(this.CheckedNoteArray, this.noteItem)
               this.isChecked = NoteUtil.isNoteChecked(this.CheckedNoteArray, this.noteItem)
             }
@@ -574,7 +566,7 @@ export struct NoteItemListComp {
         }
         // save continue data
         let continueNote: string = JSON.stringify(this.selectedNoteData?.toNoteObject())
-        AppStorage.SetOrCreate<string>('ContinueNote', continueNote)
+        AppStorage.setOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "doSearch, set continue note success")
         this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
       })
@@ -596,7 +588,7 @@ export struct NoteItemListComp {
       .width("100%")
       .padding({ left: 24, right: 24, bottom: 12 })
       .visibility((FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ?
-      Visibility.None : Visibility.Visible)
+        Visibility.None : Visibility.Visible)
 
       Stack() {
         Flex({ direction: FlexDirection.Column }) {
@@ -609,7 +601,7 @@ export struct NoteItemListComp {
           .width('100%')
           .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes
             && FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) > 0 ?
-          Visibility.Visible : Visibility.None)
+            Visibility.Visible : Visibility.None)
 
           Column() {
             List({ initialIndex: 0 }) {
@@ -628,7 +620,7 @@ export struct NoteItemListComp {
               .height('100%')
               .padding({ bottom: 120 })
               .visibility((FolderUtil.getNoteCount(AppStorage.get('AllNoteArray'), this.selectedFolderData.uuid) == 0) ?
-              Visibility.Visible : Visibility.None)
+                Visibility.Visible : Visibility.None)
 
               LazyForEach(this.noteList, (noteItem: NoteData) => {
                 ListItem() {
@@ -654,7 +646,7 @@ export struct NoteItemListComp {
             .layoutWeight(1)
             .listDirection(Axis.Vertical)
             .edgeEffect(EdgeEffect.Spring)
-            .cachedCount(10)
+            .cachedCount(2)
           }
           .layoutWeight(1)
           .height("100%")
@@ -784,7 +776,7 @@ export struct OperateNoteComp {
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
         .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 18 })
         .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None :
-        Visibility.Visible)
+          Visibility.Visible)
         .onClick(() => {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_top = (noteItem.is_top == Top.Yes) ? Top.No : Top.Yes
@@ -804,7 +796,7 @@ export struct OperateNoteComp {
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
         .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 0 : 18 })
         .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None :
-        Visibility.Visible)
+          Visibility.Visible)
         .onClick(() => {
           this.noteDataMoveDialogCtl!.open();
         })
@@ -824,7 +816,7 @@ export struct OperateNoteComp {
         .enabled(this.CheckedNoteArray.length == 0 ? false : true)
         .margin({ right: this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? 18 : 0 })
         .visibility(this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.Visible :
-        Visibility.None)
+          Visibility.None)
         .onClick(() => {
           this.CheckedNoteArray.forEach((noteItem) => {
             noteItem.is_deleted = Delete.No
@@ -942,7 +934,7 @@ export struct AddNoteComp {
         routePage()
       })
       .visibility(this.longpress || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None :
-      Visibility.Visible)
+        Visibility.Visible)
   }
 }
 
@@ -984,7 +976,7 @@ export struct SearchComp {
           .defaultFocus(true)
         TextInput({ placeholder: $r('app.string.searchNote'), text: this.text })
           .backgroundColor(this.longpress ? $r("app.color.search_longpress_bgcolor_f7f8f9") :
-          $r("app.color.color_ffffff"))
+            $r("app.color.color_ffffff"))
           .caretColor($r("app.color.search_note_caret_color"))
           .enabled(this.longpress ? false : true)
           .padding({
@@ -1261,7 +1253,7 @@ export struct OperateNoteCompForPortrait {
                   if (error != null) {
                     LogUtil.error(TAG, "error is " + error);
                   } else {
-                   this.getUIContext().getPromptAction().showToast({ message: value, duration: 2000 });
+                    this.getUIContext().getPromptAction().showToast({ message: value, duration: 2000 });
                   }
                 });
                 // update note to db

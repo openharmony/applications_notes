@@ -28,15 +28,15 @@ import webview from '@ohos.web.webview';
 @Component
 export struct NoteHomeComp {
   // 当前文件夹、笔记、分栏
-  @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.Get('Folder')!;
-  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.Get('Note')!;
-  @Provide('SectionStatus') sectionStatus: number = AppStorage.Get('Section')!;
+  @Provide('SelectedFolderData') selectedFolderData: FolderData = AppStorage.get('Folder')!;
+  @Provide('SelectedNoteData') selectedNoteData: NoteData = AppStorage.get('Note')!;
+  @Provide('SectionStatus') sectionStatus: number = AppStorage.get('Section')!;
   @Provide('SelectedColor') selectedColor: string = circleColorArray[0]
   @Provide('LastSectionStatus') lastSectionStatus: number = 3 // 记录分栏上一次的状态
   @Provide('Longpress') longpress: boolean = false // 第二栏长按状态
   @Provide('ExpandStatus') expandStatus: boolean = false // 笔记本折叠展开状态
   @Provide('ChooseNote') chooseNote: boolean = true // 是否选择笔记进行打开
-  @Provide('Search') search: boolean = AppStorage.Get('Search')!; // 是否处于搜索状态
+  @Provide('Search') search: boolean = AppStorage.get('Search')!; // 是否处于搜索状态
   @Provide('SearchResultList') searchResultList: NoteData[] = [] // 搜索得到的笔记列表
   @Provide('InputKeyword') inputKeyword: string = '' // 搜索的字串
   @Provide('SelectedAll') selectedAll: boolean = false
@@ -173,7 +173,7 @@ export struct NoteHomeComp {
       this.sectionStatus = 1
     }
     // save continue data
-    AppStorage.SetOrCreate<number>('ContinueSection', this.sectionStatus)
+    AppStorage.setOrCreate<number>('ContinueSection', this.sectionStatus)
     LogUtil.info(this.TAG, "aboutToAppear, set continue section success")
   }
 

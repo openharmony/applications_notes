@@ -14,15 +14,14 @@
  */
 
 import fileio from '@ohos.fileio'
-import { NoteHomeComp } from './NoteHome'
 import { NoteHomePortraitComp } from './NoteHomePortrait'
 import { LogUtil } from '@ohos/utils/src/main/ets/default/baseUtil/LogUtil'
 import RdbStoreUtil from '@ohos/utils/src/main/ets/default/baseUtil/RdbStoreUtil'
-import inputMethod from '@ohos.inputMethod';
-import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
-import webview from '@ohos.web.webview';
-import { BusinessError } from '@ohos.base';
-import common from '@ohos.app.ability.common';
+import inputMethod from '@ohos.inputMethod'
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl'
+import webview from '@ohos.web.webview'
+import { BusinessError } from '@ohos.base'
+import common from '@ohos.app.ability.common'
 
 @Entry
 @Component
@@ -39,11 +38,7 @@ export struct MyNoteHomeComp {
 
   onBreakPointChange() {
     LogUtil.info(this.TAG, "onBreakPointChange, breakPoints = "+this.breakPoints)
-    if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
-      this.portraitModel = true
-    } else {
-      this.portraitModel = false
-    }
+    this.portraitModel = true
   }
 
   build() {
@@ -54,12 +49,7 @@ export struct MyNoteHomeComp {
         .height(this.getUIContext().px2vp(this.topHeight))
       Row() {
         if (this.dBQueryFinished == 1) {
-          if (this.breakPoints == 'sm') {
             NoteHomePortraitComp()
-          } else {
-            NoteHomeComp({ controllerShow: this.controllerShow })
-          }
-
         }
       }
       .width('100%')
@@ -70,11 +60,7 @@ export struct MyNoteHomeComp {
   aboutToAppear(): void {
     LogUtil.info(this.TAG, "aboutToAppear")
     this.breakPoints = AppStorage.get('breakPoint')!;
-    if (this.breakPoints == 'sm' || this.breakPoints == 'md') {
-      this.portraitModel = true
-    } else {
-      this.portraitModel = false
-    }
+    this.portraitModel = true
     if (this.context == undefined || this.context == null) {
       LogUtil.warn(this.TAG, "context is error")
       return
