@@ -20,13 +20,12 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "compileSdkVersion": 20,
-        "compatibleSdkVersion": 14,
+        "compileSdkVersion": 23,
+        "compatibleSdkVersion": 23,
         "runtimeOS": "OpenHarmony"
       }
     ],
-    "signingConfigs": [
-    ]
+    "signingConfigs": []
   },
   "modules": [
     {
