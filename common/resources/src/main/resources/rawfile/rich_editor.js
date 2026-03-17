@@ -391,6 +391,9 @@ let callBackToApp = window.callBackToApp;
 
 function getHtmlContent() {
   console.log('getHtmlContent');
+  if (!callBackToApp) {
+    return;
+  }
   let htmlString = RICH_EDITOR.getHtml();
   let imgName = getImagePathFromContent(htmlString);
   console.log('getHtmlContent:'+htmlString)
@@ -402,6 +405,9 @@ function getHtmlContent() {
 
 function saveHtmlContent() {
   console.log('saveHtmlContent');
+  if (!callBackToApp) {
+    return;
+  }
   let htmlString = RICH_EDITOR.getHtml();
   let imgName = getImagePathFromContent(htmlString);
   htmlString = window.btoa(unescape(encodeURIComponent(htmlString)));
