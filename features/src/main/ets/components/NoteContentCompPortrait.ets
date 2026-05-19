@@ -158,8 +158,10 @@ export struct NoteContentCompPortrait {
     },
     callbackImagePath: (imgName) => {
       // updata note image
-      LogUtil.info(TAG, 'note imgName is:' + imgName);
-      this.selectedNoteData.content_img = imgName;
+      if(imgName){
+        LogUtil.info(TAG, 'note imgName is:' + imgName);
+        this.selectedNoteData.content_img = imgName;
+      }
     },
 
     callbackScheduledSave: (html) => {
