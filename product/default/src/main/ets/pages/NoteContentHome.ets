@@ -39,6 +39,9 @@ struct NoteContentHome {
         NoteContentCompPortrait({ controllerShow: this.controllerShow })
       }
     }
+    .onAttach(()=>{
+      LogUtil.info(this.TAG, "onAttach")
+    })
     .backgroundColor($r("app.color.notecontent_color_ffffff"))
     .width('100%')
     .height('100%')

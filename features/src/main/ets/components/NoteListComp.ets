@@ -51,7 +51,9 @@ function routePage() {
     url: 'pages/NoteContentHome'
   }
   try {
+    LogUtil.info(TAG, "pushUrl")
     router.pushUrl(options)
+    LogUtil.info(TAG, "pushUrl success")
   } catch (err) {
     LogUtil.info(TAG, "fail callback")
   }
@@ -489,6 +491,7 @@ export struct NoteItemComp {
       if (this.portraitModel == true) {
         AppStorage.setOrCreate<NoteData>('NewNote', this.selectedNoteData)
         AppStorage.setOrCreate<FolderData>('NewFolder', this.selectedFolderData)
+        LogUtil.info(TAG, "NoteItemComp, item click")
         routePage()
       }
       this.selectedAll = this.CheckedNoteArray.length ==
@@ -931,6 +934,7 @@ export struct AddNoteComp {
         AppStorage.setOrCreate<string>('ContinueNote', continueNote)
         LogUtil.info(TAG, "addNote, set continue note success")
         AppStorage.setOrCreate('isUpdate', true)
+        LogUtil.info(TAG, "addNote")
         routePage()
       })
       .visibility(this.longpress || this.selectedFolderData.uuid == SysDefFolderUuid.RecentDeletes ? Visibility.None :
@@ -1143,6 +1147,7 @@ export struct OperateNoteCompForPortrait {
               height: 54
             })
             .onClick(() => {
+              LogUtil.info(TAG, "OperateNoteCompForPortrait, set top")
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_top = (noteItem.is_top == Top.Yes) ? Top.No : Top.Yes
                 // update note to db
@@ -1154,6 +1159,7 @@ export struct OperateNoteCompForPortrait {
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               NoteUtil.unsetAllNotesChecked(this.CheckedNoteArray)
               NoteUtil.refreshAll()
+              LogUtil.info(TAG, "OperateNoteCompForPortrait, set top end")
             })
           Text($r("app.string.set_top"))
             .opacity(this.greyOpacity ? 0.4 : 1)
@@ -1181,8 +1187,10 @@ export struct OperateNoteCompForPortrait {
             height: 54
           })
           .onClick(() => {
+            LogUtil.info(TAG, "OperateNoteCompForPortrait, delete")
             this.noteDataDeleteDialogCtlBottom!.open();
             AppStorage.setOrCreate('isUpdate', true)
+            LogUtil.info(TAG, "OperateNoteCompForPortrait, delete end")
           })
         Text($r("app.string.delete"))
           .opacity(this.greyOpacity ? 0.4 : 1)
@@ -1210,8 +1218,10 @@ export struct OperateNoteCompForPortrait {
               height: 54
             })
             .onClick(() => {
+              LogUtil.info(TAG, "OperateNoteCompForPortrait, move")
               this.noteDataMoveDialogCtlBottom!.open();
               AppStorage.setOrCreate('isUpdate', true)
+              LogUtil.info(TAG, "OperateNoteCompForPortrait, move end")
             })
           Text($r("app.string.move"))
             .opacity(this.greyOpacity ? 0.4 : 1)
@@ -1240,6 +1250,7 @@ export struct OperateNoteCompForPortrait {
               height: 54
             })
             .onClick(() => {
+              LogUtil.info(TAG, "OperateNoteCompForPortrait, recover")
               this.CheckedNoteArray.forEach((noteItem) => {
                 noteItem.is_deleted = Delete.No
                 noteItem.deleted_time = 0
@@ -1266,6 +1277,7 @@ export struct OperateNoteCompForPortrait {
               this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
               AppStorage.setOrCreate('isUpdate', true)
               NoteUtil.refreshAll()
+              LogUtil.info(TAG, "OperateNoteCompForPortrait, recover end")
             })
           Text($r("app.string.recover"))
             .fontSize(10)
@@ -1292,6 +1304,7 @@ export struct OperateNoteCompForPortrait {
           })
           .id(this.isUpdate + '')
           .onClick(() => {
+            LogUtil.info(TAG, "OperateNoteCompForPortrait, check_all")
             if (this.CheckedNoteArray.length < NoteUtil.getNoteDataArray(AppStorage.get('AllNoteArray')!,
               this.selectedFolderData.uuid).length) {
               NoteUtil.setAllNotesChecked(this.CheckedNoteArray, NoteUtil.getNoteDataArray(
@@ -1301,6 +1314,7 @@ export struct OperateNoteCompForPortrait {
             }
             this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
             NoteUtil.refreshAll()
+            LogUtil.info(TAG, "OperateNoteCompForPortrait, check_all end")
           })
         Text($r("app.string.check_all"))
           .fontSize(10)

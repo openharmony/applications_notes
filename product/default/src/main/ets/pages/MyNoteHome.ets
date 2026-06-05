@@ -22,6 +22,7 @@ import abilityAccessCtrl from '@ohos.abilityAccessCtrl'
 import webview from '@ohos.web.webview'
 import { BusinessError } from '@ohos.base'
 import common from '@ohos.app.ability.common'
+import { JSON } from '@kit.ArkTS'
 
 @Entry
 @Component
@@ -118,7 +119,13 @@ export struct MyNoteHomeComp {
     let noteContentHomeExist = AppStorage.get<boolean>('NoteContentHomeExist')
     LogUtil.info(this.TAG, "onPageShow, noteContentHomeExist : " + noteContentHomeExist)
     if (continueFromTablet && !noteContentHomeExist) {
-      this.getUIContext().getRouter().pushUrl({ url: 'pages/NoteContentHome' })
+      LogUtil.info(this.TAG, "continue from tablet")
+      try {
+        this.getUIContext().getRouter().pushUrl({ url: 'pages/NoteContentHome' });
+      }catch (err) {
+        LogUtil.info(this.TAG, "pushUrl error : " + JSON.stringify(err))
+      }
+
       AppStorage.setOrCreate<boolean>('ContinueFromTablet', false)
     }
     this.refreshFlag = (this.refreshFlag == 0 ? 1 : 0)
